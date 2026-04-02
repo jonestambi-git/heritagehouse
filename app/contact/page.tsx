@@ -190,7 +190,7 @@ export default function ContactPage() {
                   <div className="flex flex-col gap-1">
                     <label className="font-body text-white/45 text-xs tracking-widest uppercase">Subject</label>
                     <Select value={form.subject} onValueChange={(v) => setForm((p) => ({ ...p, subject: v }))}>
-                      <SelectTrigger className={`${inputClass} w-full`}>
+                      <SelectTrigger className={`${inputClass} w-full data-[size=default]:h-10`}>
                         <SelectValue placeholder="Select a topic" />
                       </SelectTrigger>
                       <SelectContent>
