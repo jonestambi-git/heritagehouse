@@ -15,6 +15,7 @@ export default function AdminSermonsPage() {
   const [sermons, setSermons] = useState<Sermon[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -28,10 +29,11 @@ export default function AdminSermonsPage() {
   function startEdit(sermon: Sermon) {
     setEditing(sermon.slug);
     setForm({ ...emptyForm, ...sermon });
+    setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function cancelEdit() { setEditing(null); setForm(emptyForm); }
+  function cancelEdit() { setEditing(null); setForm(emptyForm); setShowForm(false); }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -43,7 +45,7 @@ export default function AdminSermonsPage() {
     });
     if (res.ok) {
       const updated = await fetch("/api/admin/sermons").then((r) => r.json());
-      setSermons(updated); setForm(emptyForm); setEditing(null);
+      setSermons(updated); setForm(emptyForm); setEditing(null); setShowForm(false);
     } else { setError("Failed to save."); }
     setSaving(false);
   }
@@ -58,13 +60,23 @@ export default function AdminSermonsPage() {
 
   return (
     <div className="flex flex-col min-h-screen px-6 py-8 sm:px-10 sm:py-10 max-w-5xl mx-auto">
-      <div className="mb-10">
-        <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">Admin</span>
-        <h1 className="font-heading text-white font-black text-3xl sm:text-4xl leading-none tracking-tight mt-0.5">Sermons</h1>
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+          <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">Admin</span>
+          <h1 className="font-heading text-white font-black text-3xl sm:text-4xl leading-none tracking-tight mt-0.5">Sermons</h1>
+        </div>
+        {!showForm && (
+          <button
+            onClick={() => { setEditing(null); setForm(emptyForm); setShowForm(true); }}
+            className="border border-white/30 px-5 py-2 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
+          >
+            + New sermon
+          </button>
+        )}
       </div>
 
-      {/* Form */}
-      <div className="border border-white/10 p-6 mb-10 backdrop-blur-sm bg-white/3">
+      {/* Form — shown only when creating or editing */}
+      {showForm && <div className="border border-white/10 p-6 mb-10 backdrop-blur-sm bg-white/3">
         <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-5">
           {editing ? "Edit sermon" : "New sermon"}
         </p>
@@ -130,9 +142,12 @@ export default function AdminSermonsPage() {
             {editing && (
               <button type="button" onClick={cancelEdit} className="font-body text-white/40 text-sm hover:text-white transition-colors">Cancel</button>
             )}
+            {!editing && (
+              <button type="button" onClick={() => { setShowForm(false); setForm(emptyForm); }} className="font-body text-white/40 text-sm hover:text-white transition-colors">Cancel</button>
+            )}
           </div>
         </form>
-      </div>
+      </div>}
 
       {/* List */}
       <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-2">{sermons.length} sermon{sermons.length !== 1 ? "s" : ""}</p>

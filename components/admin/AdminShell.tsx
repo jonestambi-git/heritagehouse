@@ -77,17 +77,27 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className={`flex-shrink-0 flex flex-col py-6 border-r border-white/8 bg-black/50 backdrop-blur-xl transition-all duration-300 ${open ? "w-60 px-3" : "w-14 px-2"}`}>
+      <aside className={`flex-shrink-0 flex flex-col py-6 border-r border-white/8 bg-black/50 backdrop-blur-xl transition-all duration-300 sticky top-0 h-screen overflow-y-auto ${open ? "w-60 px-3" : "w-14 px-2"}`}>
 
         {/* Brand */}
         {open && (
-          <div className="px-3 mb-6">
+          <div className="px-3 mb-4">
             <p className="font-body text-white/30 text-[9px] tracking-widest uppercase mb-0.5">Browse</p>
           </div>
         )}
-        {!open && <div className="mb-6 h-5" />}
+        {!open && <div className="mb-4 h-5" />}
+
+        {/* Toggle button */}
+        <button
+          onClick={() => setOpen((p) => !p)}
+          title={open ? "Collapse sidebar" : "Expand sidebar"}
+          className={`flex items-center gap-2 rounded-lg font-body text-white/35 text-xs hover:text-white hover:bg-white/6 transition-colors cursor-pointer mb-4 border border-white/10 ${open ? "px-3 py-1.5 self-start" : "w-8 h-8 justify-center self-center"}`}
+        >
+          <span className="text-sm leading-none">{open ? "←" : "→"}</span>
+          {open && <span>Hide</span>}
+        </button>
 
         {/* Nav cards */}
         <nav className="flex flex-col gap-1.5 flex-1">
@@ -155,16 +165,6 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto">
-        {/* Toggle bar */}
-        <div className="flex items-center px-6 pt-6 pb-0">
-          <button
-            onClick={() => setOpen((p) => !p)}
-            className="flex items-center gap-2 font-body text-white/35 text-xs hover:text-white transition-colors cursor-pointer border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/6"
-          >
-            <span className="text-base leading-none">{open ? "←" : "→"}</span>
-            {open ? "Hide sidebar" : "Show sidebar"}
-          </button>
-        </div>
         {children}
       </main>
     </div>

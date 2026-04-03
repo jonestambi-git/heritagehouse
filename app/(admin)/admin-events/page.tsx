@@ -10,6 +10,7 @@ const empty = { title: "", description: "", date: "", time: "", location: "", ca
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<ChurchEvent[]>([]);
   const [form, setForm] = useState(empty);
+  const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,6 +35,7 @@ export default function AdminEventsPage() {
       const created = await res.json();
       setEvents((p) => [created, ...p]);
       setForm(empty);
+      setShowForm(false);
     } else {
       setError("Failed to save event.");
     }
@@ -53,13 +55,23 @@ export default function AdminEventsPage() {
 
   return (
     <div className="flex flex-col min-h-screen px-6 py-8 sm:px-10 sm:py-10 max-w-5xl mx-auto">
-      <div className="mb-10">
-        <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">Admin</span>
-        <h1 className="font-heading text-white font-black text-3xl sm:text-4xl leading-none tracking-tight mt-0.5">Events</h1>
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+          <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">Admin</span>
+          <h1 className="font-heading text-white font-black text-3xl sm:text-4xl leading-none tracking-tight mt-0.5">Events</h1>
+        </div>
+        {!showForm && (
+          <button
+            onClick={() => { setForm(empty); setShowForm(true); }}
+            className="border border-white/30 px-5 py-2 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
+          >
+            + New event
+          </button>
+        )}
       </div>
 
       {/* Create form */}
-      <div className="border border-white/10 p-6 mb-10 backdrop-blur-sm bg-white/3">
+      {showForm && <div className="border border-white/10 p-6 mb-10 backdrop-blur-sm bg-white/3">
         <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-5">New event</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -97,12 +109,18 @@ export default function AdminEventsPage() {
 
           {error && <p className="font-body text-red-400 text-xs">{error}</p>}
 
-          <button type="submit" disabled={saving}
-            className="self-start border border-white/30 px-6 py-2.5 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors disabled:opacity-40 cursor-pointer">
-            {saving ? "Saving…" : "Create event"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button type="submit" disabled={saving}
+              className="self-start border border-white/30 px-6 py-2.5 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors disabled:opacity-40 cursor-pointer">
+              {saving ? "Saving…" : "Create event"}
+            </button>
+            <button type="button" onClick={() => { setShowForm(false); setForm(empty); }}
+              className="font-body text-white/40 text-sm hover:text-white transition-colors">
+              Cancel
+            </button>
+          </div>
         </form>
-      </div>
+      </div>}
 
       {/* Events list */}
       <div className="flex flex-col gap-1">
