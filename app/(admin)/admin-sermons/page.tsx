@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react";
 import type { Sermon, SeriesTag } from "@/lib/sermons-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatePicker } from "@/components/ui/date-picker";
 
 const emptyForm = {
   slug: "", title: "", subtitle: "", series: "", tag: "Faith" as SeriesTag,
   date: "", dateISO: "", pastor: "", pastorRole: "", pastorPhoto: "",
   readTime: "", scripture: "", excerpt: "", body: "", featured: false,
+  podcastSpotify: "", podcastApple: "", podcastYoutube: "",
 };
 
 const tags: SeriesTag[] = ["Faith", "Family", "Prayer", "Identity", "Prophecy"];
@@ -28,7 +31,12 @@ export default function AdminSermonsPage() {
 
   function startEdit(sermon: Sermon) {
     setEditing(sermon.slug);
-    setForm({ ...emptyForm, ...sermon });
+    setForm({
+      ...emptyForm, ...sermon,
+      podcastSpotify: sermon.podcastLinks?.spotify ?? "",
+      podcastApple: sermon.podcastLinks?.apple ?? "",
+      podcastYoutube: sermon.podcastLinks?.youtube ?? "",
+    });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -38,7 +46,15 @@ export default function AdminSermonsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true); setError("");
-    const payload = { ...form, slug: form.slug || form.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") };
+    const payload = {
+      ...form,
+      slug: form.slug || form.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+      podcastLinks: {
+        ...(form.podcastSpotify && { spotify: form.podcastSpotify }),
+        ...(form.podcastApple   && { apple:   form.podcastApple   }),
+        ...(form.podcastYoutube && { youtube: form.podcastYoutube }),
+      },
+    };
     const method = editing ? "PUT" : "POST";
     const res = await fetch("/api/admin/sermons", {
       method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
@@ -98,9 +114,14 @@ export default function AdminSermonsPage() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Tag</label>
-              <select name="tag" value={form.tag} onChange={handleChange} className={`${inputClass} appearance-none`}>
-                {tags.map((t) => <option key={t} value={t} className="text-black">{t}</option>)}
-              </select>
+              <Select value={form.tag} onValueChange={(v) => setForm((p) => ({ ...p, tag: v as SeriesTag }))}>
+                <SelectTrigger className="bg-white/5 border-white/15 text-white rounded-none h-10 w-full data-[size=default]:h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {tags.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Scripture</label>
@@ -118,7 +139,14 @@ export default function AdminSermonsPage() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Date</label>
-              <input name="dateISO" type="date" value={form.dateISO} onChange={(e) => setForm((p) => ({ ...p, dateISO: e.target.value, date: new Date(e.target.value).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) }))} className={inputClass} />
+              <DatePicker
+                value={form.dateISO}
+                onChange={(iso) => setForm((p) => ({
+                  ...p,
+                  dateISO: iso,
+                  date: new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+                }))}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-1">
@@ -133,6 +161,25 @@ export default function AdminSermonsPage() {
             <input type="checkbox" name="featured" checked={form.featured} onChange={handleChange} className="w-4 h-4 accent-white" />
             <span className="font-body text-white/60 text-sm">Mark as featured</span>
           </label>
+
+          {/* Podcast links */}
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
+            <p className="font-body text-white/30 text-[10px] tracking-widest uppercase">Podcast links <span className="normal-case opacity-60">(optional)</span></p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Spotify</label>
+                <input name="podcastSpotify" value={form.podcastSpotify} onChange={handleChange} placeholder="https://open.spotify.com/..." className={inputClass} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Apple Podcasts</label>
+                <input name="podcastApple" value={form.podcastApple} onChange={handleChange} placeholder="https://podcasts.apple.com/..." className={inputClass} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube</label>
+                <input name="podcastYoutube" value={form.podcastYoutube} onChange={handleChange} placeholder="https://youtube.com/..." className={inputClass} />
+              </div>
+            </div>
+          </div>
           {error && <p className="font-body text-red-400 text-xs">{error}</p>}
           <div className="flex items-center gap-3">
             <button type="submit" disabled={saving}

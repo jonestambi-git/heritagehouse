@@ -19,6 +19,11 @@ export interface Sermon {
   excerpt: string;
   body: string;
   featured?: boolean;
+  podcastLinks?: {
+    spotify?: string;
+    apple?: string;
+    youtube?: string;
+  };
 }
 
 export const sermons: Sermon[] = [
@@ -39,6 +44,11 @@ export const sermons: Sermon[] = [
       "Hagar was alone in the desert, invisible to the world — yet God found her. This message unpacks what it means to be truly seen by a God who never looks away.",
     body: `There is a woman in the wilderness. She has no status, no tribe, no one to advocate for her. Her name is Hagar, and she has just fled from a home that was never truly hers.\n\nAnd yet, in that desolation, something remarkable happens. God speaks to her. Not to Abraham, the patriarch. Not to Sarah, the matriarch. To Hagar — the one the world had already forgotten.\n\nShe responds with one of the most tender confessions in all of Scripture: *"You are the God who sees me."* El Roi. The God who sees.\n\nWe live in an age of performance. We craft our identities online, we curate what the world sees, and we quietly dread being truly known — because to be known is to be vulnerable. But Hagar's story tells us something the world cannot: the God of the universe already knows you completely, and He has not turned away.\n\nTo be seen by God is not a threat. It is the safest thing there is.\n\nThe question this morning is not whether God sees you. He does. The question is whether you will allow yourself to be found — whether you will stop running and, like Hagar, lift your eyes and receive the grace of being truly known.\n\nYou are not an afterthought in His story. You are the reason He entered the wilderness in the first place.`,
     featured: true,
+    podcastLinks: {
+      spotify: "https://open.spotify.com",
+      apple: "https://podcasts.apple.com",
+      youtube: "https://youtube.com",
+    },
   },
   {
     slug: "when-faith-feels-like-foolishness",

@@ -1,8 +1,17 @@
+export interface PreviousStream {
+  id: string;
+  title: string;
+  description: string;
+  streamUrl: string;
+  date: string; // ISO
+}
+
 export interface LiveSettings {
   isLive: boolean;
   streamUrl: string;
   title: string;
   description: string;
+  previousStreams?: PreviousStream[];
 }
 
 export const defaultLiveSettings: LiveSettings = {

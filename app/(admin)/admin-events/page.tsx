@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import type { ChurchEvent } from "@/lib/events-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatePicker } from "@/components/ui/date-picker";
 
 const categories = ["service", "prayer", "youth", "outreach", "other"] as const;
 
@@ -81,16 +83,21 @@ export default function AdminEventsPage() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Category</label>
-              <select name="category" value={form.category} onChange={handleChange} className={`${inputClass} appearance-none`}>
-                {categories.map((c) => <option key={c} value={c} className="text-black capitalize">{c}</option>)}
-              </select>
+              <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v as typeof form.category }))}>
+                <SelectTrigger className="bg-white/5 border-white/15 text-white rounded-none h-10 w-full data-[size=default]:h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Date</label>
-              <input name="date" type="date" value={form.date} onChange={handleChange} required className={inputClass} />
+              <DatePicker value={form.date} onChange={(iso) => setForm((p) => ({ ...p, date: iso }))} />
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Time</label>

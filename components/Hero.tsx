@@ -28,9 +28,9 @@ function getDailyPhoto(): string {
 }
 
 const navLinks = [
-  [{ label: "Welcome", href: "/" },       { label: "Community", href: "/community" }],
-  [{ label: "Our Mission", href: "/mission" }, { label: "Ministry", href: "/ministry" }],
-  [{ label: "Events", href: "/events" },  { label: "Contact", href: "/contact" }],
+  [{ label: "Welcome", href: "/" },          { label: "Community", href: "/community" }, { label: "Give",     href: "/give"     }],
+  [{ label: "Our Mission", href: "/mission" },{ label: "Ministry",  href: "/ministry"  }, { label: "Events",   href: "/events"   }],
+  [{ label: "Location", href: "/location" },  { label: "Contact",   href: "/contact"   }, { label: "Sermons",  href: "/sermons"  }],
 ];
 
 const dailyQuotes = [
@@ -176,10 +176,10 @@ export default function Hero() {
         >
           {/* Nav */}
           <motion.nav
-            className="grid grid-cols-2 gap-x-8 sm:gap-x-20 flex-shrink-0"
+            className="grid grid-cols-3 gap-x-8 sm:gap-x-14 flex-shrink-0"
             variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
           >
-            {navLinks.map(([left, right], i) => (
+            {navLinks.map(([left, mid, right], i) => (
               <div key={i} className="contents">
                 <motion.a
                   href={left.href}
@@ -187,6 +187,13 @@ export default function Hero() {
                   variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
                 >
                   {left.label}
+                </motion.a>
+                <motion.a
+                  href={mid.href}
+                  className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
+                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                >
+                  {mid.label}
                 </motion.a>
                 <motion.a
                   href={right.href}

@@ -165,6 +165,36 @@ export default function SermonDetailPage({ params }: { params: Promise<{ slug: s
               {renderBody(sermon.body)}
             </motion.article>
 
+            {/* Podcast links */}
+            {sermon.podcastLinks && Object.values(sermon.podcastLinks).some(Boolean) && (
+              <motion.div
+                className="mt-6 border border-white/15 backdrop-blur-sm bg-white/5 px-5 py-4 flex flex-col gap-3"
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.6 }}
+              >
+                <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">Listen on</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {sermon.podcastLinks.spotify && (
+                    <a href={sermon.podcastLinks.spotify} target="_blank" rel="noopener noreferrer"
+                      className="font-body text-white/60 text-[10px] tracking-widest uppercase hover:text-white transition-colors border border-white/15 px-3 py-1.5 hover:bg-white/10">
+                      Spotify
+                    </a>
+                  )}
+                  {sermon.podcastLinks.apple && (
+                    <a href={sermon.podcastLinks.apple} target="_blank" rel="noopener noreferrer"
+                      className="font-body text-white/60 text-[10px] tracking-widest uppercase hover:text-white transition-colors border border-white/15 px-3 py-1.5 hover:bg-white/10">
+                      Apple Podcasts
+                    </a>
+                  )}
+                  {sermon.podcastLinks.youtube && (
+                    <a href={sermon.podcastLinks.youtube} target="_blank" rel="noopener noreferrer"
+                      className="font-body text-white/60 text-[10px] tracking-widest uppercase hover:text-white transition-colors border border-white/15 px-3 py-1.5 hover:bg-white/10">
+                      YouTube
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
             {/* Share */}
             <motion.div
               className="mt-8 border-t border-white/20 pt-6 flex items-center gap-4 flex-wrap"
@@ -175,8 +205,6 @@ export default function SermonDetailPage({ params }: { params: Promise<{ slug: s
               <span className="font-body text-white/35 text-xs tracking-widest uppercase">Share</span>
               {[
                 { label: "Copy link", action: () => navigator.clipboard.writeText(window.location.href) },
-                { label: "WhatsApp",  action: () => window.open(`https://wa.me/?text=${encodeURIComponent(sermon.title + " — " + window.location.href)}`) },
-                { label: "Email",     action: () => window.open(`mailto:?subject=${encodeURIComponent(sermon.title)}&body=${encodeURIComponent(window.location.href)}`) },
               ].map(({ label, action }) => (
                 <button
                   key={label}

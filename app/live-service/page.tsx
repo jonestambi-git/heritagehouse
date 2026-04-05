@@ -112,11 +112,24 @@ export default function LiveServicePage() {
   const bgUrl = getDailyPhoto();
   const now = useNow(60_000);
 
+  // Load live settings from admin
+  const [liveSettings, setLiveSettings] = useState<{ isLive: boolean; streamUrl: string; title: string; description: string } | null>(null);
+  useEffect(() => {
+    fetch("/api/admin/live").then((r) => r.json()).then(setLiveSettings);
+  }, []);
+
   // Pick active/next service
   const liveService    = services.find((s) => getServiceStatus(s) === "live") ?? null;
   const upcomingService= services.find((s) => getServiceStatus(s) === "upcoming") ?? null;
   const featured       = liveService ?? upcomingService ?? services[0];
-  const isLive         = !!liveService;
+
+  // Admin "isLive" overrides the schedule check
+  const isLive = liveSettings?.isLive ?? !!liveService;
+
+  // Use admin stream URL if set, otherwise fall back to the schedule's youtubeId
+  const streamUrl = liveSettings?.streamUrl || `https://www.youtube.com/embed/${featured.youtubeId}?autoplay=1&mute=0&rel=0`;
+  const serviceTitle = liveSettings?.title || featured.title;
+  const serviceDesc  = liveSettings?.description || featured.description;
 
   // Chat state
   const [messages, setMessages]   = useState<ChatMsg[]>(seedMessages);
@@ -228,7 +241,7 @@ export default function LiveServicePage() {
               {isLive ? (
                 <iframe
                   className="absolute inset-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${featured.youtubeId}?autoplay=1&mute=0&rel=0`}
+                  src={streamUrl}
                   title="Live Service"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -257,18 +270,27 @@ export default function LiveServicePage() {
             {/* Service info */}
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-start border-t border-white/20 pt-5">
               <div className="flex flex-col gap-1">
-                <h2 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">{featured.title}</h2>
+                <h2 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">{serviceTitle}</h2>
                 <p className="font-body text-white/50 text-xs tracking-wide">{featured.speaker}</p>
-                <p className="font-body text-white/65 text-sm leading-relaxed mt-2 max-w-md">{featured.description}</p>
+                <p className="font-body text-white/65 text-sm leading-relaxed mt-2 max-w-md">{serviceDesc}</p>
               </div>
               <div className="flex gap-3 sm:flex-col">
                 <Button variant="outline" size="sm"
-                  className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5">
+                  className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
+                  onClick={() => {
+                    const url = window.location.href;
+                    if (navigator.share) {
+                      navigator.share({ title: serviceTitle, url });
+                    } else {
+                      navigator.clipboard.writeText(url);
+                    }
+                  }}>
                   Share
                 </Button>
                 <Button variant="ghost" size="sm"
-                  className="text-white/55 hover:text-white hover:bg-transparent font-body text-xs tracking-wide rounded-none px-0 underline underline-offset-4">
-                  Give online
+                  className="text-white/55 hover:text-white hover:bg-transparent font-body text-xs tracking-wide rounded-none px-0 underline underline-offset-4"
+                  asChild>
+                  <a href="/give">Give online</a>
                 </Button>
               </div>
             </div>

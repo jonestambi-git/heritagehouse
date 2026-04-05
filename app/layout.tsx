@@ -17,8 +17,23 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Church",
-  description: "Welcome to our church",
+  title: {
+    default: "Assemblies Of God Church",
+    template: "%s | AG Church",
+  },
+  description: "A Spirit-filled community rooted in love, faith, and service. Join us for worship, sermons, and community in Port Harcourt, Rivers State.",
+  keywords: ["church", "assemblies of god", "Port Harcourt", "worship", "sermons", "faith"],
+  openGraph: {
+    type: "website",
+    siteName: "Assemblies Of God Church",
+    title: "Assemblies Of God Church",
+    description: "A Spirit-filled community rooted in love, faith, and service.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Assemblies Of God Church",
+    description: "A Spirit-filled community rooted in love, faith, and service.",
+  },
 };
 
 export default function RootLayout({
