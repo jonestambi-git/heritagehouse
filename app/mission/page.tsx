@@ -1,14 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-// ─── Background ──────────────────────────────────────────────────────────────
-
-const BG_URL =
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1800&q=90";
+import { getDailyPhoto } from "@/lib/church-photos";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -90,31 +85,24 @@ const timeline = [
 
 export default function MissionPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const bgUrl = getDailyPhoto(9);
 
   return (
-    <section className="relative w-full min-h-svh overflow-hidden">
+    <section className="relative w-full min-h-svh">
 
-      {/* Background */}
+      {/* Fixed background */}
       <motion.div
-        className="absolute inset-0"
+        className="page-bg"
+        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.6 }}
-      >
-        <Image
-          src={BG_URL}
-          alt="Church mission"
-          fill
-          priority
-          quality={90}
-          className="object-cover object-center"
-        />
-      </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/30" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/70 to-transparent" />
+      />
+      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 pointer-events-none" style={{ zIndex: 0 }} />
+      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" style={{ zIndex: 0 }} />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
 
         {/* Top bar */}
         <div className="flex items-center justify-between">

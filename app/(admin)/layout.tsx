@@ -1,12 +1,14 @@
 import Image from "next/image";
 import AdminShell from "@/components/admin/AdminShell";
+import { getDailyPhoto } from "@/lib/church-photos";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const bgUrl = getDailyPhoto(8);
   return (
     <div className="relative min-h-screen bg-zinc-950 text-white">
       {/* Background */}
       <Image
-        src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1800&q=80"
+        src={bgUrl}
         alt="Church interior"
         fill
         priority

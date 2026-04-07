@@ -130,7 +130,7 @@ export default function MinistryPage() {
     activeTag === "All" ? ministries : ministries.filter((m) => m.tag === activeTag);
 
   return (
-    <section className="relative w-full min-h-svh overflow-hidden">
+    <section className="relative w-full min-h-svh">
 
       {/* Background */}
       <motion.div
@@ -148,8 +148,8 @@ export default function MinistryPage() {
           className="object-cover object-center"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/58 to-black/30" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/70 to-transparent" />
+      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
+<div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">

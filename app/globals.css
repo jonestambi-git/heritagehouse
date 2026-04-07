@@ -4,6 +4,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Fixed background helper */
+.bg-fixed-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* CSS-based fixed background — use as inline style with --bg-url */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--bg-url);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* Site max-width wrapper */
+.site-wrapper {
+  max-width: 1440px;
+  margin-inline: auto;
+  width: 100%;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

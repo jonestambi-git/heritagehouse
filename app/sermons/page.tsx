@@ -5,46 +5,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import { sermons, seriesTags, tagColors, tagActiveBg, type SeriesTag } from "@/lib/sermons-data";
-
-const churchPhotos = [
-  "photo-1438032005730-c779502df39b",
-  "photo-1529070538774-1843cb3265df",
-  "photo-1543968996-ee822b8176ba",
-  "photo-1508739773434-c26b3d09e071",
-  "photo-1519817914152-22d216bb9170",
-  "photo-1514896856000-91cb6de818e0",
-  "photo-1555396273-367ea4eb4db5",
-  "photo-1502672260266-1c1ef2d93688",
-  "photo-1600585154340-be6161a56a0c",
-  "photo-1507003211169-0a1dd7228f2d",
-];
-
-function getDailyPhoto(): string {
-  const now = new Date();
-  const dayOfYear =
-    Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000) + 5;
-  return `https://images.unsplash.com/${churchPhotos[dayOfYear % churchPhotos.length]}?w=1800&q=90`;
-}
+import { getDailyPhoto } from "@/lib/church-photos";
 
 export default function SermonsPage() {
-  const bgUrl = getDailyPhoto();
+  const bgUrl = getDailyPhoto(5);
   const [activeTag, setActiveTag] = useState<SeriesTag>("All");
 
   const filtered = activeTag === "All" ? sermons : sermons.filter((s) => s.tag === activeTag);
   const featured = sermons.find((s) => s.featured);
 
   return (
-    <section className="relative w-full min-h-svh overflow-hidden">
+    <section className="relative w-full min-h-svh">
 
       {/* Background */}
-      <motion.div className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6 }}>
-        <Image src={bgUrl} alt="Church" fill priority quality={90} className="object-cover object-center" />
-      </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/35" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/75 to-transparent" />
+      <motion.div className="page-bg" style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6 }} />
+      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
+<div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
 
         {/* Top bar */}
         <div className="flex items-center justify-between">

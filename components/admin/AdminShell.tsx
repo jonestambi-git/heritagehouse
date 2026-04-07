@@ -116,7 +116,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className={`flex-shrink-0 flex flex-col py-6 border-r border-white/8 bg-black/50 backdrop-blur-xl transition-all duration-300 sticky top-0 h-screen overflow-y-auto ${open ? "w-60 px-3" : "w-14 px-2"}`}>
+      <aside className={`flex-shrink-0 flex flex-col py-6 border-r border-white/8 bg-black/50 backdrop-blur-xl transition-all duration-300 sticky top-0 h-screen overflow-y-auto ${open ? "w-60 px-3" : "w-14 px-2"}`} data-tour="sidebar">
 
         {/* Brand */}
         {open && (

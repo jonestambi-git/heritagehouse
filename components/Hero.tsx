@@ -1,31 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { sermons } from "@/lib/sermons-data";
-
-const churchPhotos = [
-  "photo-1438032005730-c779502df39b", // stained glass interior
-  "photo-1529070538774-1843cb3265df", // brown church exterior
-  "photo-1543968996-ee822b8176ba", // bell tower
-  "photo-1508739773434-c26b3d09e071", // cross on hill
-  "photo-1519817914152-22d216bb9170", // church at dusk
-  "photo-1514896856000-91cb6de818e0", // church exterior
-  "photo-1555396273-367ea4eb4db5", // church interior
-  "photo-1502672260266-1c1ef2d93688", // church pews
-  "photo-1600585154340-be6161a56a0c", // modern church
-  "photo-1507003211169-0a1dd7228f2d", // chapel interior
-];
-
-function getDailyPhoto(): string {
-  const now = new Date();
-  const dayOfYear = Math.floor(
-    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000
-  );
-  const photo = churchPhotos[dayOfYear % churchPhotos.length];
-  return `https://images.unsplash.com/${photo}?w=1800&q=90`;
-}
+import HeroTour from "@/components/HeroTour";
+import { getDailyPhoto } from "@/lib/church-photos";
 
 const navLinks = [
   [{ label: "Welcome", href: "/" },          { label: "Community", href: "/community" }, { label: "Give",     href: "/give"     }],
@@ -52,40 +31,33 @@ function getDailyQuote() {
 }
 
 export default function Hero() {
-  const bgUrl = getDailyPhoto();
+  const bgUrl = getDailyPhoto(0);
   const dailyQuote = getDailyQuote();
   return (
-    <section className="relative w-full h-svh min-h-[600px] overflow-hidden">
+    <section className="relative w-full h-svh min-h-[600px]">
+      <HeroTour />
 
-      {/* Background Image */}
+      {/* Fixed background */}
       <motion.div
-        className="absolute inset-0"
+        className="page-bg"
+        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.6 }}
-      >
-        <Image
-          src={bgUrl}
-          alt="Church interior with stained glass windows"
-          fill
-          priority
-          quality={90}
-          className="object-cover object-center"
-        />
-      </motion.div>
+      />
 
       {/* Dark gradient overlay — heavier on the left so text is always readable */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10" />
-      {/* Bottom fade for nav area */}
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent" />
+      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
+<div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative z-10 flex flex-col h-full px-6 py-6 sm:px-10 sm:py-8">
 
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <motion.p
             className="font-body text-white/70 text-xs tracking-widest uppercase"
+            data-tour="brand"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
@@ -94,6 +66,7 @@ export default function Hero() {
           </motion.p>
           <motion.a
             href="/live-service"
+            data-tour="watch-live"
             className="flex items-center gap-2 font-body text-xs font-semibold text-white tracking-wide border border-white/30 px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -107,6 +80,7 @@ export default function Hero() {
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          data-tour="heading"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -130,6 +104,7 @@ export default function Hero() {
         {/* Latest Sermons */}
         <motion.div
           className="mt-8 sm:mt-10"
+          data-tour="latest-sermons"
           initial="hidden"
           animate="show"
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 1.0 } } }}
@@ -177,6 +152,7 @@ export default function Hero() {
           {/* Nav */}
           <motion.nav
             className="grid grid-cols-3 gap-x-8 sm:gap-x-14 flex-shrink-0"
+            data-tour="nav"
             variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
           >
             {navLinks.map(([left, mid, right], i) => (
@@ -209,6 +185,7 @@ export default function Hero() {
           {/* Daily quote */}
           <motion.div
             className="hidden md:flex flex-col items-end gap-1.5 max-w-sm pb-1 border-t border-white/15 pt-3"
+            data-tour="daily-quote"
             variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } } }}
           >
             <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">Word for today</span>

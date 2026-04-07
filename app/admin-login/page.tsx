@@ -2,25 +2,24 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { getDailyPhoto } from "@/lib/church-photos";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const bgUrl = getDailyPhoto(11);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
     });
-
     if (res.ok) {
       router.push("/admin-dashboard");
     } else {
@@ -30,16 +29,13 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-black flex items-center justify-center px-6 overflow-hidden">
-      {/* Background */}
-      <Image
-        src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&q=80"
-        alt="Church interior"
-        fill
-        priority
-        className="object-cover object-center opacity-25"
+    <div className="relative min-h-screen bg-black flex items-center justify-center px-6">
+      {/* Fixed background */}
+      <div
+        className="page-bg"
+        style={{ "--bg-url": `url(${bgUrl})`, opacity: 0.3 } as React.CSSProperties}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-black/60 to-black/85" />
+      <div className="fixed inset-0 bg-gradient-to-br from-black/85 via-black/60 to-black/85 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-sm flex flex-col gap-8">
 
@@ -71,9 +67,7 @@ export default function AdminLoginPage() {
             />
           </div>
 
-          {error && (
-            <p className="font-body text-red-400 text-xs">{error}</p>
-          )}
+          {error && <p className="font-body text-red-400 text-xs">{error}</p>}
 
           <button
             type="submit"
