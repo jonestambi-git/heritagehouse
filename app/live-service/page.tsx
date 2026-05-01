@@ -1,69 +1,17 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getDailyPhoto } from "@/lib/church-photos";
 import {
   useLivestreamActive,
   useLivestreamSchedule,
 } from "@/lib/hooks/queries";
-import { toYouTubeEmbedUrl, toYouTubeWatchUrl } from "@/lib/utils/youtube";
-
-interface ChatMsg {
-  id: number;
-  name: string;
-  text: string;
-  ts: string;
-}
-
-const seedMessages: ChatMsg[] = [
-  {
-    id: 1,
-    name: "Ada N.",
-    text: "Praise God! Joining from Abuja 🙏",
-    ts: "10:31",
-  },
-  {
-    id: 2,
-    name: "Emeka O.",
-    text: "The worship today is powerful!",
-    ts: "10:33",
-  },
-  {
-    id: 3,
-    name: "Grace B.",
-    text: "This message is exactly what I needed.",
-    ts: "10:36",
-  },
-  {
-    id: 4,
-    name: "Tunde A.",
-    text: "Watching from London. God bless this church.",
-    ts: "10:38",
-  },
-  {
-    id: 5,
-    name: "Blessing C.",
-    text: "Romans 8:28 — amen and amen!",
-    ts: "10:40",
-  },
-];
-
-function useNow(intervalMs = 60_000) {
-  const [now, setNow] = useState(new Date());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), intervalMs);
-    return () => clearInterval(id);
-  }, [intervalMs]);
-
-  return now;
-}
+import { toYouTubeEmbedUrl, toYouTubeVideoId, toYouTubeWatchUrl } from "@/lib/utils/youtube";
 
 export default function LiveServicePage() {
   const bgUrl = getDailyPhoto(1);
-  const now = useNow(60_000);
 
   const activeQuery = useLivestreamActive();
   const scheduleQuery = useLivestreamSchedule();
@@ -79,6 +27,9 @@ export default function LiveServicePage() {
   const watchUrl = liveSettings?.streamUrl
     ? toYouTubeWatchUrl(liveSettings.streamUrl)
     : "";
+  const videoId = liveSettings?.streamUrl
+    ? toYouTubeVideoId(liveSettings.streamUrl)
+    : "";
   const serviceTitle = liveSettings?.title || "Sunday Service";
   const serviceDesc =
     liveSettings?.description ||
@@ -90,32 +41,6 @@ export default function LiveServicePage() {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-  const [messages, setMessages] = useState<ChatMsg[]>(seedMessages);
-  const [draft, setDraft] = useState("");
-  const [chatName, setChatName] = useState("");
-  const [nameSet, setNameSet] = useState(false);
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  function sendMessage() {
-    if (!draft.trim() || !chatName.trim()) return;
-
-    const newMsg: ChatMsg = {
-      id: Date.now(),
-      name: chatName,
-      text: draft.trim(),
-      ts: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
-    setDraft("");
-
-    setTimeout(() => {
-      chatRef.current?.scrollTo({
-        top: chatRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 50);
   }
 
   return (
@@ -294,6 +219,7 @@ export default function LiveServicePage() {
             </div>
           </div>
 
+          {/* ── YouTube Live Chat ── */}
           <div
             className="flex flex-col overflow-hidden sticky top-4 self-start"
             style={{
@@ -303,81 +229,56 @@ export default function LiveServicePage() {
               border: "1px solid rgba(255,255,255,0.12)",
               borderRadius: "16px",
               boxShadow: "0 4px 24px rgba(0,0,0,0.28)",
-              maxHeight: "560px",
+              minHeight: "480px",
+              height: "560px",
             }}
           >
-            <div className="px-4 py-3 border-b border-white/15 flex items-center justify-between">
-              <span className="font-body text-white/60 text-xs tracking-widest uppercase">
-                Live chat
-              </span>
-              <span className="font-body text-white/35 text-[10px]">
-                {messages.length} messages
-              </span>
+            <div className="px-4 py-3 border-b border-white/15 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="font-body text-white/60 text-xs tracking-widest uppercase">
+                  Live chat
+                </span>
+                {isLive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                )}
+              </div>
+              {videoId && (
+                <a
+                  href={`https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${typeof window !== "undefined" ? window.location.hostname : "localhost"}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-body text-white/35 text-[10px] tracking-widest uppercase hover:text-white transition-colors"
+                >
+                  Open ↗
+                </a>
+              )}
             </div>
 
-            <div
-              ref={chatRef}
-              className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3 scrollbar-none"
-            >
-              <AnimatePresence initial={false}>
-                {messages.map((msg) => (
-                  <motion.div
-                    key={msg.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="flex flex-col gap-0.5"
-                  >
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-body text-white font-semibold text-xs">
-                        {msg.name}
-                      </span>
-                      <span className="font-body text-white/25 text-[10px]">
-                        {msg.ts}
-                      </span>
-                    </div>
-                    <p className="font-body text-white/70 text-xs leading-relaxed">
-                      {msg.text}
-                    </p>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-
-            <div className="border-t border-white/15 px-4 py-3 flex flex-col gap-2">
-              {!nameSet ? (
-                <div className="flex gap-2">
-                  <input
-                    value={chatName}
-                    onChange={(e) => setChatName(e.target.value)}
-                    placeholder="Your name"
-                    className="flex-1 bg-white/10 border border-white/20 px-3 py-2 font-body text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/50"
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && chatName.trim() && setNameSet(true)
-                    }
-                  />
-                  <button
-                    onClick={() => chatName.trim() && setNameSet(true)}
-                    className="font-body text-xs tracking-widest uppercase px-3 py-2 border border-white/30 text-white/70 hover:bg-white hover:text-black transition-colors"
-                  >
-                    Join
-                  </button>
-                </div>
+            <div className="flex-1 overflow-hidden">
+              {isLive && videoId ? (
+                <iframe
+                  src={`https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${typeof window !== "undefined" ? window.location.hostname : "localhost"}`}
+                  className="w-full h-full"
+                  style={{ border: "none" }}
+                  title="YouTube Live Chat"
+                  allow="autoplay"
+                />
               ) : (
-                <div className="flex gap-2">
-                  <input
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    placeholder="Say something…"
-                    className="flex-1 bg-white/10 border border-white/20 px-3 py-2 font-body text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/50"
-                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                  />
-                  <button
-                    onClick={sendMessage}
-                    className="font-body text-xs tracking-widest uppercase px-3 py-2 border border-white/30 text-white/70 hover:bg-white hover:text-black transition-colors"
+                <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    className="text-white/20"
                   >
-                    Send
-                  </button>
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  <p className="font-body text-white/35 text-xs leading-relaxed">
+                    Live chat will appear here when the service is streaming.
+                  </p>
                 </div>
               )}
             </div>
