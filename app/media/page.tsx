@@ -12,22 +12,88 @@ export const metadata: Metadata = {
     "Listen to audio messages and watch recorded services from Assemblies Of God Church, Choba 2.",
 };
 
+function getTagText(xml: string, tag: string): string {
+  const escaped = tag.replace(":", "\\:");
+  const re = new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "i");
+  const m = xml.match(re);
+  return m ? m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim() : "";
+}
+
+function parseItems(xml: string) {
+  const items = [];
+  const itemRe = /<item>([\s\S]*?)<\/item>/gi;
+  let match: RegExpExecArray | null;
+  let index = 0;
+
+  while ((match = itemRe.exec(xml)) !== null) {
+    const item = match[1];
+    const enclosureRe = /<enclosure[^>]*url="([^"]*)"[^>]*type="audio[^"]*"/i;
+    const enclosureMatch = item.match(enclosureRe);
+    const audioUrl = enclosureMatch ? enclosureMatch[1] : "";
+    const itunesImageRe = /<itunes:image[^>]*href="([^"]*)"/i;
+    const itunesImageMatch = item.match(itunesImageRe);
+    const image = itunesImageMatch ? itunesImageMatch[1] : "";
+    const epNumStr = getTagText(item, "itunes:episode");
+    const episodeNumber = epNumStr ? parseInt(epNumStr, 10) : null;
+    const duration = getTagText(item, "itunes:duration");
+    const guid = getTagText(item, "guid") || `ep-${index}`;
+    const description =
+      getTagText(item, "itunes:summary") || getTagText(item, "description") || "";
+    const cleanDescription = description.replace(/<[^>]+>/g, "").trim();
+
+    items.push({
+      guid,
+      title: getTagText(item, "title"),
+      description: cleanDescription,
+      pubDate: getTagText(item, "pubDate"),
+      audioUrl,
+      duration,
+      image,
+      episodeNumber,
+    });
+    index++;
+  }
+  return items;
+}
+
 async function getPodcastFeed(): Promise<PodcastFeed | null> {
-  const RSS_URL = process.env.PODCAST_RSS_URL ?? "https://anchor.fm/s/111293d28/podcast/rss";
-  if (!RSS_URL) return null;
+  const RSS_URL =
+    process.env.PODCAST_RSS_URL ?? "https://anchor.fm/s/111293d28/podcast/rss";
 
   try {
-    // Fetch via our own API route so the XML parsing logic is centralised
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-    const res = await fetch(`${baseUrl}/api/podcast-feed`, {
+    const res = await fetch(RSS_URL, {
       next: { revalidate: 3600 },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; ChurchSite/1.0)",
+        Accept: "application/rss+xml, application/xml, text/xml, */*",
+      },
     });
 
     if (!res.ok) return null;
-    return (await res.json()) as PodcastFeed;
+
+    const xml = await res.text();
+    const channelMatch = xml.match(/<channel>([\s\S]*?)<item>/i);
+    const channelXml = channelMatch ? channelMatch[1] : xml;
+
+    const itunesImgRe = /<itunes:image[^>]*href="([^"]*)"/i;
+    const itunesImgMatch = channelXml.match(itunesImgRe);
+    const imageUrlRe = /<image>[\s\S]*?<url>([\s\S]*?)<\/url>/i;
+    const imageUrlMatch = channelXml.match(imageUrlRe);
+    const channelImage =
+      (itunesImgMatch ? itunesImgMatch[1] : "") ||
+      (imageUrlMatch ? imageUrlMatch[1].trim() : "");
+
+    return {
+      title: getTagText(channelXml, "title")
+        .replace(/^good options:\s*/i, "")
+        .trim(),
+      description:
+        getTagText(channelXml, "itunes:summary") ||
+        getTagText(channelXml, "description"),
+      image: channelImage,
+      link: getTagText(channelXml, "link"),
+      episodes: parseItems(xml),
+    };
   } catch {
     return null;
   }
