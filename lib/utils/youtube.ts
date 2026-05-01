@@ -45,6 +45,38 @@ export function toYouTubeEmbedUrl(url: string): string {
   return raw;
 }
 
+/** Extract the raw video ID from any YouTube URL format */
+export function toYouTubeVideoId(url: string): string {
+  const raw = url.trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw);
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+
+    if (host === "youtu.be") {
+      return parsed.pathname.split("/").filter(Boolean)[0] ?? "";
+    }
+
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (parsed.pathname.startsWith("/watch")) {
+        return parsed.searchParams.get("v") ?? "";
+      }
+      if (
+        parsed.pathname.startsWith("/live/") ||
+        parsed.pathname.startsWith("/shorts/") ||
+        parsed.pathname.startsWith("/embed/")
+      ) {
+        return parsed.pathname.split("/").filter(Boolean)[1] ?? "";
+      }
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
+}
+
 export function toYouTubeWatchUrl(url: string): string {
   const raw = url.trim();
   if (!raw) return "";

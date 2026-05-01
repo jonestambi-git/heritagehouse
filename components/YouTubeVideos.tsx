@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { YouTubeFeed, YouTubeVideo } from "@/app/api/youtube-feed/route";
 
@@ -27,15 +28,6 @@ const glass: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.12)",
   borderRadius: "16px",
   boxShadow: "0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
-};
-
-const glassActive: React.CSSProperties = {
-  background: "rgba(255,255,255,0.11)",
-  backdropFilter: "blur(18px)",
-  WebkitBackdropFilter: "blur(18px)",
-  border: "1px solid rgba(255,255,255,0.22)",
-  borderRadius: "16px",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)",
 };
 
 const glassSubtle: React.CSSProperties = {
@@ -81,13 +73,9 @@ function SkeletonCard() {
 function VideoCard({
   video,
   index,
-  isActive,
-  onSelect,
 }: {
   video: YouTubeVideo;
   index: number;
-  isActive: boolean;
-  onSelect: () => void;
 }) {
   return (
     <motion.div
@@ -95,14 +83,14 @@ function VideoCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.45 }}
     >
-      <button
-        onClick={onSelect}
-        className="group w-full text-left"
+      <Link
+        href={`/media/video/${video.videoId}`}
+        className="group block"
         aria-label={`Play ${video.title}`}
       >
         <div
-          className="flex flex-col overflow-hidden transition-all duration-300"
-          style={isActive ? glassActive : glassSubtle}
+          className="flex flex-col overflow-hidden transition-all duration-300 group-hover:scale-[1.02] group-hover:-translate-y-1"
+          style={glassSubtle}
         >
           {/* Thumbnail */}
           <div
@@ -120,14 +108,12 @@ function VideoCard({
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 
-            {/* Glass play button */}
+            {/* Play button */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div
                 className="w-14 h-14 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                 style={{
-                  background: isActive
-                    ? "rgba(255,255,255,0.25)"
-                    : "rgba(255,255,255,0.15)",
+                  background: "rgba(255,255,255,0.15)",
                   backdropFilter: "blur(10px)",
                   WebkitBackdropFilter: "blur(10px)",
                   border: "1px solid rgba(255,255,255,0.30)",
@@ -135,50 +121,17 @@ function VideoCard({
                   boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
                 }}
               >
-                {isActive ? (
-                  /* Pause icon when active */
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="text-white"
-                  >
-                    <rect x="6" y="4" width="4" height="16" />
-                    <rect x="14" y="4" width="4" height="16" />
-                  </svg>
-                ) : (
-                  /* Play icon */
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="text-white ml-0.5"
-                  >
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                  </svg>
-                )}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="text-white ml-0.5"
+                >
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
               </div>
             </div>
-
-            {/* "Now playing" badge */}
-            {isActive && (
-              <div
-                className="absolute top-2 left-2 px-2 py-0.5 flex items-center gap-1.5"
-                style={{
-                  background: "rgba(239,68,68,0.85)",
-                  backdropFilter: "blur(8px)",
-                  WebkitBackdropFilter: "blur(8px)",
-                  borderRadius: "6px",
-                }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                <span className="font-body text-white text-[9px] tracking-widest uppercase">
-                  Playing
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Info */}
@@ -196,7 +149,7 @@ function VideoCard({
             )}
           </div>
         </div>
-      </button>
+      </Link>
     </motion.div>
   );
 }
@@ -207,7 +160,6 @@ export default function YouTubeVideos() {
   const [feed, setFeed] = useState<YouTubeFeed | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
 
   const INITIAL_COUNT = 6;
@@ -227,10 +179,6 @@ export default function YouTubeVideos() {
         const data: YouTubeFeed = await res.json();
         if (!cancelled) {
           setFeed(data);
-          // Auto-select first video
-          if (data.videos.length > 0) {
-            setActiveVideoId(data.videos[0].videoId);
-          }
         }
       } catch (err: unknown) {
         if (!cancelled) {
@@ -350,74 +298,10 @@ export default function YouTubeVideos() {
         </a>
       </div>
 
-      {/* Active video player */}
-      <AnimatePresence mode="wait">
-        {activeVideoId && (
-          <motion.div
-            key={activeVideoId}
-            initial={{ opacity: 0, y: 12, scale: 0.99 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.99 }}
-            transition={{ duration: 0.35 }}
-          >
-            <div
-              className="overflow-hidden"
-              style={{ ...glass, borderRadius: "20px" }}
-            >
-              {/* Embed */}
-              <div className="relative w-full aspect-video">
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=1&rel=0&modestbranding=1`}
-                  title={
-                    feed.videos.find((v) => v.videoId === activeVideoId)
-                      ?.title ?? "Video"
-                  }
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  style={{ border: 0 }}
-                />
-              </div>
-
-              {/* Video info below player */}
-              {(() => {
-                const v = feed.videos.find((v) => v.videoId === activeVideoId);
-                if (!v) return null;
-                return (
-                  <div className="px-5 py-4 flex flex-col gap-1.5">
-                    <h2 className="font-body text-white font-semibold text-sm sm:text-base leading-snug">
-                      {v.title}
-                    </h2>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="font-body text-white/40 text-xs">
-                        {formatDate(v.published)}
-                      </span>
-                      <a
-                        href={`https://www.youtube.com/watch?v=${v.videoId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-body text-white/35 text-xs hover:text-white transition-colors underline underline-offset-4"
-                      >
-                        Open on YouTube →
-                      </a>
-                    </div>
-                    {v.description && (
-                      <p className="font-body text-white/50 text-xs leading-relaxed mt-1 line-clamp-3">
-                        {v.description}
-                      </p>
-                    )}
-                  </div>
-                );
-              })()}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Video grid */}
       <div>
         <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-3">
-          {activeVideoId ? "All videos" : "Recorded services & live replays"}
+          Recorded services &amp; live replays
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -426,8 +310,6 @@ export default function YouTubeVideos() {
               key={video.videoId}
               video={video}
               index={i}
-              isActive={video.videoId === activeVideoId}
-              onSelect={() => setActiveVideoId(video.videoId)}
             />
           ))}
         </div>
