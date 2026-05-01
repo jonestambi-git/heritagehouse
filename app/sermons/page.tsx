@@ -77,20 +77,31 @@ export default function SermonsPage() {
   const [podcastError, setPodcastError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (activeTab !== "audio" || podcastFeed || podcastLoading) return;
+    if (activeTab !== "audio" || podcastFeed !== null || podcastLoading) return;
     let cancelled = false;
     setPodcastLoading(true);
     fetch("/api/podcast-feed")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const ct = r.headers.get("content-type") || "";
+        if (!ct.includes("application/json")) throw new Error("Invalid response from podcast API");
+        return r.json();
+      })
       .then((data: PodcastFeed & { error?: string }) => {
         if (cancelled) return;
         if (data.error) throw new Error(data.error);
         setPodcastFeed(data);
+        setPodcastLoading(false);
       })
-      .catch((e: Error) => { if (!cancelled) setPodcastError(e.message); })
-      .finally(() => { if (!cancelled) setPodcastLoading(false); });
+      .catch((e: Error) => {
+        if (!cancelled) {
+          setPodcastError(e.message);
+          setPodcastLoading(false);
+        }
+      });
     return () => { cancelled = true; };
-  }, [activeTab, podcastFeed, podcastLoading]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   return (
     <section className="relative w-full min-h-svh">
