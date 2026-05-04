@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import type { Sermon } from '@/lib/types/sermon';
+import type { Sermon } from '@/lib/types/resources';
 
 // Data directory path
 const DATA_DIR = path.join(process.cwd(), 'data');
