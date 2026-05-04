@@ -14,6 +14,9 @@ const options = {
   connectTimeoutMS: 10000,
   maxPoolSize: 10,
   minPoolSize: 1,
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  tlsAllowInvalidHostnames: false,
 };
 
 let client: MongoClient;

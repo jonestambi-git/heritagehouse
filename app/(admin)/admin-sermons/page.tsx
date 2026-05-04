@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   Select,
   SelectContent,
@@ -64,6 +64,8 @@ export default function AdminSermonsPage() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     apiClient
@@ -162,12 +164,36 @@ export default function AdminSermonsPage() {
 
   async function handleDelete(slug: string) {
     if (!confirm("Delete this sermon?")) return;
-    const response = await apiClient.delete<{
-      success: boolean;
-      message: string;
-    }>("/admin/sermons", { slug });
-    if (response && response.success) {
+    
+    // Optimistic update - remove from UI immediately
+    setDeletingSlug(slug);
+    const previousSermons = sermons;
+    
+    startTransition(() => {
       setSermons((p) => p.filter((s) => s.slug !== slug));
+    });
+    
+    try {
+      const response = await apiClient.delete<{
+        success: boolean;
+        message: string;
+      }>("/admin/sermons", { slug });
+      
+      if (!response || !response.success) {
+        // Rollback on failure
+        startTransition(() => {
+          setSermons(previousSermons);
+        });
+        alert("Failed to delete sermon");
+      }
+    } catch (error) {
+      // Rollback on error
+      startTransition(() => {
+        setSermons(previousSermons);
+      });
+      alert("Failed to delete sermon");
+    } finally {
+      setDeletingSlug(null);
     }
   }
 
@@ -493,9 +519,10 @@ export default function AdminSermonsPage() {
             </button>
             <button
               onClick={() => handleDelete(s.slug)}
-              className="font-body text-white/25 text-xs hover:text-red-400 transition-colors cursor-pointer"
+              disabled={deletingSlug === s.slug}
+              className="font-body text-white/25 text-xs hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Delete
+              {deletingSlug === s.slug ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>

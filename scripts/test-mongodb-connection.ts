@@ -1,40 +1,49 @@
 /**
- * Simple script to verify MongoDB connection
- * Run with: npx tsx scripts/test-mongodb-connection.ts
+ * Test MongoDB connection
+ * Run: npx tsx scripts/test-mongodb-connection.ts
  */
 
-import { getDatabase, getClient } from '../lib/db/mongodb';
+import { getDatabase } from '../lib/db/mongodb';
 
 async function testConnection() {
+  console.log('🔌 Testing MongoDB connection...\n');
+  
   try {
-    console.log('Testing MongoDB connection...');
-    
-    // Test getting the client
-    const client = await getClient();
-    console.log('✓ Successfully connected to MongoDB');
-    
-    // Test getting the database
+    console.log('Connecting to MongoDB...');
     const db = await getDatabase();
-    console.log(`✓ Database name: ${db.databaseName}`);
     
-    // Test connection pooling by making multiple calls
-    const db2 = await getDatabase();
-    const client2 = await getClient();
+    console.log('✅ Connected successfully!');
+    console.log(`Database name: ${db.databaseName}\n`);
     
-    if (client === client2) {
-      console.log('✓ Connection pooling working correctly (same client reused)');
-    } else {
-      console.log('✗ Warning: Different client instances returned');
+    // List collections
+    const collections = await db.listCollections().toArray();
+    console.log(`Collections (${collections.length}):`);
+    collections.forEach(col => console.log(`  - ${col.name}`));
+    
+    // Test sermons collection
+    const sermonsCollection = db.collection('sermons');
+    const count = await sermonsCollection.countDocuments();
+    console.log(`\n📊 Sermons count: ${count}`);
+    
+    if (count > 0) {
+      const sample = await sermonsCollection.findOne({});
+      console.log('\n📄 Sample sermon:');
+      console.log(`   Title: ${sample?.title}`);
+      console.log(`   Slug: ${sample?.slug}`);
     }
     
-    // List collections to verify we can interact with the database
-    const collections = await db.listCollections().toArray();
-    console.log(`✓ Found ${collections.length} collections in database`);
-    
-    console.log('\n✓ All MongoDB connection tests passed!');
+    console.log('\n✅ MongoDB connection test passed!');
     process.exit(0);
   } catch (error) {
-    console.error('✗ MongoDB connection test failed:', error);
+    console.error('\n❌ MongoDB connection failed:');
+    console.error(error);
+    
+    if (error instanceof Error) {
+      console.error('\nError details:');
+      console.error(`  Message: ${error.message}`);
+      console.error(`  Stack: ${error.stack}`);
+    }
+    
     process.exit(1);
   }
 }
