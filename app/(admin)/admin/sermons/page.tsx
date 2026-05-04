@@ -162,39 +162,37 @@ export default function AdminSermonsPage() {
     setSaving(false);
   }
 
-  async function handleDelete(slug: string) {
+  function handleDelete(slug: string) {
     if (!confirm("Delete this sermon?")) return;
     
-    // Optimistic update - remove from UI immediately
+    // Set deleting state immediately for UI feedback
     setDeletingSlug(slug);
     const previousSermons = sermons;
     
-    startTransition(() => {
+    // Defer the heavy work to avoid blocking the UI
+    startTransition(async () => {
+      // Optimistic update - remove from UI
       setSermons((p) => p.filter((s) => s.slug !== slug));
-    });
-    
-    try {
-      const response = await apiClient.delete<{
-        success: boolean;
-        message: string;
-      }>("/admin/sermons", { slug });
       
-      if (!response || !response.success) {
-        // Rollback on failure
-        startTransition(() => {
+      try {
+        const response = await apiClient.delete<{
+          success: boolean;
+          message: string;
+        }>("/admin/sermons", { slug });
+        
+        if (!response || !response.success) {
+          // Rollback on failure
           setSermons(previousSermons);
-        });
-        alert("Failed to delete sermon");
-      }
-    } catch (error) {
-      // Rollback on error
-      startTransition(() => {
+          alert("Failed to delete sermon");
+        }
+      } catch (error) {
+        // Rollback on error
         setSermons(previousSermons);
-      });
-      alert("Failed to delete sermon");
-    } finally {
-      setDeletingSlug(null);
-    }
+        alert("Failed to delete sermon");
+      } finally {
+        setDeletingSlug(null);
+      }
+    });
   }
 
   const inputClass =

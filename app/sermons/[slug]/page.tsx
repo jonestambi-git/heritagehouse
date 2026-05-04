@@ -80,13 +80,13 @@ export default function SermonDetailPage({
               {sermon.title}
             </h1>
             {sermon.pastor && (
-              <span className="font-body text-white/50 text-[10px] tracking-widest uppercase mb-1">
+              <span className="font-body text-white/50 text-[10px] tracking-widest uppercase mb-1 block mt-2">
                 By {sermon.pastor}
               </span>
             )}
-            {(sermon.excerpt || sermon.body) && (
-              <p className="font-body text-white/70 text-sm leading-relaxed mb-6">
-                {sermon.excerpt || sermon.body}
+            {sermon.excerpt && (
+              <p className="font-body text-white/70 text-base leading-relaxed mt-6 mb-8">
+                {sermon.excerpt}
               </p>
             )}
 
@@ -117,6 +117,32 @@ export default function SermonDetailPage({
                 </a>
               )}
             </div>
+
+            {/* Sermon Body Content */}
+            {sermon.body && (
+              <div className="mt-12 pt-8 border-t border-white/10">
+                <div 
+                  className="font-body text-white/80 text-sm sm:text-base leading-relaxed prose prose-invert prose-sm sm:prose-base max-w-none"
+                  style={{
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {sermon.body}
+                </div>
+              </div>
+            )}
+
+            {/* Scripture Reference */}
+            {sermon.scripture && (
+              <div className="mt-8 p-6 border border-white/15 bg-white/5 backdrop-blur-sm">
+                <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-2">
+                  Scripture
+                </p>
+                <p className="font-body text-white/90 text-sm">
+                  {sermon.scripture}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
