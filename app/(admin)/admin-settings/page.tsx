@@ -317,11 +317,11 @@ export default function AdminSettingsPage() {
         {/* ── Pastor Information ── */}
         <section className="p-5 sm:p-6 flex flex-col gap-4" style={glass}>
           <p className="font-body text-white/30 text-[10px] tracking-widest uppercase">
-            Current Pastor
+            Lead Pastor
           </p>
           <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <p className="font-body text-white/50 text-xs">
-              Display current pastor information on the location page
+              Display lead pastor information on the location page
             </p>
             <label className="flex items-center gap-2 cursor-pointer">
               <input

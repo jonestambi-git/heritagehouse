@@ -133,7 +133,7 @@ export default function AdminPastorPage() {
           Pastor Management
         </h1>
         <p className="font-body text-white/40 text-sm mt-2">
-          Manage current pastor information and photos.
+          Manage lead pastor information and photos.
         </p>
       </div>
 

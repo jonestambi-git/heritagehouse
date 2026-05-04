@@ -250,7 +250,7 @@ export default function MinistryPage() {
           </div>
         </motion.div>
 
-        {/* ── Current Pastor ── */}
+        {/* ── Lead Pastor ── */}
         {!settings?.pastorHidden && (settings?.pastorName || settings?.pastorWifeName) && (
           <motion.div
             className="mt-12 sm:mt-14"
@@ -301,7 +301,7 @@ export default function MinistryPage() {
                     borderRadius: "8px",
                   }}
                 >
-                  Current Pastor
+                  Lead Pastor
                 </span>
                 <span className="w-2.5 h-2.5 rounded-full bg-white shadow-lg" />
               </div>

@@ -144,7 +144,7 @@ const navItems = [
   },
   {
     label: "Pastor",
-    sub: "Current pastor info",
+    sub: "Lead pastor info",
     href: "/admin-pastor",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
