@@ -38,6 +38,10 @@ interface SiteSettings {
   instagramUrl: string;
   twitterUrl: string;
   whatsappNumber: string;
+  // Guidance & Counselling
+  guidanceText: string;
+  guidancePhone: string;
+  guidanceEmail: string;
 }
 
 const defaults: SiteSettings = {
@@ -71,6 +75,9 @@ const defaults: SiteSettings = {
   instagramUrl: "",
   twitterUrl: "",
   whatsappNumber: "",
+  guidanceText: "If this message has stirred something in your heart, or if you're facing challenges and need someone to talk to, we're here for you. Our pastoral team is available for guidance, prayer, and counselling.",
+  guidancePhone: "+234 801 234 5678",
+  guidanceEmail: "counselling@agchurch.org",
 };
 
 const inputClass =
@@ -408,6 +415,50 @@ export default function AdminSettingsPage() {
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">WhatsApp number</label>
               <input name="whatsappNumber" value={settings.whatsappNumber} onChange={handleChange} placeholder="+234 800 000 0000" className={inputClass} />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Guidance & Counselling ── */}
+        <section className="p-5 sm:p-6 flex flex-col gap-4" style={glass}>
+          <p className="font-body text-white/30 text-[10px] tracking-widest uppercase">
+            Guidance & Counselling
+          </p>
+          <p className="font-body text-white/50 text-xs -mt-2">
+            This section appears at the bottom of every sermon page
+          </p>
+          <div className="flex flex-col gap-1">
+            <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Message text</label>
+            <textarea 
+              name="guidanceText" 
+              value={settings.guidanceText} 
+              onChange={handleChange} 
+              placeholder="Enter the guidance message that will appear on sermon pages..." 
+              className={inputClass}
+              rows={3}
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Contact phone</label>
+              <input 
+                name="guidancePhone" 
+                value={settings.guidancePhone} 
+                onChange={handleChange} 
+                placeholder="+234 800 000 0000" 
+                className={inputClass} 
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Contact email</label>
+              <input 
+                name="guidanceEmail" 
+                type="email"
+                value={settings.guidanceEmail} 
+                onChange={handleChange} 
+                placeholder="counselling@church.org" 
+                className={inputClass} 
+              />
             </div>
           </div>
         </section>
