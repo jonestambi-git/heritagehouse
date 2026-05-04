@@ -3,7 +3,6 @@
 import AdminTour from "@/components/admin/AdminTour";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { projects as defaultProjects } from "@/lib/projects-data";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -20,9 +19,9 @@ interface StatCard {
 async function fetchCount(url: string): Promise<number | null> {
   try {
     const res = await fetch(url, { 
-      signal: AbortSignal.timeout(2000), // Reduced from 4000ms to 2000ms
+      signal: AbortSignal.timeout(8000), // 8 seconds — enough for first MongoDB connection
       credentials: 'include',
-      cache: 'no-store', // Don't cache to get fresh data
+      cache: 'no-store',
     });
     if (!res.ok) {
       console.error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
@@ -67,7 +66,7 @@ async function fetchCount(url: string): Promise<number | null> {
 async function fetchPodcastCount(): Promise<number | null> {
   try {
     const res = await fetch(`/api/podcast-feed`, { 
-      signal: AbortSignal.timeout(3000), // Reduced from 5000ms
+      signal: AbortSignal.timeout(8000),
       cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -81,7 +80,7 @@ async function fetchPodcastCount(): Promise<number | null> {
 async function fetchYouTubeCount(): Promise<number | null> {
   try {
     const res = await fetch(`/api/youtube-feed`, { 
-      signal: AbortSignal.timeout(3000), // Reduced from 5000ms
+      signal: AbortSignal.timeout(8000),
       cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -119,6 +118,7 @@ function StatusDot({ status }: { status: StatCard["status"] }) {
 const quickActions = [
   { label: "New sermon", href: "/admin/sermons", desc: "Add a written message" },
   { label: "New event", href: "/admin/events", desc: "Schedule an event" },
+  { label: "New news", href: "/admin/announcements", desc: "Post an announcement" },
   { label: "Live stream", href: "/admin/live", desc: "Start or configure stream" },
   { label: "Media settings", href: "/admin/media", desc: "Update RSS & YouTube" },
   { label: "Projects", href: "/admin/projects", desc: "Add or edit projects" },
@@ -139,6 +139,7 @@ export default function DashboardPage() {
     { label: "Projects", value: "…", href: "/admin/projects", status: "loading" },
     { label: "Members", value: "…", href: "/admin/members", status: "loading" },
     { label: "Messages", value: "…", href: "/admin/contacts", status: "loading" },
+    { label: "News", value: "…", href: "/admin/announcements", status: "loading" },
   ]);
 
   useEffect(() => {
@@ -154,6 +155,8 @@ export default function DashboardPage() {
         contactsCount,
         audioCount,
         videoCount,
+        projectsCount,
+        newsCount,
       ] = await Promise.all([
         fetchCount(`/api/v1/sermons/count`),
         fetchCount(`/api/v1/events`),
@@ -162,6 +165,8 @@ export default function DashboardPage() {
         fetchCount(`/api/v1/admin/prayer-requests`),
         fetchPodcastCount(),
         fetchYouTubeCount(),
+        fetchCount(`/api/v1/projects`),
+        fetchCount(`/api/v1/news`),
       ]);
 
       console.log("Dashboard: Fetched counts:", {
@@ -172,16 +177,9 @@ export default function DashboardPage() {
         contactsCount,
         audioCount,
         videoCount,
+        projectsCount,
+        newsCount,
       });
-
-      // Local counts (always available)
-      const savedProjects = localStorage.getItem("admin-projects");
-      const projectsCount = savedProjects
-        ? JSON.parse(savedProjects).length
-        : defaultProjects.length;
-
-      const savedVideos = localStorage.getItem("admin-manual-videos");
-      const manualVideos = savedVideos ? JSON.parse(savedVideos).length : 0;
 
       setStats([
         {
@@ -200,18 +198,10 @@ export default function DashboardPage() {
         },
         {
           label: "Videos",
-          value: videoCount !== null
-            ? videoCount + manualVideos
-            : manualVideos > 0
-              ? `${manualVideos}+`
-              : "—",
-          sub: videoCount !== null
-            ? "from YouTube channel"
-            : manualVideos > 0
-              ? `${manualVideos} manual`
-              : "channel feed offline",
+          value: videoCount ?? "—",
+          sub: videoCount !== null ? "from YouTube channel" : "channel feed offline",
           href: "/admin/media",
-          status: videoCount !== null ? "live" : manualVideos > 0 ? "local" : "offline",
+          status: videoCount !== null ? "live" : "offline",
         },
         {
           label: "Events",
@@ -229,10 +219,10 @@ export default function DashboardPage() {
         },
         {
           label: "Projects",
-          value: projectsCount,
-          sub: "local data",
+          value: projectsCount ?? 0,
+          sub: "active projects",
           href: "/admin/projects",
-          status: "local",
+          status: projectsCount !== null ? "live" : "offline",
         },
         {
           label: "Members",
@@ -247,6 +237,13 @@ export default function DashboardPage() {
           sub: "prayer requests",
           href: "/admin/contacts",
           status: contactsCount !== null ? "live" : "offline",
+        },
+        {
+          label: "News",
+          value: newsCount ?? 0,
+          sub: "published items",
+          href: "/admin/announcements",
+          status: newsCount !== null ? "live" : "offline",
         },
       ]);
     }

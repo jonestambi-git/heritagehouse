@@ -9,12 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
-import { apiClient } from "@/lib/api/client";
-import { API_BASE_URL, COOKIE_TOKEN_NAME } from "@/lib/constants/config";
-import { cookieUtil, localStorageUtil } from "@/lib/utils/storage";
 
 type ChurchEvent = {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   date: string;
@@ -45,9 +42,9 @@ export default function AdminEventsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    apiClient
-      .get<ChurchEvent[]>("/admin/events")
-      .then(setEvents)
+    fetch("/api/v1/events?limit=100", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((payload) => setEvents(payload?.data?.data ?? []))
       .catch(() => setEvents([]));
   }, []);
 
@@ -66,69 +63,47 @@ export default function AdminEventsPage() {
 
     let imageUrl = form.imageUrl;
 
+    // Convert image file to base64 if selected
     if (imageFile) {
       try {
-        imageUrl = await uploadEventImage(imageFile);
-      } catch (uploadError: unknown) {
-        setError(
-          uploadError instanceof Error
-            ? uploadError.message
-            : "Failed to upload event image.",
-        );
+        imageUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error("Failed to read image"));
+          reader.readAsDataURL(imageFile);
+        });
+      } catch {
+        setError("Failed to process image.");
         setSaving(false);
         return;
       }
     }
 
     try {
-      const created = await apiClient.post<ChurchEvent>("/admin/events", {
-        ...form,
-        imageUrl,
+      const res = await fetch("/api/v1/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ ...form, imageUrl }),
       });
-      setEvents((p) => [created, ...p].filter(Boolean));
+      const payload = await res.json();
+      if (!res.ok || !payload?.data) throw new Error(payload?.error ?? "Failed to save event");
+      setEvents((p) => [payload.data, ...p].filter(Boolean));
       setForm(empty);
       setImageFile(null);
       setShowForm(false);
-    } catch {
-      setError("Failed to save event.");
+    } catch (err: any) {
+      setError(err.message ?? "Failed to save event.");
     }
     setSaving(false);
   }
 
-  async function uploadEventImage(file: File): Promise<string> {
-    const authState = localStorageUtil.getJSON<{
-      tokens?: { accessToken?: string };
-    }>("auth-store");
-    const accessToken =
-      cookieUtil.get(COOKIE_TOKEN_NAME) || authState?.tokens?.accessToken;
-
-    if (!accessToken) {
-      throw new Error("Authentication required to upload image.");
-    }
-
-    const payload = new FormData();
-    payload.append("file", file);
-
-    const response = await fetch(`${API_BASE_URL}/admin/events/upload-image`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: payload,
-    });
-
-    const json = (await response.json()) as { url?: string; message?: string };
-
-    if (!response.ok || !json.url) {
-      throw new Error(json.message || "Failed to upload image");
-    }
-
-    return json.url;
-  }
-
   async function handleDelete(id: string) {
-    await apiClient.delete("/admin/events", { body: { id } });
-    setEvents((p) => p.filter((e) => e.id !== id));
+    const res = await fetch(`/api/v1/events/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (res.ok) setEvents((p) => p.filter((e) => e._id !== id));
   }
 
   const inputClass =
@@ -310,7 +285,7 @@ export default function AdminEventsPage() {
         )}
         {events.map((ev) => (
           <div
-            key={ev.id}
+            key={ev._id}
             className="flex items-start justify-between gap-4 py-4 border-t border-white/10 hover:border-white/20 transition-colors"
           >
             <div className="flex flex-col gap-0.5">
@@ -342,7 +317,7 @@ export default function AdminEventsPage() {
               )}
             </div>
             <button
-              onClick={() => handleDelete(ev.id)}
+              onClick={() => handleDelete(ev._id)}
               className="font-body text-white/25 text-xs hover:text-red-400 transition-colors shrink-0 cursor-pointer"
             >
               Delete

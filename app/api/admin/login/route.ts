@@ -1,33 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getAdminCredentials } from "@/lib/db/admin-storage";
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "agchoba2@gmail.org";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sanctuary2020";
 
 export async function POST(req: NextRequest) {
-  const { email, password } = await req.json() as { email: string; password: string };
-
-  let credentials;
   try {
-    credentials = await getAdminCredentials();
-  } catch {
-    return NextResponse.json({ error: "Admin credentials not configured." }, { status: 500 });
+    const body = await req.json();
+    const { email, password } = body;
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { success: false, error: "Email and password are required" },
+        { status: 400 }
+      );
+    }
+
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      return NextResponse.json(
+        { success: false, error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const cookieStore = await cookies();
+    cookieStore.set("admin_session", "authenticated", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[POST /api/admin/login]", error);
+    return NextResponse.json(
+      { success: false, error: "Server error" },
+      { status: 500 }
+    );
   }
-
-  if (!credentials) {
-    return NextResponse.json({ error: "Admin credentials not configured." }, { status: 500 });
-  }
-
-  if (email !== credentials.email || password !== credentials.password) {
-    return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
-  }
-
-  const cookieStore = await cookies();
-  cookieStore.set("admin_session", "authenticated", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  });
-
-  return NextResponse.json({ success: true });
 }

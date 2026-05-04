@@ -20,16 +20,19 @@ export interface YouTubeFeed {
 
 // ─── XML helpers ──────────────────────────────────────────────────────────────
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\:]/g, (c) => "\\" + c);
+}
+
 function getTagText(xml: string, tag: string): string {
-  // Properly escape special regex chars (including the colon in yt:videoId, media:title etc.)
-  const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escaped = escapeRegex(tag);
   const re = new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "i");
   const m = xml.match(re);
   return m ? m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim() : "";
 }
 
 function getAttr(xml: string, tag: string, attr: string): string {
-  const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escaped = escapeRegex(tag);
   const re = new RegExp(`<${escaped}[^>]*\\s${attr}="([^"]*)"`, "i");
   const m = xml.match(re);
   return m ? m[1].trim() : "";

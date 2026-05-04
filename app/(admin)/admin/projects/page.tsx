@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { projects as initialProjects, type Project, type ProjectCategory } from "@/lib/projects-data";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,17 +46,19 @@ const statusColors: Record<Project["status"], string> = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AdminProjectsPage() {
-  // Use reactive localStorage hook to persist changes
-  const [projects, setProjects] = useLocalStorage<Project[]>("admin-projects", initialProjects);
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
 
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  function persist(updated: Project[]) {
-    setProjects(updated);
-  }
+  useEffect(() => {
+    fetch("/api/v1/projects?limit=100", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((payload) => setProjects(payload?.data?.data ?? initialProjects))
+      .catch(() => setProjects(initialProjects));
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -97,7 +98,7 @@ export default function AdminProjectsPage() {
     setShowForm(false);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
 
@@ -122,21 +123,32 @@ export default function AdminProjectsPage() {
       images: form.images.filter(Boolean),
     };
 
-    let updated: Project[];
-    if (editing) {
-      updated = projects.map((p) => (p.slug === editing ? project : p));
-    } else {
-      updated = [project, ...projects];
-    }
+    const res = await fetch("/api/v1/projects", {
+      method: editing ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(project),
+    });
+    const payload = await res.json();
 
-    persist(updated);
-    cancel();
+    if (res.ok && payload?.data) {
+      setProjects((current) =>
+        editing
+          ? current.map((p) => (p.slug === editing ? payload.data : p))
+          : [payload.data, ...current],
+      );
+      cancel();
+    }
     setSaving(false);
   }
 
-  function handleDelete(slug: string) {
+  async function handleDelete(slug: string) {
     if (!confirm("Delete this project?")) return;
-    persist(projects.filter((p) => p.slug !== slug));
+    const res = await fetch("/api/v1/projects", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug }),
+    });
+    if (res.ok) setProjects((p) => p.filter((project) => project.slug !== slug));
   }
 
   return (

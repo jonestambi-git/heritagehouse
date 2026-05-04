@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-interface Announcement {
-  id: string;
+interface NewsItem {
+  _id: string;
   title: string;
   message: string;
   date?: string;
@@ -20,46 +20,25 @@ const emptyForm = {
   active: true,
 };
 
-export default function AdminAnnouncementsPage() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+const inputClass =
+  "bg-white/5 border border-white/15 px-3 py-2.5 font-body text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/40 transition-colors w-full";
+
+export default function AdminNewsPage() {
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  async function fetchAll() {
-    try {
-      // Fetch all (including inactive) — we call the public endpoint but admin sees all
-      // We use a custom header to signal admin context; for now we fetch all from the file
-      const res = await fetch("/api/announcements/all");
-      if (res.ok) {
-        const data: Announcement[] = await res.json();
-        setAnnouncements(data);
-        return;
-      }
-    } catch {
-      // fallback below
-    }
-    // Fallback: fetch active only
-    try {
-      const res = await fetch("/api/announcements");
-      if (res.ok) {
-        const data: Announcement[] = await res.json();
-        setAnnouncements(data);
-      }
-    } catch {
-      // silently fail
-    }
-  }
-
   useEffect(() => {
-    void fetchAll();
+    fetch("/api/v1/admin/news", { credentials: "include", cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => setNews(data?.data ?? []))
+      .catch(() => setNews([]));
   }, []);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
     setForm((p) => ({
       ...p,
@@ -67,20 +46,20 @@ export default function AdminAnnouncementsPage() {
     }));
   }
 
-  function startEdit(a: Announcement) {
-    setEditing(a.id);
+  function startEdit(item: NewsItem) {
+    setEditing(item._id);
     setForm({
-      title: a.title,
-      message: a.message,
-      date: a.date ?? "",
-      venue: a.venue ?? "",
-      active: a.active,
+      title: item.title,
+      message: item.message,
+      date: item.date ?? "",
+      venue: item.venue ?? "",
+      active: item.active,
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function cancelEdit() {
+  function cancel() {
     setEditing(null);
     setForm(emptyForm);
     setShowForm(false);
@@ -94,71 +73,81 @@ export default function AdminAnnouncementsPage() {
 
     try {
       const method = editing ? "PUT" : "POST";
-      const payload = editing ? { id: editing, ...form } : form;
+      const body = editing ? { ...form, _id: editing } : form;
 
-      const res = await fetch("/api/announcements", {
+      const res = await fetch("/api/v1/admin/news", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        credentials: "include",
+        body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        setError((err as { error?: string }).error ?? "Failed to save.");
-        setSaving(false);
-        return;
-      }
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error ?? "Failed to save");
 
-      await fetchAll();
-      setForm(emptyForm);
-      setEditing(null);
-      setShowForm(false);
-    } catch {
-      setError("Network error. Please try again.");
+      // Refresh list
+      const updated = await fetch("/api/v1/admin/news", { credentials: "include", cache: "no-store" });
+      const updatedData = await updated.json();
+      setNews(updatedData?.data ?? []);
+      cancel();
+    } catch (err: any) {
+      setError(err.message ?? "Failed to save news");
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this announcement?")) return;
+    if (!confirm("Delete this news item?")) return;
     try {
-      await fetch("/api/announcements", {
+      const res = await fetch("/api/v1/admin/news", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        credentials: "include",
+        body: JSON.stringify({ _id: id }),
       });
-      setAnnouncements((p) => p.filter((a) => a.id !== id));
+      if (res.ok) setNews((p) => p.filter((n) => n._id !== id));
     } catch {
-      // silently fail
+      alert("Failed to delete news item");
     }
   }
 
-  const inputClass =
-    "bg-white/5 border border-white/15 px-3 py-2.5 font-body text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/40 transition-colors w-full";
+  async function toggleActive(item: NewsItem) {
+    try {
+      const res = await fetch("/api/v1/admin/news", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ _id: item._id, active: !item.active }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setNews((p) => p.map((n) => n._id === item._id ? { ...n, active: !n.active } : n));
+      }
+    } catch {
+      alert("Failed to update news item");
+    }
+  }
 
   return (
-    <div className="flex flex-col min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 max-w-5xl mx-auto">
+    <div className="flex flex-col min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-10 flex items-center justify-between">
         <div>
-          <span className="font-body text-white/30 text-[10px] tracking-widests uppercase">
-            Admin
-          </span>
+          <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">Admin</span>
           <h1 className="font-heading text-white font-black text-3xl sm:text-4xl leading-none tracking-tight mt-0.5">
-            Announcements
+            News
           </h1>
+          <p className="font-body text-white/40 text-sm mt-1">
+            Manage church announcements and news.
+          </p>
         </div>
         {!showForm && (
           <button
-            onClick={() => {
-              setEditing(null);
-              setForm(emptyForm);
-              setShowForm(true);
-            }}
+            onClick={() => { setEditing(null); setForm(emptyForm); setShowForm(true); }}
             className="border border-white/30 px-5 py-2 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
           >
-            + New announcement
+            + New item
           </button>
         )}
       </div>
@@ -166,58 +155,54 @@ export default function AdminAnnouncementsPage() {
       {/* Form */}
       {showForm && (
         <div className="border border-white/10 p-6 mb-10 backdrop-blur-sm bg-white/3">
-          <p className="font-body text-white/30 text-[10px] tracking-widests uppercase mb-5">
-            {editing ? "Edit announcement" : "New announcement"}
+          <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-5">
+            {editing ? "Edit news item" : "New news item"}
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* Title */}
             <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widests uppercase">
-                Title <span className="text-red-400">*</span>
-              </label>
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Title *</label>
               <input
                 name="title"
                 value={form.title}
                 onChange={handleChange}
                 required
-                placeholder="Announcement title"
+                placeholder="News headline"
                 className={inputClass}
               />
             </div>
 
             {/* Message */}
             <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widests uppercase">
-                Message <span className="text-red-400">*</span>
-              </label>
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Message *</label>
               <textarea
                 name="message"
                 value={form.message}
                 onChange={handleChange}
                 required
                 rows={4}
-                placeholder="Full announcement message…"
+                placeholder="Full news content…"
                 className={`${inputClass} resize-none`}
               />
             </div>
 
-            {/* Date + Venue */}
+            {/* Date & Venue */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="font-body text-white/35 text-[10px] tracking-widests uppercase">
-                  Date <span className="font-body text-white/20 normal-case">(optional)</span>
+                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
+                  Date <span className="normal-case opacity-50">(optional)</span>
                 </label>
                 <input
                   name="date"
                   value={form.date}
                   onChange={handleChange}
-                  placeholder="e.g. Sunday, 20 July 2025"
+                  placeholder="e.g. Sunday, June 1"
                   className={inputClass}
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="font-body text-white/35 text-[10px] tracking-widests uppercase">
-                  Venue <span className="font-body text-white/20 normal-case">(optional)</span>
+                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
+                  Venue <span className="normal-case opacity-50">(optional)</span>
                 </label>
                 <input
                   name="venue"
@@ -238,9 +223,7 @@ export default function AdminAnnouncementsPage() {
                 onChange={handleChange}
                 className="w-4 h-4 accent-white"
               />
-              <span className="font-body text-white/60 text-sm">
-                Mark as active (shows to users)
-              </span>
+              <span className="font-body text-white/60 text-sm">Visible to public</span>
             </label>
 
             {error && <p className="font-body text-red-400 text-xs">{error}</p>}
@@ -251,16 +234,12 @@ export default function AdminAnnouncementsPage() {
                 disabled={saving}
                 className="self-start border border-white/30 px-6 py-2.5 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors disabled:opacity-40 cursor-pointer"
               >
-                {saving
-                  ? "Saving…"
-                  : editing
-                    ? "Update announcement"
-                    : "Create announcement"}
+                {saving ? "Saving…" : editing ? "Update" : "Publish"}
               </button>
               <button
                 type="button"
-                onClick={cancelEdit}
-                className="font-body text-white/40 text-sm hover:text-white transition-colors cursor-pointer"
+                onClick={cancel}
+                className="font-body text-white/40 text-sm hover:text-white transition-colors"
               >
                 Cancel
               </button>
@@ -270,50 +249,52 @@ export default function AdminAnnouncementsPage() {
       )}
 
       {/* List */}
-      <p className="font-body text-white/30 text-[10px] tracking-widests uppercase mb-2">
-        {announcements.length} announcement{announcements.length !== 1 ? "s" : ""}
+      <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-2">
+        {news.length} item{news.length !== 1 ? "s" : ""}
       </p>
-      {announcements.length === 0 && (
-        <p className="font-body text-white/25 text-sm">No announcements created yet.</p>
+      {news.length === 0 && (
+        <p className="font-body text-white/25 text-sm">No news items yet.</p>
       )}
-      {announcements.map((a) => (
+      {news.map((item) => (
         <div
-          key={a.id}
+          key={item._id}
           className="flex items-start justify-between gap-4 py-4 border-t border-white/10 hover:border-white/20 transition-colors"
         >
           <div className="flex flex-col gap-0.5 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-body text-white font-semibold text-sm truncate">
-                {a.title}
-              </span>
+              <span className="font-body text-white font-semibold text-sm truncate">{item.title}</span>
               <span
-                className={`font-body text-[9px] tracking-widests uppercase px-1.5 py-0.5 border ${
-                  a.active
-                    ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25"
+                className={`font-body text-[9px] tracking-widest uppercase px-1.5 py-0.5 border ${
+                  item.active
+                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                     : "bg-white/5 text-white/30 border-white/10"
                 }`}
               >
-                {a.active ? "Active" : "Inactive"}
+                {item.active ? "Live" : "Hidden"}
               </span>
             </div>
-            <span className="font-body text-white/35 text-xs line-clamp-1">
-              {a.message}
-            </span>
-            {(a.date || a.venue) && (
-              <span className="font-body text-white/25 text-[11px]">
-                {[a.date, a.venue].filter(Boolean).join(" · ")}
+            <span className="font-body text-white/35 text-xs line-clamp-1">{item.message}</span>
+            {(item.date || item.venue) && (
+              <span className="font-body text-white/25 text-xs">
+                {[item.date, item.venue].filter(Boolean).join(" · ")}
               </span>
             )}
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
-              onClick={() => startEdit(a)}
+              onClick={() => toggleActive(item)}
+              className="font-body text-white/40 text-xs hover:text-white transition-colors cursor-pointer"
+            >
+              {item.active ? "Hide" : "Show"}
+            </button>
+            <button
+              onClick={() => startEdit(item)}
               className="font-body text-white/40 text-xs hover:text-white transition-colors cursor-pointer"
             >
               Edit
             </button>
             <button
-              onClick={() => handleDelete(a.id)}
+              onClick={() => handleDelete(item._id)}
               className="font-body text-white/25 text-xs hover:text-red-400 transition-colors cursor-pointer"
             >
               Delete

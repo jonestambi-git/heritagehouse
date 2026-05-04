@@ -88,26 +88,18 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>(defaults);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
+  // Load from database
   useEffect(() => {
-    const stored = localStorage.getItem("admin-site-settings");
-    if (stored) {
-      const parsed = JSON.parse(stored) as Partial<SiteSettings>;
-      // Check if pastor fields exist, if not, add them with defaults
-      const updated = {
-        ...defaults,
-        ...parsed,
-        // Force add pastor fields if they don't exist
-        pastorName: parsed.pastorName ?? defaults.pastorName,
-        pastorWifeName: parsed.pastorWifeName ?? defaults.pastorWifeName,
-        pastorPhotoUrl: parsed.pastorPhotoUrl ?? defaults.pastorPhotoUrl,
-        pastorWifePhotoUrl: parsed.pastorWifePhotoUrl ?? defaults.pastorWifePhotoUrl,
-        pastorHidden: parsed.pastorHidden ?? defaults.pastorHidden,
-      };
-      setSettings(updated);
-      // Save updated settings back to localStorage
-      localStorage.setItem("admin-site-settings", JSON.stringify(updated));
-    }
+    fetch("/api/v1/site-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setSettings({ ...defaults, ...data.data });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -119,15 +111,26 @@ export default function AdminSettingsPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    localStorage.setItem("admin-site-settings", JSON.stringify(settings));
-    setTimeout(() => {
-      setSaving(false);
+    setError("");
+    try {
+      const res = await fetch("/api/v1/site-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(settings),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error ?? "Failed to save");
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    }, 400);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to save settings");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (

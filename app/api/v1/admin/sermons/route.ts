@@ -1,281 +1,117 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { readSermons, createSermon, updateSermon, deleteSermon, getSermonBySlug } from "@/lib/db/mongodb-storage";
-import type { Sermon } from "@/lib/types/sermon";
-import { validateSermon } from "@/lib/utils/sermon-validation";
+import { connectDB } from "@/lib/db/mongoose";
+import Sermon from "@/lib/models/Sermon";
 
-/**
- * Verify admin authentication from request cookies
- */
-async function verifyAdminAuth(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("admin_session");
-  return session?.value === "authenticated";
+async function isAuthenticated(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get("admin_session")?.value === "authenticated";
+  } catch {
+    return false;
+  }
 }
 
-/**
- * Generate a URL-friendly slug from a title
- */
 function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+  return title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-/**
- * GET /api/v1/admin/sermons
- * Retrieves all sermons from JSON file
- */
-export async function GET(req: NextRequest) {
-  const isAuthenticated = await verifyAdminAuth();
-  
-  if (!isAuthenticated) {
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Unauthorized",
-      },
-    }, { status: 401 });
-  }
-
+// GET — list all sermons
+export async function GET() {
   try {
-    const sermons = await readSermons();
-
-    return NextResponse.json({
-      success: true,
-      data: sermons,
-    }, { status: 200 });
-
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+    await connectDB();
+    const sermons = await Sermon.find().sort({ dateISO: -1 }).lean();
+    return NextResponse.json({ success: true, data: sermons });
   } catch (error) {
-    console.error("Error retrieving sermons:", error);
-    
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "SERVER_ERROR",
-        message: "Failed to retrieve sermons",
-      },
-    }, { status: 500 });
+    console.error("[GET /api/v1/admin/sermons]", error);
+    return NextResponse.json({ success: false, error: "Failed to fetch sermons" }, { status: 500 });
   }
 }
 
-/**
- * POST /api/v1/admin/sermons
- * Creates a new sermon in JSON file
- */
+// POST — create sermon
 export async function POST(req: NextRequest) {
-  const isAuthenticated = await verifyAdminAuth();
-  
-  if (!isAuthenticated) {
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Unauthorized",
-      },
-    }, { status: 401 });
-  }
-
   try {
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     const body = await req.json();
-
-    // Validate sermon data
-    const validationResult = validateSermon(body);
-    
-    if (!validationResult.success) {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Validation failed",
-          details: validationResult.errors,
-        },
-      }, { status: 400 });
+    if (!body.title || !body.tag || !body.pastor) {
+      return NextResponse.json({ success: false, error: "title, tag and pastor are required" }, { status: 400 });
     }
+    await connectDB();
+    const slug = body.slug || generateSlug(body.title);
 
-    // Generate slug from title if not provided
-    const sermonData = validationResult.data as Sermon;
-    if (!sermonData.slug || sermonData.slug.trim() === "") {
-      sermonData.slug = generateSlug(sermonData.title);
+    // Auto-generate date from dateISO if not provided
+    const date = body.date || (body.dateISO
+      ? new Date(body.dateISO).toLocaleDateString("en-US", {
+          year: "numeric", month: "long", day: "numeric",
+        })
+      : new Date().toLocaleDateString("en-US", {
+          year: "numeric", month: "long", day: "numeric",
+        }));
+
+    const sermon = await Sermon.create({ ...body, slug, date });
+    return NextResponse.json({ success: true, data: sermon }, { status: 201 });
+  } catch (error: any) {
+    console.error("[POST /api/v1/admin/sermons]", error);
+    if (error.code === 11000) {
+      return NextResponse.json({ success: false, error: "A sermon with this slug already exists" }, { status: 409 });
     }
-
-    // Create sermon
-    const createdSermon = await createSermon(sermonData);
-
-    return NextResponse.json({
-      success: true,
-      data: createdSermon,
-    }, { status: 201 });
-
-  } catch (error) {
-    console.error("Error creating sermon:", error);
-    
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "SERVER_ERROR",
-        message: "Failed to create sermon",
-      },
-    }, { status: 500 });
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((e: any) => e.message).join(", ");
+      return NextResponse.json({ success: false, error: `Validation failed: ${messages}` }, { status: 400 });
+    }
+    return NextResponse.json({ success: false, error: "Failed to create sermon" }, { status: 500 });
   }
 }
 
-/**
- * PUT /api/v1/admin/sermons
- * Updates an existing sermon in JSON file
- */
+// PUT — update sermon
 export async function PUT(req: NextRequest) {
-  const isAuthenticated = await verifyAdminAuth();
-  
-  if (!isAuthenticated) {
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Unauthorized",
-      },
-    }, { status: 401 });
-  }
-
   try {
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     const body = await req.json();
-    const { slug } = body;
-
-    if (!slug || typeof slug !== "string" || slug.trim() === "") {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Slug is required for updating a sermon",
-        },
-      }, { status: 400 });
+    if (!body.slug) {
+      return NextResponse.json({ success: false, error: "slug is required" }, { status: 400 });
     }
-
-    // Validate sermon data
-    const validationResult = validateSermon(body);
-    
-    if (!validationResult.success) {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Validation failed",
-          details: validationResult.errors,
-        },
-      }, { status: 400 });
+    await connectDB();
+    const sermon = await Sermon.findOneAndUpdate(
+      { slug: body.slug },
+      { $set: body },
+      { new: true, runValidators: true }
+    ).lean();
+    if (!sermon) {
+      return NextResponse.json({ success: false, error: "Sermon not found" }, { status: 404 });
     }
-
-    // Check if sermon exists
-    const existingSermon = await getSermonBySlug(slug);
-
-    if (!existingSermon) {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Sermon not found",
-        },
-      }, { status: 404 });
-    }
-
-    // Update sermon
-    const sermonData = validationResult.data as Sermon;
-    const updatedSermon = await updateSermon(slug, sermonData);
-
-    return NextResponse.json({
-      success: true,
-      data: updatedSermon,
-    }, { status: 200 });
-
+    return NextResponse.json({ success: true, data: sermon });
   } catch (error) {
-    console.error("Error updating sermon:", error);
-    
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "SERVER_ERROR",
-        message: "Failed to update sermon",
-      },
-    }, { status: 500 });
+    console.error("[PUT /api/v1/admin/sermons]", error);
+    return NextResponse.json({ success: false, error: "Failed to update sermon" }, { status: 500 });
   }
 }
 
-/**
- * DELETE /api/v1/admin/sermons
- * Deletes a sermon from JSON file
- */
+// DELETE — delete sermon
 export async function DELETE(req: NextRequest) {
-  const isAuthenticated = await verifyAdminAuth();
-  
-  if (!isAuthenticated) {
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Unauthorized",
-      },
-    }, { status: 401 });
-  }
-
   try {
-    const body = await req.json();
-    const { slug } = body;
-
-    if (!slug || typeof slug !== "string" || slug.trim() === "") {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Slug is required for deleting a sermon",
-        },
-      }, { status: 400 });
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
-
-    // Check if sermon exists
-    const existingSermon = await getSermonBySlug(slug);
-
-    if (!existingSermon) {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Sermon not found",
-        },
-      }, { status: 404 });
+    const { slug } = await req.json();
+    if (!slug) {
+      return NextResponse.json({ success: false, error: "slug is required" }, { status: 400 });
     }
-
-    // Delete sermon
-    const deleted = await deleteSermon(slug);
-
-    if (!deleted) {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: "SERVER_ERROR",
-          message: "Failed to delete sermon",
-        },
-      }, { status: 500 });
+    await connectDB();
+    const result = await Sermon.findOneAndDelete({ slug });
+    if (!result) {
+      return NextResponse.json({ success: false, error: "Sermon not found" }, { status: 404 });
     }
-
-    return NextResponse.json({
-      success: true,
-      message: "Sermon deleted successfully",
-    }, { status: 200 });
-
+    return NextResponse.json({ success: true, message: "Sermon deleted" });
   } catch (error) {
-    console.error("Error deleting sermon:", error);
-    
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "SERVER_ERROR",
-        message: "Failed to delete sermon",
-      },
-    }, { status: 500 });
+    console.error("[DELETE /api/v1/admin/sermons]", error);
+    return NextResponse.json({ success: false, error: "Failed to delete sermon" }, { status: 500 });
   }
 }

@@ -5,10 +5,24 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getDailyPhoto } from "@/lib/church-photos";
-import { projects as defaultProjects, type ProjectCategory, type Project } from "@/lib/projects-data";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import type { ProjectCategory } from "@/lib/projects-data";
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Project {
+  _id: string;
+  slug: string;
+  title: string;
+  category: ProjectCategory;
+  status: "Ongoing" | "Completed" | "Upcoming";
+  year: string;
+  lead?: string;
+  summary: string;
+  body?: string;
+  goal?: string | null;
+  raised?: string | null;
+  images: string[];
+}
 
 type Filter = "All" | ProjectCategory;
 
@@ -40,21 +54,22 @@ const statusColors: Record<string, string> = {
 export default function ProjectsPage() {
   const bgUrl = getDailyPhoto(7);
   const [activeFilter, setActiveFilter] = useState<Filter>("All");
-  
-  // Use reactive localStorage hook for projects
-  const [savedProjects] = useLocalStorage<Project[]>("admin-projects", defaultProjects);
-  const [projects, setProjects] = useState<Project[]>(defaultProjects);
-  
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setProjects(savedProjects);
-  }, [savedProjects]);
+    fetch("/api/v1/projects?limit=100", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => setProjects(data?.data?.data ?? []))
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filtered =
     activeFilter === "All"
       ? projects
       : projects.filter((p) => p.category === activeFilter);
 
-  // Dynamic stats based on actual projects
   const stats = [
     { value: projects.length.toString(), label: "Active projects" },
     { value: "500+", label: "Families helped" },
@@ -270,14 +285,27 @@ export default function ProjectsPage() {
             </motion.div>
           </AnimatePresence>
 
-          {filtered.length === 0 && (
-            <motion.p
-              className="font-body text-white/40 text-sm pt-8"
+          {filtered.length === 0 && !loading && (
+            <motion.div
+              className="py-16 flex flex-col items-center gap-3 text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              No projects in this category right now.
-            </motion.p>
+              <p className="font-heading text-white/20 font-black text-4xl">No projects yet</p>
+              <p className="font-body text-white/35 text-sm max-w-xs">
+                {activeFilter === "All"
+                  ? "Projects will appear here once the admin adds them."
+                  : `No ${activeFilter} projects at the moment.`}
+              </p>
+            </motion.div>
+          )}
+
+          {loading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-64 rounded-2xl bg-white/5 animate-pulse" />
+              ))}
+            </div>
           )}
         </motion.div>
 

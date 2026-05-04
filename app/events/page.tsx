@@ -89,7 +89,15 @@ const categoryEmptyMessage: Record<Category, string> = {
 // ─── Monthly Programs Component ───────────────────────────────────────────────
 
 function MonthlyProgramsSection() {
+  const [mounted, setMounted] = useState(false);
   const [programs] = useLocalStorage<MonthlyProgram[]>("admin-monthly-programs", defaultMonthlyPrograms);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) return null;
 
   if (!programs || programs.length === 0) {
     return null;

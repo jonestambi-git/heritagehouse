@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getDailyPhoto } from "@/lib/church-photos";
 
 interface Announcement {
-  id: string;
+  _id: string;
   title: string;
   message: string;
   date?: string;
@@ -20,10 +20,10 @@ export default function AnnouncementsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/announcements')
+    fetch('/api/v1/news?limit=50', { cache: "no-store" })
       .then(res => res.json())
       .then(data => {
-        setAnnouncements(data);
+        setAnnouncements(data?.data?.data ?? []);
         setLoading(false);
       })
       .catch(() => {
@@ -105,7 +105,7 @@ export default function AnnouncementsPage() {
             ) : (
               announcements.map((a, i) => (
                 <motion.div
-                  key={a.id}
+                  key={a._id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}

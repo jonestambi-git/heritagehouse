@@ -1,37 +1,15 @@
 import { NextResponse } from "next/server";
-import { countSermons } from "@/lib/db/mongodb-storage";
+import { connectDB } from "@/lib/db/mongoose";
+import Sermon from "@/lib/models/Sermon";
 
-/**
- * GET /api/v1/sermons/count
- * 
- * Public endpoint to retrieve the total count of sermons
- * Uses JSON file storage
- */
+// GET — total sermon count
 export async function GET() {
-  console.log("[/api/v1/sermons/count] GET request received");
-  
   try {
-    console.log("[/api/v1/sermons/count] Counting sermons from JSON file...");
-    const total = await countSermons();
-    console.log(`[/api/v1/sermons/count] ✓ Found ${total} sermons`);
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        total: total,
-      },
-    }, { status: 200 });
-
+    await connectDB();
+    const total = await Sermon.countDocuments();
+    return NextResponse.json({ success: true, data: { total } });
   } catch (error) {
-    console.error("[/api/v1/sermons/count] ERROR:", error);
-    
-    return NextResponse.json({
-      success: false,
-      error: {
-        code: "SERVER_ERROR",
-        message: "Failed to retrieve sermon count",
-        details: error instanceof Error ? error.message : String(error),
-      },
-    }, { status: 500 });
+    console.error("[GET /api/v1/sermons/count]", error);
+    return NextResponse.json({ success: false, error: "Failed to count sermons" }, { status: 500 });
   }
 }

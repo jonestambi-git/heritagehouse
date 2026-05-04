@@ -7,10 +7,10 @@ import { getDailyPhoto } from "@/lib/church-photos";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type MinistryTag = "Worship" | "Outreach" | "Care" | "Children" | "Media";
+type MinistryTag = "MEN" | "WOMEN" | "YOUTH" | "FAMILIES" | "ALL_AGES";
 
 interface Ministry {
-  id: string;
+  _id: string;
   name: string;
   tag: MinistryTag;
   leader: string;
@@ -21,91 +21,95 @@ interface Ministry {
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
+const tagLabels: Record<MinistryTag, string> = {
+  MEN: "Men",
+  WOMEN: "Women",
+  YOUTH: "Youth",
+  FAMILIES: "Families",
+  ALL_AGES: "All Ages",
+};
+
 const tagFilters: ("All" | MinistryTag)[] = [
-  "All",
-  "Worship",
-  "Outreach",
-  "Care",
-  "Children",
-  "Media",
+  "All", "MEN", "WOMEN", "YOUTH", "FAMILIES", "ALL_AGES",
 ];
 
 const tagColors: Record<MinistryTag, string> = {
-  Worship: "bg-violet-500/20 text-violet-200",
-  Outreach: "bg-amber-500/20 text-amber-200",
-  Care: "bg-rose-500/20 text-rose-200",
-  Children: "bg-sky-500/20 text-sky-200",
-  Media: "bg-teal-500/20 text-teal-200",
+  MEN: "bg-sky-500/20 text-sky-200",
+  WOMEN: "bg-rose-500/20 text-rose-200",
+  YOUTH: "bg-violet-500/20 text-violet-200",
+  FAMILIES: "bg-amber-500/20 text-amber-200",
+  ALL_AGES: "bg-teal-500/20 text-teal-200",
 };
 
 const tagActiveBg: Record<"All" | MinistryTag, string> = {
   All: "bg-white text-black",
-  Worship: "bg-violet-400 text-violet-950",
-  Outreach: "bg-amber-400 text-amber-950",
-  Care: "bg-rose-400 text-rose-950",
-  Children: "bg-sky-400 text-sky-950",
-  Media: "bg-teal-400 text-teal-950",
+  MEN: "bg-sky-400 text-sky-950",
+  WOMEN: "bg-rose-400 text-rose-950",
+  YOUTH: "bg-violet-400 text-violet-950",
+  FAMILIES: "bg-amber-400 text-amber-950",
+  ALL_AGES: "bg-teal-400 text-teal-950",
 };
 
-const ministries: Ministry[] = [
+// Fallback ministries (not used when data is fetched from API)
+const fallbackMinistries: Ministry[] = [
   {
-    id: "1",
+    _id: "1",
     name: "Praise & Worship Team",
-    tag: "Worship",
+    tag: "ALL_AGES",
     leader: "Deacon Samuel Eze",
     meets: "Saturdays 4 PM",
     bio: "Our worship team leads the congregation into the presence of God every Sunday. We welcome singers, instrumentalists, and sound technicians who have a heart for worship.",
     spots: null,
   },
   {
-    id: "2",
+    _id: "2",
     name: "Street Evangelism",
-    tag: "Outreach",
+    tag: "ALL_AGES",
     leader: "Sis. Grace Nwosu",
     meets: "Last Saturday of the month",
     bio: "We take the Gospel to the streets, markets, and campuses of Port Harcourt. No experience needed — just a willing heart and a pair of comfortable shoes.",
     spots: 8,
   },
   {
-    id: "3",
+    _id: "3",
     name: "Pastoral Care Team",
-    tag: "Care",
+    tag: "ALL_AGES",
     leader: "Pastor Ruth Adeyemi",
     meets: "Wednesdays 5 PM",
     bio: "We visit the sick, support the grieving, and walk alongside members going through difficult seasons. Training is provided for all new volunteers.",
     spots: null,
   },
   {
-    id: "4",
+    _id: "4",
     name: "Children's Church",
-    tag: "Children",
+    tag: "YOUTH",
     leader: "Bro. Emeka Obi",
     meets: "Sundays 8 AM & 10:30 AM",
     bio: "We create a safe, fun, and Spirit-filled environment for children ages 3–12 to encounter God. Teachers, helpers, and creatives are all welcome.",
     spots: 5,
   },
   {
-    id: "5",
+    _id: "5",
     name: "Media & Tech Ministry",
-    tag: "Media",
+    tag: "ALL_AGES",
     leader: "Bro. Chidi Nkemdirim",
     meets: "Sundays from 7 AM",
     bio: "From live streaming to graphic design, our media team ensures every service reaches beyond the four walls of the church. Designers, videographers, and developers welcome.",
     spots: null,
   },
   {
-    id: "6",
+    _id: "6",
     name: "Prison Outreach",
-    tag: "Outreach",
+    tag: "MEN",
     leader: "Deacon Philip Okafor",
     meets: "Second Friday of the month",
     bio: "We minister to inmates at correctional facilities in Rivers State — bringing hope, the Word, and practical support to those who need it most.",
     spots: null,
   },
   {
-    id: "7",
+    _id: "7",
     name: "Prayer Intercessors",
-    tag: "Worship",
+    tag: "ALL_AGES",
     leader: "Sis. Blessing Amadi",
     meets: "Tuesdays & Fridays 6 AM",
     bio: "The engine room of the church. Our intercessors carry the church, the city, and the nations before the throne of God. All are welcome to join.",
@@ -127,33 +131,36 @@ export default function MinistryPage() {
   const [activeTag, setActiveTag] = useState<"All" | MinistryTag>("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [settings, setSettings] = useState<any>(null);
+  const [ministries, setMinistries] = useState<Ministry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load settings from localStorage on client side only
+  // Load pastor settings from database
   useEffect(() => {
-    const stored = localStorage.getItem("admin-site-settings");
-    const defaultPastorSettings = {
-      pastorName: "Rev. Emmanuel Okafor",
-      pastorWifeName: "Mrs. Grace Okafor",
-      pastorPhotoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces",
-      pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
-      pastorHidden: false,
-    };
-    
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      // Merge with defaults to ensure pastor fields exist
-      const merged = {
-        ...parsed,
-        pastorName: parsed.pastorName ?? defaultPastorSettings.pastorName,
-        pastorWifeName: parsed.pastorWifeName ?? defaultPastorSettings.pastorWifeName,
-        pastorPhotoUrl: parsed.pastorPhotoUrl ?? defaultPastorSettings.pastorPhotoUrl,
-        pastorWifePhotoUrl: parsed.pastorWifePhotoUrl ?? defaultPastorSettings.pastorWifePhotoUrl,
-        pastorHidden: parsed.pastorHidden ?? defaultPastorSettings.pastorHidden,
-      };
-      setSettings(merged);
-    } else {
-      setSettings(defaultPastorSettings);
-    }
+    fetch("/api/v1/site-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setSettings(data.data);
+        } else {
+          setSettings({
+            pastorName: "Rev. Emmanuel Okafor",
+            pastorWifeName: "Mrs. Grace Okafor",
+            pastorPhotoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces",
+            pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
+            pastorHidden: false,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fetch ministries from database
+  useEffect(() => {
+    fetch("/api/v1/ministries?limit=100", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => setMinistries(data?.data ?? []))
+      .catch(() => setMinistries([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered =
@@ -258,264 +265,120 @@ export default function MinistryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.7 }}
           >
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
+            <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-6">
               Our Leadership
             </p>
-            <motion.div
-              className="relative overflow-hidden p-8 sm:p-10"
-              style={{
-                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.25)",
-                borderRadius: "24px",
-                boxShadow: "0 12px 48px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255,255,255,0.12)",
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.15, duration: 0.5 }}
-              whileHover={{ scale: 1.01, y: -4 }}
-            >
-              {/* Decorative gradient orb */}
-              <motion.div
-                className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-3xl pointer-events-none"
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  opacity: [0.3, 0.5, 0.3]
-                }}
-                transition={{ 
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
 
-              {/* Badge */}
-              <div className="flex items-center justify-between mb-6">
-                <span
-                  className="font-body text-[10px] tracking-widest uppercase px-3 py-1.5"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.2)",
-                    color: "rgb(255, 255, 255)",
-                    border: "1px solid rgba(255, 255, 255, 0.3)",
-                    borderRadius: "8px",
-                  }}
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-6 max-w-md sm:max-w-2xl">
+              {/* Pastor Card */}
+              {settings.pastorName && (
+                <motion.div
+                  className="group relative overflow-hidden rounded-[16px] sm:rounded-[24px]"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.15, duration: 0.5 }}
+                  whileHover={{ y: -6 }}
                 >
-                  Lead Pastor
-                </span>
-                <span className="w-2.5 h-2.5 rounded-full bg-white shadow-lg" />
-              </div>
-
-              {/* Content - Portrait Cards */}
-              <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Pastor Card */}
-                {settings.pastorName && (
-                  <motion.div
-                    className="flex flex-col items-center text-center p-6"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.12)",
-                      backdropFilter: "blur(16px)",
-                      WebkitBackdropFilter: "blur(16px)",
-                      border: "1px solid rgba(255, 255, 255, 0.3)",
-                      borderRadius: "20px",
-                      boxShadow: "0 8px 24px rgba(255, 255, 255, 0.2)",
-                    }}
-                    whileHover={{ scale: 1.02, y: -4 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {/* Photo */}
+                  {/* Photo — full bleed */}
+                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[16px] sm:rounded-[24px]">
                     {settings.pastorPhotoUrl ? (
-                      <div
-                        className="w-64 h-80 sm:w-80 sm:h-96 overflow-hidden mb-4"
-                        style={{
-                          border: "3px solid rgba(255, 255, 255, 0.5)",
-                          borderRadius: "16px",
-                          boxShadow: "0 8px 24px rgba(255, 255, 255, 0.4)",
-                        }}
-                      >
-                        <img 
-                          src={settings.pastorPhotoUrl} 
-                          alt={settings.pastorName}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            if (e.currentTarget.nextElementSibling) {
-                              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
-                            }
-                          }}
-                        />
-                        <div
-                          className="w-full h-full items-center justify-center hidden"
-                          style={{
-                            background: "rgba(255, 255, 255, 0.2)",
-                          }}
-                        >
-                          <svg 
-                            width="48" 
-                            height="48" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            className="text-white"
-                          >
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                          </svg>
-                        </div>
-                      </div>
+                      <img
+                        src={settings.pastorPhotoUrl}
+                        alt={settings.pastorName}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        onError={(e) => { e.currentTarget.src = ""; e.currentTarget.style.display = "none"; }}
+                      />
                     ) : (
-                      <div
-                        className="w-64 h-80 sm:w-80 sm:h-96 flex items-center justify-center mb-4"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.2)",
-                          border: "3px solid rgba(255, 255, 255, 0.5)",
-                          borderRadius: "16px",
-                        }}
-                      >
-                        <svg 
-                          width="48" 
-                          height="48" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          className="text-white"
-                        >
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
+                      <div className="w-full h-full flex items-center justify-center bg-white/10">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/40">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                         </svg>
                       </div>
                     )}
-                    
-                    {/* Info */}
-                    <span className="font-body text-white text-[10px] tracking-widest uppercase mb-2">
-                      Lead Pastor
-                    </span>
-                    <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
-                      {settings.pastorName}
-                    </h3>
-                  </motion.div>
-                )}
 
-                {/* Pastor's Wife Card */}
-                {settings.pastorWifeName && (
-                  <motion.div
-                    className="flex flex-col items-center text-center p-6"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.10)",
-                      backdropFilter: "blur(16px)",
-                      WebkitBackdropFilter: "blur(16px)",
-                      border: "1px solid rgba(255, 255, 255, 0.25)",
-                      borderRadius: "20px",
-                      boxShadow: "0 8px 24px rgba(255, 255, 255, 0.15)",
-                    }}
-                    whileHover={{ scale: 1.02, y: -4 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {/* Photo */}
-                    {settings.pastorWifePhotoUrl ? (
-                      <div
-                        className="w-64 h-80 sm:w-80 sm:h-96 overflow-hidden mb-4"
+                    {/* Gradient overlay at bottom */}
+                    <div
+                      className="absolute inset-0 pointer-events-none rounded-[16px] sm:rounded-[24px]"
+                      style={{
+                        background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)",
+                      }}
+                    />
+
+                    {/* Text pinned to bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+                      <span
+                        className="inline-block font-body text-[8px] sm:text-[10px] tracking-widest uppercase px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
                         style={{
-                          border: "3px solid rgba(255, 255, 255, 0.4)",
-                          borderRadius: "16px",
-                          boxShadow: "0 8px 24px rgba(255, 255, 255, 0.3)",
+                          background: "rgba(255,255,255,0.15)",
+                          border: "1px solid rgba(255,255,255,0.25)",
+                          borderRadius: "6px",
+                          color: "rgba(255,255,255,0.8)",
+                          backdropFilter: "blur(8px)",
                         }}
                       >
-                        <img 
-                          src={settings.pastorWifePhotoUrl} 
-                          alt={settings.pastorWifeName}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            if (e.currentTarget.nextElementSibling) {
-                              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
-                            }
-                          }}
-                        />
-                        <div
-                          className="w-full h-full items-center justify-center hidden"
-                          style={{
-                            background: "rgba(255, 255, 255, 0.15)",
-                          }}
-                        >
-                          <svg 
-                            width="48" 
-                            height="48" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            className="text-white"
-                          >
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                          </svg>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="w-64 h-80 sm:w-80 sm:h-96 flex items-center justify-center mb-4"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.15)",
-                          border: "3px solid rgba(255, 255, 255, 0.4)",
-                          borderRadius: "16px",
-                        }}
-                      >
-                        <svg 
-                          width="48" 
-                          height="48" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          className="text-white"
-                        >
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                      </div>
-                    )}
-                    
-                    {/* Info */}
-                    <span className="font-body text-white text-[10px] tracking-widest uppercase mb-2">
-                      Pastor&apos;s Wife
-                    </span>
-                    <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
-                      {settings.pastorWifeName}
-                    </h3>
-                  </motion.div>
-                )}
-              </div>
+                        Lead Pastor
+                      </span>
+                      <h3 className="font-heading text-white font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight">
+                        {settings.pastorName}
+                      </h3>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-              {/* Info note */}
-              <div
-                className="inline-flex items-start gap-2 px-4 py-3 mt-6"
-                style={{
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: "12px",
-                }}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-white/40 mt-0.5 flex-shrink-0"
+              {/* Wife Card */}
+              {settings.pastorWifeName && (
+                <motion.div
+                  className="group relative overflow-hidden rounded-[16px] sm:rounded-[24px]"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.25, duration: 0.5 }}
+                  whileHover={{ y: -6 }}
                 >
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                  <path d="M2 17l10 5 10-5"/>
-                  <path d="M2 12l10 5 10-5"/>
-                </svg>
-                <span className="font-body text-white/55 text-sm leading-relaxed">
-                  Leading our congregation with faith, wisdom, and compassion
-                </span>
-              </div>
-            </motion.div>
+                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[16px] sm:rounded-[24px]">
+                    {settings.pastorWifePhotoUrl ? (
+                      <img
+                        src={settings.pastorWifePhotoUrl}
+                        alt={settings.pastorWifeName}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        onError={(e) => { e.currentTarget.src = ""; e.currentTarget.style.display = "none"; }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-white/10">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/40">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                      </div>
+                    )}
+
+                    <div
+                      className="absolute inset-0 pointer-events-none rounded-[16px] sm:rounded-[24px]"
+                      style={{
+                        background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)",
+                      }}
+                    />
+
+                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+                      <span
+                        className="inline-block font-body text-[8px] sm:text-[10px] tracking-widest uppercase px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
+                        style={{
+                          background: "rgba(255,255,255,0.15)",
+                          border: "1px solid rgba(255,255,255,0.25)",
+                          borderRadius: "6px",
+                          color: "rgba(255,255,255,0.8)",
+                          backdropFilter: "blur(8px)",
+                        }}
+                      >
+                        Pastor&apos;s Wife
+                      </span>
+                      <h3 className="font-heading text-white font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight">
+                        {settings.pastorWifeName}
+                      </h3>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </motion.div>
         )}
 
@@ -546,106 +409,111 @@ export default function MinistryPage() {
                       : "border-white/25 text-white/60 hover:border-white/50 hover:text-white bg-transparent"
                   }`}
                 >
-                  {tag}
+                  {tag === "All" ? "All" : tagLabels[tag as MinistryTag]}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Accordion */}
-          <AnimatePresence mode="popLayout">
-            {filtered.map((ministry, i) => {
-              const isOpen = expandedId === ministry.id;
-              return (
-                <motion.div
-                  key={ministry.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ delay: i * 0.04, duration: 0.3 }}
-                  className="border-t border-white/20"
-                >
-                  <button
-                    onClick={() => setExpandedId(isOpen ? null : ministry.id)}
-                    className="w-full text-left py-4 sm:py-5 grid grid-cols-[1fr_auto] gap-4 items-start group"
-                  >
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
-                          {ministry.name}
-                        </span>
-                        <span
-                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[ministry.tag]}`}
-                        >
-                          {ministry.tag}
-                        </span>
-                        {ministry.spots !== null && (
-                          <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-rose-500/20 text-rose-300">
-                            {ministry.spots} spots left
-                          </span>
-                        )}
-                      </div>
-                      <span className="font-body text-white/45 text-xs">
-                        {ministry.meets} · Led by {ministry.leader}
-                      </span>
-                    </div>
-                    <span
-                      className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300 inline-block"
-                      style={{
-                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-                      }}
-                    >
-                      +
-                    </span>
-                  </button>
+          {/* Loading */}
+          {loading && (
+            <div className="space-y-3 pt-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-16 border-t border-white/20 animate-pulse" />
+              ))}
+            </div>
+          )}
 
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
+          {/* Accordion */}
+          {!loading && (
+            <AnimatePresence mode="popLayout">
+              {filtered.map((ministry, i) => {
+                const id = ministry._id;
+                const isOpen = expandedId === id;
+                return (
+                  <motion.div
+                    key={id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ delay: i * 0.04, duration: 0.3 }}
+                    className="border-t border-white/20"
+                  >
+                    <button
+                      onClick={() => setExpandedId(isOpen ? null : id)}
+                      className="w-full text-left py-4 sm:py-5 grid grid-cols-[1fr_auto] gap-4 items-start group"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
+                            {ministry.name}
+                          </span>
+                          <span className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[ministry.tag]}`}>
+                            {tagLabels[ministry.tag]}
+                          </span>
+                          {ministry.spots !== null && (
+                            <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-rose-500/20 text-rose-300">
+                              {ministry.spots} spots left
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-body text-white/45 text-xs">
+                          {ministry.meets} · Led by {ministry.leader}
+                        </span>
+                      </div>
+                      <span
+                        className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300 inline-block"
+                        style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
                       >
-                        <div className="pb-6 pr-8 flex flex-col gap-4 max-w-lg">
-                          <p className="font-body text-white/70 text-sm leading-relaxed">
-                            {ministry.bio}
-                          </p>
-                          <div className="flex gap-3 flex-wrap">
+                        +
+                      </span>
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pb-6 pr-8 flex flex-col gap-4 max-w-lg">
+                            <p className="font-body text-white/70 text-sm leading-relaxed">
+                              {ministry.bio}
+                            </p>
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
+                              className="self-start border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
+                              asChild
                             >
-                              Volunteer
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-white/55 hover:text-white hover:bg-transparent font-body text-xs tracking-wide rounded-none px-0 underline underline-offset-4"
-                            >
-                              Learn more
+                              <a href="/contact">Volunteer</a>
                             </Button>
                           </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          )}
 
-          {filtered.length === 0 && (
-            <motion.p
-              className="font-body text-white/40 text-sm pt-8"
+          {!loading && filtered.length === 0 && (
+            <motion.div
+              className="py-16 flex flex-col items-center gap-3 text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              No ministries in this category right now.
-            </motion.p>
+              <p className="font-heading text-white/20 font-black text-4xl">No ministries yet</p>
+              <p className="font-body text-white/35 text-sm max-w-xs">
+                {activeTag === "All"
+                  ? "Ministries will appear here once the admin adds them."
+                  : `No ${tagLabels[activeTag as MinistryTag]} ministries at the moment.`}
+              </p>
+            </motion.div>
           )}
         </motion.div>
 
