@@ -44,20 +44,15 @@ export default function LiveServicePage() {
   }
 
   return (
-    <section className="relative w-full min-h-svh">
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
 
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -176,7 +171,7 @@ export default function LiveServicePage() {
             </div>
 
             <div className="p-4 sm:p-5" style={{
-              background: "rgba(255,255,255,0.07)",
+              background: "rgba(0,0,0,0.45)",
               backdropFilter: "blur(16px)",
               WebkitBackdropFilter: "blur(16px)",
               border: "1px solid rgba(255,255,255,0.12)",
@@ -223,7 +218,7 @@ export default function LiveServicePage() {
           <div
             className="flex flex-col overflow-hidden sticky top-4 self-start"
             style={{
-              background: "rgba(255,255,255,0.07)",
+              background: "rgba(0,0,0,0.45)",
               backdropFilter: "blur(18px)",
               WebkitBackdropFilter: "blur(18px)",
               border: "1px solid rgba(255,255,255,0.12)",
@@ -288,7 +283,7 @@ export default function LiveServicePage() {
         <motion.div
           className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-5"
           style={{
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(0,0,0,0.45)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             border: "1px solid rgba(255,255,255,0.10)",
@@ -301,7 +296,7 @@ export default function LiveServicePage() {
           transition={{ delay: 1.25, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
               Need prayer?
             </p>
             <p className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">

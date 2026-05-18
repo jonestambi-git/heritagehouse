@@ -43,26 +43,15 @@ export default function ProjectDetailPage({
   }, [savedProjects, slug]);
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div
-        className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
-      <div
-        className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         {/* Not found */}
         {!project && (
           <motion.div
@@ -198,7 +187,7 @@ export default function ProjectDetailPage({
               <div
                 className="flex flex-col gap-0"
                 style={{
-                  background: "rgba(255,255,255,0.07)",
+                  background: "rgba(0,0,0,0.45)",
                   backdropFilter: "blur(16px)",
                   WebkitBackdropFilter: "blur(16px)",
                   border: "1px solid rgba(255,255,255,0.12)",
@@ -255,7 +244,7 @@ export default function ProjectDetailPage({
               <div
                 className="flex flex-col gap-6 px-6 py-6"
                 style={{
-                  background: "rgba(255,255,255,0.06)",
+                  background: "rgba(0,0,0,0.45)",
                   backdropFilter: "blur(16px)",
                   WebkitBackdropFilter: "blur(16px)",
                   border: "1px solid rgba(255,255,255,0.10)",
@@ -292,7 +281,7 @@ export default function ProjectDetailPage({
             <motion.div
               className="mt-16 sm:mt-20 pt-8"
               style={{
-                background: "rgba(255,255,255,0.05)",
+                background: "rgba(0,0,0,0.35)",
                 backdropFilter: "blur(14px)",
                 WebkitBackdropFilter: "blur(14px)",
                 border: "1px solid rgba(255,255,255,0.09)",
@@ -304,7 +293,7 @@ export default function ProjectDetailPage({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2, duration: 0.7 }}
             >
-              <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
+              <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
                 Other projects
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -322,7 +311,7 @@ export default function ProjectDetailPage({
                         href={`/project/${p.slug}`}
                         className="group flex flex-col overflow-hidden transition-all duration-300"
                         style={{
-                          background: "rgba(255,255,255,0.07)",
+                          background: "rgba(0,0,0,0.45)",
                           backdropFilter: "blur(12px)",
                           WebkitBackdropFilter: "blur(12px)",
                           border: "1px solid rgba(255,255,255,0.10)",

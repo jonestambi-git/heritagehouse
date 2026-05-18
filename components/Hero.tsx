@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { getDailyPhoto } from "@/lib/church-photos";
+import { getDailyPhoto, getDailyScripture } from "@/lib/church-photos";
 import AnnouncementModal from "@/components/AnnouncementModal";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
@@ -111,19 +111,26 @@ function ServiceTimes() {
       {serviceDays.map((s) => (
         <div
           key={s.day}
-          className="flex flex-col gap-0.5 px-4 py-3"
+          className="flex items-center gap-3 px-4 py-2.5"
           style={{
-            background: "rgba(255,255,255,0.06)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "12px",
+            background: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "999px",
           }}
         >
+          <span
+            className="w-2 h-2 rounded-full flex-shrink-0"
+            style={{ background: "#42a7c0" }}
+          />
           <span className="font-body text-white font-semibold text-xs tracking-wide">
             {s.day}
           </span>
-          <span className="font-body text-white/50 text-xs">
+          <span
+            className="font-body text-xs"
+            style={{ color: "#3ca7c2" }}
+          >
             {s.time}
           </span>
         </div>
@@ -188,79 +195,57 @@ function MonthlyPrograms() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          Monthly Special Programs
+          Monthly Gatherings
         </motion.p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {programs.map((program, i) => (
             <motion.div
               key={program.id}
-              className="relative overflow-hidden p-6"
+              className="relative overflow-hidden"
               style={{
-                background: "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%)",
+                background: "rgba(0,0,0,0.45)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(139, 92, 246, 0.2)",
+                border: "1px solid rgba(255,255,255,0.12)",
                 borderRadius: "20px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
               }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
             >
-              {/* Badge */}
-              <div className="flex items-center justify-between mb-4">
-                <span
-                  className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
-                  style={{
-                    background: "rgba(139, 92, 246, 0.2)",
-                    color: "rgb(196, 181, 253)",
-                    border: "1px solid rgba(139, 92, 246, 0.3)",
-                    borderRadius: "8px",
-                  }}
-                >
-                  {program.day}
-                </span>
-                <span className="w-2.5 h-2.5 rounded-full shadow-lg bg-violet-400" />
-              </div>
+              {/* Gold left border stripe */}
+              <div
+                className="absolute left-0 top-0 bottom-0 w-1"
+                style={{ background: "#42a7c0", borderRadius: "20px 0 0 20px" }}
+              />
 
-              {/* Title & Time */}
-              <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight mb-2">
-                {program.title}
-              </h3>
-              <div className="flex items-center gap-2 mb-4">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-white/50"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <span className="font-body text-white/70 text-sm font-medium">
-                  {program.time}
-                </span>
-              </div>
+              <div className="pl-6 pr-6 py-6">
+                {/* Badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <span
+                    className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
+                    style={{
+                      background: "rgb(187, 187, 187)",
+                      color: "#141414",
+                      border: "1px solid rgba(212,175,55,0.3)",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    {program.day}
+                  </span>
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shadow-lg"
+                    style={{ background: "#42a7c0" }}
+                  />
+                </div>
 
-              {/* Description */}
-              <p className="font-body text-white/70 text-sm leading-relaxed mb-4">
-                {program.description}
-              </p>
-
-              {/* Notes */}
-              {program.notes && (
-                <div
-                  className="inline-flex items-start gap-2 px-3 py-2"
-                  style={{
-                    background: "rgba(255,255,255,0.08)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    borderRadius: "10px",
-                  }}
-                >
+                {/* Title & Time */}
+                <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight mb-2">
+                  {program.title}
+                </h3>
+                <div className="flex items-center gap-2 mb-4">
                   <svg
                     width="14"
                     height="14"
@@ -268,17 +253,50 @@ function MonthlyPrograms() {
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
-                    className="text-white/40 mt-0.5 flex-shrink-0"
+                    className="text-white/50"
                   >
                     <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="16" x2="12" y2="12" />
-                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                    <polyline points="12 6 12 12 16 14" />
                   </svg>
-                  <span className="font-body text-white/50 text-xs italic leading-relaxed">
-                    {program.notes}
+                  <span className="font-body text-white/70 text-sm font-medium">
+                    {program.time}
                   </span>
                 </div>
-              )}
+
+                {/* Description */}
+                <p className="font-body text-white/70 text-sm leading-relaxed mb-4">
+                  {program.description}
+                </p>
+
+                {/* Notes */}
+                {program.notes && (
+                  <div
+                    className="inline-flex items-start gap-2 px-3 py-2"
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.10)",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-white/40 mt-0.5 flex-shrink-0"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="16" x2="12" y2="12" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    <span className="font-body text-white/50 text-xs italic leading-relaxed">
+                      {program.notes}
+                    </span>
+                  </div>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -290,10 +308,10 @@ function MonthlyPrograms() {
 // ─── Quick Links & Daily Quotes ───────────────────────────────────────────────
 
 const quickLinks = [
-  { label: "Plan a visit", href: "/location" },
-  { label: "Watch sermons", href: "/sermons" },
-  { label: "Join a group", href: "/community" },
-  { label: "Give online", href: "/give" },
+  { label: "Visit Us", href: "/location" },
+  { label: "Messages", href: "/sermons" },
+  { label: "Life Groups", href: "/community" },
+  { label: "Give & Support", href: "/give" },
 ];
 
 const dailyQuotes = [
@@ -337,6 +355,7 @@ function getDailyQuote() {
 
 export default function Hero() {
   const bgUrl = getDailyPhoto(0);
+  const scripture = getDailyScripture(0);
   const dailyQuote = getDailyQuote();
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
   const [loadingSermons, setLoadingSermons] = useState(true);
@@ -363,29 +382,36 @@ export default function Hero() {
   return (
     <>
       {/* ── Hero section ─────────────────────────────── */}
-      <section className="relative w-full h-svh min-h-[600px]">
-        {/* Background */}
-        <motion.div
-          className="page-bg"
-          style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.8 }}
+      <section className="relative w-full h-svh min-h-[700px] overflow-hidden">
+        {/* Background image */}
+        <img
+          src={bgUrl}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{ zIndex: 0 }}
         />
-        <div className="fixed inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/15 z-10 pointer-events-none" />
-        <div className="fixed inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/70 to-transparent z-10 pointer-events-none" />
+        {/* Dark overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(120deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.70) 100%)", zIndex: 1 }}
+        />
 
-        {/* Content */}
-        <div className="public-content relative z-20 flex flex-col h-full px-6 py-6 sm:px-10 sm:py-8">
+        {/* Content — centered single column */}
+        <div
+          className="public-content relative h-full flex flex-col items-center justify-center gap-8 px-6 py-10 sm:px-10 sm:py-12 text-center"
+          style={{ zIndex: 2 }}
+        >
 
-          {/* ── Hero headline ── */}
-          <div className="flex-1 flex flex-col justify-center mt-6 sm:mt-0">
+          {/* ── Headline + CTAs ── */}
+          <div className="flex flex-col items-center w-full max-w-3xl">
+
             {/* Location pill */}
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="mb-5"
+              className="mb-6"
             >
               <span
                 className="font-body text-white/60 text-xs tracking-widest uppercase px-4 py-1.5 inline-flex items-center gap-2"
@@ -395,170 +421,181 @@ export default function Hero() {
                   WebkitBackdropFilter: "blur(12px)",
                   border: "1px solid rgba(255,255,255,0.18)",
                   borderRadius: "24px",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)",
                 }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Assemblies of God · Choba 2 · Port Harcourt
+                God's Own Favour Prophetic Ministry · Eleme
               </span>
             </motion.div>
 
-            {/* Headline */}
-            <motion.h1
-              className="font-heading text-white font-black leading-[0.9] tracking-tight"
-              style={{ fontSize: "clamp(3rem, 11vw, 7rem)" }}
-            >
-              <motion.span
-                className="block"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            {/* Headline with gold left border accent */}
+            <div className="flex gap-5 items-stretch mb-6 justify-center">
+              <motion.div
+                className="w-1 rounded-full flex-shrink-0"
+                style={{ background: "#42a7c0" }}
+                initial={{ scaleY: 0, opacity: 0 }}
+                animate={{ scaleY: 1, opacity: 1 }}
+                transition={{ delay: 0.55, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              />
+              <motion.h1
+                className="font-heading text-white font-black leading-[0.88] tracking-tight"
+                style={{ fontSize: "clamp(3rem, 9vw, 6.5rem)" }}
               >
-                Love God,
-              </motion.span>
-              <motion.span
-                className="block"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.75, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              >
-                love to serve.
-              </motion.span>
-            </motion.h1>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0, x: -40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  Love God,
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0, x: -40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.75, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  Serve People.
+                </motion.span>
+              </motion.h1>
+            </div>
 
-            {/* Welcome text */}
+            {/* Welcome + tagline */}
             <motion.p
-              className="mt-4 font-heading text-white/50 font-black text-lg sm:text-xl tracking-tight"
+              className="font-heading text-white/50 font-black text-lg sm:text-xl tracking-tight mb-3"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.88, duration: 0.7 }}
             >
-              You are welcome.
+              Every soul is welcome here.
             </motion.p>
 
-            {/* Tagline — glass pill */}
-            <motion.div
-              className="mt-6 self-start"
+            <motion.p
+              className="font-body text-white/60 text-sm sm:text-base leading-relaxed mb-8 max-w-md"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.95, duration: 0.7 }}
             >
-              <p
-                className="font-body text-white/75 text-sm sm:text-base leading-relaxed px-5 py-3"
+              A Spirit-filled family rooted in the Word, alive in worship, and committed to transforming lives — right here in Port Harcourt.
+            </motion.p>
+
+            {/* Scripture */}
+            <motion.div
+              className="mb-8 flex flex-col items-center gap-1.5 max-w-md"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0, duration: 0.7 }}
+            >
+              <p className="font-heading text-white font-black text-base sm:text-lg leading-snug italic drop-shadow-lg">
+                &ldquo;{scripture.text}&rdquo;
+              </p>
+              <span
+                className="font-body text-xs tracking-widest uppercase self-start px-3 py-1"
                 style={{
-                  background: "rgba(255,255,255,0.08)",
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: "14px",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)",
-                  maxWidth: "26rem",
+                  background: "#42a7c0",
+                  border: "1px solid rgba(231, 231, 228, 0.3)",
+                  borderRadius: "20px",
+                  color: "#0a0a0a", 
                 }}
               >
-                A Spirit-filled community rooted in faith, worship, and service — right here in Port Harcourt.
-              </p>
+                {scripture.verse}
+              </span>
             </motion.div>
 
-            {/* CTAs */}
+            {/* CTAs row */}
             <motion.div
-              className="mt-6 flex flex-wrap gap-3"
+              className="flex flex-wrap justify-center gap-3"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1, duration: 0.6 }}
             >
+              {/* Plan a visit — solid white */}
               <Link
                 href="/location"
                 className="font-body text-sm font-semibold text-black tracking-wide px-6 py-2.5 transition-all hover:opacity-90"
                 style={{
-                  background: "rgba(255,255,255,0.95)",
+                  background: "#ffffff",
                   borderRadius: "12px",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,1)",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
                 }}
               >
-                Plan a visit
+                Plan a Visit
               </Link>
+              {/* Watch Live — red gradient */}
               <Link
                 href="/live-service"
-                className="font-body text-sm font-semibold text-white tracking-wide px-6 py-2.5 flex items-center gap-2 transition-all"
+                className="font-body text-sm font-semibold text-white tracking-wide px-6 py-2.5 flex items-center gap-2 transition-all hover:opacity-90"
                 style={{
-                  background: "rgba(255,255,255,0.10)",
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                  border: "1px solid rgba(255,255,255,0.22)",
+                  background: "linear-gradient(135deg, #557a92 0%, #b91c1c 100%)",
                   borderRadius: "12px",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.10)",
+                  boxShadow: "0 4px 16px rgba(185,28,28,0.4)",
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                 Watch Live
               </Link>
+              {/* Give — ghost outline */}
               <Link
                 href="/give"
-                className="font-body text-sm font-semibold text-white/70 tracking-wide px-6 py-2.5 transition-all hover:text-white"
+                className="font-body text-sm font-semibold text-white/80 tracking-wide px-6 py-2.5 transition-all hover:text-white hover:border-white/40"
                 style={{
-                  background: "rgba(255,255,255,0.06)",
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.25)",
                   borderRadius: "12px",
                 }}
               >
                 Give
               </Link>
             </motion.div>
-          </div>
+          </div>{/* end headline+CTAs */}
 
-          {/* ── Bottom: sermons + quote ── */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 pb-2">
-
-            {/* Latest sermons */}
-            <motion.div
-              className="w-full sm:max-w-sm"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2, duration: 0.7 }}
+          {/* ── Sermons + quote row ── */}
+          <div className="flex flex-col sm:flex-row gap-5 w-full max-w-3xl justify-center">
+            <div
+              className="flex flex-col overflow-hidden"
+              style={{
+                background: "rgba(0,0,0,0.45)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "20px",
+                borderTop: "2px solid #42a7c0",
+              }}
             >
-              <div
-                className="px-4 py-4"
-                style={{
-                  background: "rgba(0,0,0,0.35)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  borderRadius: "16px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-                }}
-              >
-                <div className="flex items-center justify-between mb-3">
+              {/* Sermons section */}
+              <div className="px-5 pt-5 pb-4">
+                <div className="flex items-center justify-between mb-4">
                   <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
-                    Latest sermons
+                    Recent Messages
                   </span>
                   <Link
                     href="/sermons"
-                    className="font-body text-white/50 text-[10px] tracking-widest uppercase hover:text-white transition-colors"
+                    className="font-body text-[10px] tracking-widest uppercase transition-colors hover:text-white"
+                    style={{ color: "#42a7c0" }}
                   >
                     View all →
                   </Link>
                 </div>
+
                 {loadingSermons ? (
                   <div className="py-8 text-center">
                     <span className="font-body text-white/40 text-xs">Loading sermons...</span>
                   </div>
                 ) : recentSermons.length === 0 ? (
                   <div className="py-8 text-center">
-                    <span className="font-body text-white/40 text-xs">No sermons available</span>
+                    <span className="font-body text-white/40 text-xs">No messages yet</span>
                   </div>
                 ) : (
                   recentSermons.map((sermon, i) => (
                     <motion.div
                       key={sermon.slug}
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 1.3 + i * 0.1, duration: 0.5 }}
+                      transition={{ delay: 1.1 + i * 0.1, duration: 0.5 }}
                     >
                       <Link
                         href={`/sermons/${sermon.slug || sermon._id}`}
-                        className="group flex items-center justify-between gap-4 py-2.5 border-t border-white/10 hover:border-white/25 transition-colors"
+                        className="group flex items-center justify-between gap-4 py-3 border-t border-white/10 hover:border-white/20 transition-colors"
                       >
                         <div className="flex flex-col gap-0.5 min-w-0">
                           <span className="font-body text-white/85 font-semibold text-xs truncate group-hover:text-white transition-colors">
@@ -568,7 +605,10 @@ export default function Hero() {
                             {sermon.scripture} · {sermon.pastor}
                           </span>
                         </div>
-                        <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm">
+                        <span
+                          className="group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm"
+                          style={{ color: "rgba(18, 64, 124, 0.5)" }}
+                        >
                           →
                         </span>
                       </Link>
@@ -576,28 +616,14 @@ export default function Hero() {
                   ))
                 )}
               </div>
-            </motion.div>
 
-            {/* Daily quote */}
-            <motion.div
-              className="hidden sm:flex flex-col items-end gap-2 max-w-xs text-right"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.35, duration: 0.7 }}
-            >
-              <div
-                className="px-5 py-4 flex flex-col items-end gap-2"
-                style={{
-                  background: "rgba(255,255,255,0.07)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: "16px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)",
-                }}
-              >
-                <span className="font-body text-white/35 text-[9px] tracking-widest uppercase">
-                  Word for today
+              {/* Divider */}
+              <div className="mx-5 h-px" style={{ background: "rgba(212,175,55,0.2)" }} />
+
+              {/* Daily quote section */}
+              <div className="px-5 py-5 flex flex-col gap-2">
+                <span className="font-body text-[9px] tracking-widest uppercase" style={{ color: "#b7c0c2" }}>
+                  Today&apos;s Word
                 </span>
                 <p className="font-heading text-white/80 font-black text-sm leading-snug italic">
                   &ldquo;{dailyQuote.quote}&rdquo;
@@ -606,14 +632,14 @@ export default function Hero() {
                   — {dailyQuote.ref}
                 </span>
               </div>
-            </motion.div>
-          </div>
-        </div>
+            </div>
+          </div>{/* end sermons+quote row */}
+        </div>{/* end content */}
       </section>
 
       {/* ── Quick links strip ─────────────────────────── */}
       <section className="relative z-10 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10">
+        <div className="max-w-4xl mx-auto px-6 py-8 sm:px-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {quickLinks.map((item, i) => (
               <motion.div
@@ -624,15 +650,25 @@ export default function Hero() {
               >
                 <Link
                   href={item.href}
-                  className="group flex items-center justify-center py-4 px-4 text-center transition-all duration-300"
+                  className="group flex items-center gap-3 py-4 px-4 transition-all duration-300"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    backdropFilter: "blur(14px)",
-                    WebkitBackdropFilter: "blur(14px)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "14px",
+                    background: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "20px",
                   }}
                 >
+                  <span
+                    className="font-body text-[10px] font-bold flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full"
+                    style={{
+                      background: "rgba(250, 250, 250, 0.7)",
+                      color: "#42a7c0",
+                      border: "1px solid rgba(212,175,55,0.25)",
+                    }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span className="font-body text-white/65 text-xs tracking-widest uppercase group-hover:text-white transition-colors">
                     {item.label}
                   </span>
@@ -644,123 +680,135 @@ export default function Hero() {
       </section>
 
       {/* ── Mission section ───────────────────────────── */}
-      <section className="relative z-10 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-16 sm:px-10 sm:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+      <section className="relative z-10 border-t border-white/10 overflow-hidden">
+        {/* Logo watermark */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+          aria-hidden="true"
+          style={{ zIndex: 0 }}
+        >
+          <Image
+            src="/gofpm.png"
+            alt=""
+            width={600}
+            height={600}
+            className="object-contain"
+            style={{ opacity: 0.04, userSelect: "none" }}
+          />
+        </div>
 
-            {/* Left */}
-            <div>
-              <motion.p
-                className="font-body text-white/45 text-xs tracking-widest uppercase mb-4"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                Our Mission
-              </motion.p>
-              <motion.h2
-                className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight tracking-tight max-w-md"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1, duration: 0.7 }}
-              >
-                Why we exist.
-              </motion.h2>
+        <div className="relative max-w-4xl mx-auto px-6 py-16 sm:px-10 sm:py-20 flex flex-col items-center text-center" style={{ zIndex: 1 }}>
 
-              {/* Stats */}
-              <motion.div
-                className="mt-8 grid grid-cols-2 gap-px"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2, duration: 0.7 }}
+          {/* Section label */}
+          <motion.p
+            className="font-body text-white/45 text-xs tracking-widest uppercase mb-4"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Our Purpose
+          </motion.p>
+          <motion.h2
+            className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight tracking-tight mb-12"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.7 }}
+          >
+            Built on the Word.<br />Moved by the Spirit.
+          </motion.h2>
+
+          {/* Stats — horizontal row of 4 */}
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-0 mb-12 w-full"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.7 }}
+          >
+            {[
+              { value: "18+", label: "Years serving" },
+              { value: "1,200+", label: "Members" },
+              { value: "40+", label: "Nations" },
+              { value: "\u221e", label: "Impact" },
+            ].map((s, i) => (
+              <div
+                key={s.label}
+                className="flex flex-col gap-1 px-6 py-5"
                 style={{
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  borderRadius: "14px",
-                  overflow: "hidden",
+                  borderLeft: i === 0 ? "none" : "1px solid rgba(255,255,255,0.08)",
                 }}
               >
-                {[
-                  { value: "18+", label: "Years serving" },
-                  { value: "1,200+", label: "Members" },
-                  { value: "40+", label: "Nations" },
-                  { value: "∞", label: "Impact" },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    className="flex flex-col gap-0.5 px-5 py-4"
-                    style={{ background: "rgba(0,0,0,0.2)" }}
-                  >
-                    <span className="font-heading text-white font-black text-2xl leading-none">
-                      {s.value}
-                    </span>
-                    <span className="font-body text-white/40 text-[10px] tracking-widest uppercase mt-0.5">
-                      {s.label}
-                    </span>
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* Right */}
-            <motion.div
-              className="flex flex-col gap-5"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.15, duration: 0.7 }}
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
-                border: "1px solid rgba(255,255,255,0.10)",
-                borderRadius: "20px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-                padding: "2rem",
-              }}
-            >
-              <p className="font-body text-white/72 text-sm sm:text-base leading-relaxed">
-                Our mission is not a programme — it&apos;s a calling. For over
-                eighteen years, we have pursued one thing: to know God deeply,
-                make Him known boldly, and serve humanity selflessly.
-              </p>
-              <p className="font-body text-white/52 text-sm sm:text-base leading-relaxed">
-                Worship, community, and mission are the heartbeat of this house.
-                We exist to help people encounter Christ, grow in faith, and
-                live out the gospel in Port Harcourt and beyond.
-              </p>
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Link
-                  href="/mission"
-                  className="font-body text-white/80 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors"
-                >
-                  Read the full mission →
-                </Link>
-                <Link
-                  href="/community"
-                  className="font-body text-white/50 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors"
-                >
-                  Join a life group →
-                </Link>
+                {/* Gold divider line above each stat */}
+                <div
+                  className="w-8 h-0.5 mb-3"
+                  style={{ background: "#42a7c0" }}
+                />
+                <span className="font-heading text-white font-black text-3xl sm:text-4xl leading-none">
+                  {s.value}
+                </span>
+                <span className="font-body text-white/40 text-[10px] tracking-widest uppercase mt-1">
+                  {s.label}
+                </span>
               </div>
-            </motion.div>
-          </div>
+            ))}
+          </motion.div>
+
+          {/* Mission text card */}
+          <motion.div
+            className="flex flex-col gap-5 w-full text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15, duration: 0.7 }}
+            style={{
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "20px",
+              padding: "2rem",
+            }}
+          >
+            <p className="font-body text-white/72 text-sm sm:text-base leading-relaxed">
+              We are not just a congregation — we are a family on mission. For over
+              eighteen years, AG Church Choba 2 has been a place where broken people
+              find wholeness, seekers find truth, and believers grow deeper in Christ.
+            </p>
+            <p className="font-body text-white/52 text-sm sm:text-base leading-relaxed">
+              Rooted in the Assemblies of God fellowship, we are passionate about
+              Spirit-filled worship, sound biblical teaching, and reaching every
+              soul in Port Harcourt and beyond with the love of Jesus.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link
+                href="/mission"
+                className="font-body text-white/80 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors"
+              >
+                Our full story →
+              </Link>
+              <Link
+                href="/community"
+                className="font-body text-white/50 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors"
+              >
+                Find a life group →
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ── Service times strip ───────────────────────── */}
       <section className="relative z-10 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-10 sm:px-10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="max-w-4xl mx-auto px-6 py-10 sm:px-10">
+          <div className="flex flex-col items-center gap-6 text-center">
             <div>
               <p className="font-body text-white/40 text-xs tracking-widest uppercase mb-1">
-                Join us in person
+                Gather with us
               </p>
               <p className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
-                You are always welcome.
+                Come as you are. Leave transformed.
               </p>
             </div>
             <ServiceTimes />
@@ -771,55 +819,7 @@ export default function Hero() {
       {/* ── Monthly Programs ───────────────────────────── */}
       <MonthlyPrograms />
 
-      {/* ── Footer ───────────────────────────────────── */}
-      <footer className="relative z-10 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            {/* Brand */}
-            <div className="flex items-center gap-4">
-              <Image
-                src="/logo.png"
-                alt="Assemblies Of God Church logo"
-                width={44}
-                height={44}
-              />
-              <div className="flex flex-col gap-0.5">
-                <span className="font-body text-white text-sm tracking-widest uppercase">
-                  Assemblies Of God Church
-                </span>
-                <span className="font-body text-white/35 text-xs">
-                  Choba 2 · Port Harcourt, Rivers State
-                </span>
-              </div>
-            </div>
-
-            {/* Links */}
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {["Community", "Events", "Sermons", "Projects", "Give", "Contact"].map((label) => (
-                <Link
-                  key={label}
-                  href={`/${label.toLowerCase()}`}
-                  className="font-body text-white/40 text-xs tracking-widests uppercase hover:text-white transition-colors"
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6 pt-5 border-t border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <span className="font-body text-white/25 text-xs">
-              © {new Date().getFullYear()} Assemblies Of God Church, Choba 2. All rights reserved.
-            </span>
-            <Link
-              href="/admin-login"
-              className="font-body text-white/20 text-xs hover:text-white/50 transition-colors"
-            >
-              Admin
-            </Link>
-          </div>
-        </div>
-      </footer>
+      
 
       {/* ── Announcement Modal ────────────────────────── */}
       <AnnouncementModal />

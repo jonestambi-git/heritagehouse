@@ -110,7 +110,7 @@ function MonthlyProgramsSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.75, duration: 0.7 }}
     >
-      <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
+      <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
         Monthly Special Programs
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -119,14 +119,10 @@ function MonthlyProgramsSection() {
             key={program.id}
             className="relative overflow-hidden p-6"
             style={{
-              background: program.type === "first"
-                ? "linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%)"
-                : "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%)",
+              background: "linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(0,0,0,0.5) 100%)",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
-              border: program.type === "first"
-                ? "1px solid rgba(251, 191, 36, 0.2)"
-                : "1px solid rgba(139, 92, 246, 0.2)",
+              border: "1px solid rgba(212,175,55,0.25)",
               borderRadius: "20px",
               boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
             }}
@@ -139,15 +135,9 @@ function MonthlyProgramsSection() {
               <span
                 className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
                 style={{
-                  background: program.type === "first"
-                    ? "rgba(251, 191, 36, 0.2)"
-                    : "rgba(139, 92, 246, 0.2)",
-                  color: program.type === "first"
-                    ? "rgb(251, 191, 36)"
-                    : "rgb(167, 139, 250)",
-                  border: program.type === "first"
-                    ? "1px solid rgba(251, 191, 36, 0.3)"
-                    : "1px solid rgba(139, 92, 246, 0.3)",
+                  background: "rgba(212,175,55,0.15)",
+                  color: "#D4AF37",
+                  border: "1px solid rgba(212,175,55,0.3)",
                   borderRadius: "8px",
                 }}
               >
@@ -155,7 +145,7 @@ function MonthlyProgramsSection() {
               </span>
               <span
                 className={`w-2.5 h-2.5 rounded-full shadow-lg ${
-                  program.type === "first" ? "bg-amber-400" : "bg-violet-400"
+                  "bg-[#D4AF37]"
                 }`}
               />
             </div>
@@ -192,7 +182,7 @@ function MonthlyProgramsSection() {
               <div
                 className="inline-flex items-start gap-2 px-3 py-2"
                 style={{
-                  background: "rgba(255,255,255,0.08)",
+                  background: "rgba(0,0,0,0.45)",
                   border: "1px solid rgba(255,255,255,0.12)",
                   borderRadius: "10px",
                 }}
@@ -267,23 +257,18 @@ export default function EventsPage() {
   };
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -309,7 +294,7 @@ export default function EventsPage() {
 
         {/* Category filters */}
         <motion.div
-          className="mt-8 sm:mt-10 flex flex-wrap gap-2"
+          className="mt-8 sm:mt-10 flex flex-wrap gap-2 justify-center"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -369,7 +354,7 @@ export default function EventsPage() {
         {/* Events list */}
         {!isLoading && !error && (
           <motion.div
-            className="mt-8 flex flex-col gap-0 flex-1"
+            className="mt-8 flex flex-col gap-0 flex-1 w-full max-w-4xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.7 }}
@@ -420,7 +405,7 @@ export default function EventsPage() {
                             {event.title}
                           </span>
                           {event.featured && (
-                            <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-white/15 text-white/80 border border-white/20">
+                            <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5" style={{ background: "rgba(212,175,55,0.15)", color: "#D4AF37", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "4px" }}>
                               Featured
                             </span>
                           )}

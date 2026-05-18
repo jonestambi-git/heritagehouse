@@ -78,29 +78,18 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div
-        className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
-      <div
-        className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -123,7 +112,7 @@ export default function ProjectsPage() {
 
         {/* Intro + Stats */}
         <motion.div
-          className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16"
+          className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 w-full max-w-5xl"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.7 }}
@@ -137,7 +126,7 @@ export default function ProjectsPage() {
           <div
             className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px"
             style={{
-              background: "rgba(255,255,255,0.08)",
+              background: "rgba(0,0,0,0.45)",
               borderRadius: "16px",
               border: "1px solid rgba(255,255,255,0.12)",
               boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
@@ -170,13 +159,13 @@ export default function ProjectsPage() {
 
         {/* ── Projects grid ─────────────────────────────── */}
         <motion.div
-          className="mt-12 sm:mt-16"
+          className="mt-12 sm:mt-16 w-full max-w-4xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.05, duration: 0.7 }}
         >
           <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
-            <h2 className="font-body text-white/45 text-xs tracking-widest uppercase">
+            <h2 className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
               Projects
             </h2>
 
@@ -216,7 +205,7 @@ export default function ProjectsPage() {
                     href={`/project/${project.slug}`}
                     className="group flex flex-col transition-all duration-300 overflow-hidden"
                     style={{
-                      background: "rgba(255,255,255,0.07)",
+                      background: "rgba(0,0,0,0.45)",
                       backdropFilter: "blur(16px)",
                       WebkitBackdropFilter: "blur(16px)",
                       border: "1px solid rgba(255,255,255,0.12)",
@@ -313,7 +302,7 @@ export default function ProjectsPage() {
         <motion.div
           className="mt-16 sm:mt-20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
           style={{
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(0,0,0,0.45)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             border: "1px solid rgba(255,255,255,0.10)",
@@ -326,7 +315,7 @@ export default function ProjectsPage() {
           transition={{ delay: 1.3, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
               Get involved
             </p>
             <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">

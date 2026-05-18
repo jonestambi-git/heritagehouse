@@ -274,24 +274,19 @@ export default function LocationPage() {
   }, [settings]);
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-linear-to-r from-black/80 via-black/50 to-black/15 z-10 pointer-events-none" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10 pointer-events-none" />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
 
         {/* ── Heading ── */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -313,7 +308,7 @@ export default function LocationPage() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-md"
+          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-md text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -324,12 +319,12 @@ export default function LocationPage() {
 
         {/* ── Service Times ── */}
         <motion.div
-          className="mt-10 sm:mt-14"
+          className="mt-10 sm:mt-14 w-full max-w-4xl"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.7 }}
         >
-          <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
+          <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
             Weekly Service times
           </p>
           <div className={`grid grid-cols-1 gap-4 ${serviceTimes.length === 1 ? 'sm:grid-cols-1 max-w-md' : serviceTimes.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
@@ -372,7 +367,7 @@ export default function LocationPage() {
                 <div
                   className="inline-flex items-center gap-1.5 px-3 py-1.5"
                   style={{
-                    background: "rgba(255,255,255,0.10)",
+                    background: "rgba(0,0,0,0.45)",
                     border: "1px solid rgba(255,255,255,0.15)",
                     borderRadius: "8px",
                   }}
@@ -390,7 +385,7 @@ export default function LocationPage() {
 
         {/* ── Contact Details + Map ── */}
         <motion.div
-          className="mt-12 sm:mt-16 grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-8"
+          className="mt-12 sm:mt-16 grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-8 w-full max-w-5xl"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.05, duration: 0.7 }}
@@ -408,7 +403,7 @@ export default function LocationPage() {
             }}
           >
             <div className="px-6 py-4 border-b border-white/10">
-              <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+              <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                 Contact & location
               </p>
             </div>
@@ -424,7 +419,7 @@ export default function LocationPage() {
                   <div
                     className="w-11 h-11 flex items-center justify-center flex-shrink-0 text-white/50 group-hover:text-white/80 transition-colors"
                     style={{
-                      background: "rgba(255,255,255,0.08)",
+                      background: "rgba(0,0,0,0.45)",
                       border: "1px solid rgba(255,255,255,0.12)",
                       borderRadius: "12px",
                     }}
@@ -469,7 +464,7 @@ export default function LocationPage() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full font-body font-semibold text-sm text-white py-3 transition-all duration-300"
                 style={{
-                  background: "rgba(255,255,255,0.12)",
+                  background: "rgba(0,0,0,0.45)",
                   border: "1px solid rgba(255,255,255,0.20)",
                   borderRadius: "12px",
                 }}
@@ -650,7 +645,7 @@ export default function LocationPage() {
                 <div
                   className="w-8 h-8 flex items-center justify-center"
                   style={{
-                    background: "rgba(255,255,255,0.10)",
+                    background: "rgba(0,0,0,0.45)",
                     border: "1px solid rgba(255,255,255,0.15)",
                     borderRadius: "8px",
                   }}
@@ -725,7 +720,7 @@ export default function LocationPage() {
         >
           {/* Left label */}
           <div className="flex flex-col gap-3">
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
               Plan your visit
             </p>
             <p className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight">
@@ -755,9 +750,7 @@ export default function LocationPage() {
                   key={faq.q}
                   className="overflow-hidden"
                   style={{
-                    background: isOpen
-                      ? "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)"
-                      : "rgba(255,255,255,0.04)",
+                    background: isOpen ? "rgba(212,175,55,0.08)" : "rgba(0,0,0,0.4)",
                     backdropFilter: "blur(14px)",
                     WebkitBackdropFilter: "blur(14px)",
                     border: `1px solid ${isOpen ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.08)"}`,
@@ -815,10 +808,10 @@ export default function LocationPage() {
         <motion.div
           className="mt-16 sm:mt-20 relative overflow-hidden flex flex-col sm:flex-row sm:items-end justify-between gap-8 p-8 sm:p-10"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+            background: "rgba(0,0,0,0.5)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.18)",
+            border: "1px solid rgba(212,175,55,0.25)",
             borderRadius: "24px",
             boxShadow: "0 12px 48px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
           }}

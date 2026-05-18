@@ -215,23 +215,18 @@ export default function GivePage() {
   const selectedOption = givingOptions.find((o) => o.type === givingType)!;
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -253,7 +248,7 @@ export default function GivePage() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm"
+          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -265,7 +260,7 @@ export default function GivePage() {
         {/* Enhanced Step indicator */}
         {step !== "done" && (
           <motion.div
-            className="mt-8 flex items-center gap-2 sm:gap-3"
+            className="mt-8 flex items-center gap-2 sm:gap-3 w-full max-w-4xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.95, duration: 0.5 }}
@@ -324,7 +319,7 @@ export default function GivePage() {
 
         {/* ── Main Grid ─────────────────────────────────── */}
         <motion.div
-          className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 lg:gap-14 flex-1"
+          className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 lg:gap-14 flex-1 w-full max-w-5xl"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0, duration: 0.7 }}
@@ -372,7 +367,7 @@ export default function GivePage() {
                       transition={{ duration: 0.3 }}
                       className="p-4 border-l-2 border-white/30"
                       style={{
-                        background: "rgba(255,255,255,0.04)",
+                        background: "rgba(0,0,0,0.35)",
                         borderRadius: "0 8px 8px 0",
                       }}
                     >
@@ -387,7 +382,7 @@ export default function GivePage() {
 
                   {/* Frequency */}
                   {/* <div className="flex flex-col gap-2">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Frequency
                     </label>
                     <div className="inline-flex items-center gap-2 border border-white/25 px-3 py-1.5 text-white/80 text-xs tracking-widest uppercase w-fit">
@@ -506,7 +501,7 @@ export default function GivePage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1">
-                      <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                      <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                         Full name
                       </label>
                       <Input
@@ -517,7 +512,7 @@ export default function GivePage() {
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                      <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                         Email
                       </label>
                       <Input
@@ -531,7 +526,7 @@ export default function GivePage() {
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Phone{" "}
                       <span className="normal-case opacity-50">(optional)</span>
                     </label>
@@ -545,7 +540,7 @@ export default function GivePage() {
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Note{" "}
                       <span className="normal-case opacity-50">(optional)</span>
                     </label>
@@ -560,7 +555,7 @@ export default function GivePage() {
 
                   {/* Payment method — disabled until Paystack/Flutterwave integration is live
                   <div className="flex flex-col gap-2 mt-2">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Payment method
                     </label>
                     <div className="flex gap-2">
@@ -618,7 +613,7 @@ export default function GivePage() {
 
                   {/* Summary card */}
                   <div className="divide-y divide-white/10" style={{
-                    background: "rgba(255,255,255,0.07)",
+                    background: "rgba(0,0,0,0.45)",
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
                     border: "1px solid rgba(255,255,255,0.12)",
@@ -762,10 +757,10 @@ export default function GivePage() {
               <motion.div
                 className="p-6"
                 style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+                  background: "rgba(0,0,0,0.5)",
                   backdropFilter: "blur(20px)",
                   WebkitBackdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255,255,255,0.18)",
+                  border: "1px solid rgba(212,175,55,0.25)",
                   borderRadius: "20px",
                   boxShadow: "0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
                 }}

@@ -33,24 +33,9 @@ export default function MediaClient({
   return (
     <section className="relative w-full min-h-svh">
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div
-        className="fixed inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/15 pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
-      <div
-        className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
 
         {/* Heading */}
         <motion.h1

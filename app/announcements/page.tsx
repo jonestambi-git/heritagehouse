@@ -32,23 +32,18 @@ export default function AnnouncementsPage() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -83,7 +78,7 @@ export default function AnnouncementsPage() {
         {/* Announcements List */}
         {!loading && (
           <motion.div
-            className="mt-8 sm:mt-12 flex flex-col gap-4 max-w-3xl"
+            className="mt-8 sm:mt-12 flex flex-col gap-4 w-full max-w-3xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85, duration: 0.7 }}
@@ -92,7 +87,7 @@ export default function AnnouncementsPage() {
               <div
                 className="flex flex-col items-center justify-center py-20 text-center"
                 style={{
-                  background: "rgba(255,255,255,0.06)",
+                  background: "rgba(0,0,0,0.45)",
                   backdropFilter: "blur(16px)",
                   WebkitBackdropFilter: "blur(16px)",
                   border: "1px solid rgba(255,255,255,0.10)",
@@ -110,7 +105,7 @@ export default function AnnouncementsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
                   style={{
-                    background: "rgba(255,255,255,0.06)",
+                    background: "rgba(0,0,0,0.45)",
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
                     border: "1px solid rgba(255,255,255,0.10)",
@@ -131,7 +126,7 @@ export default function AnnouncementsPage() {
                         <div
                           className="flex items-center gap-1.5 px-3 py-1.5"
                           style={{
-                            background: "rgba(255,255,255,0.06)",
+                            background: "rgba(0,0,0,0.45)",
                             border: "1px solid rgba(255,255,255,0.10)",
                             borderRadius: "8px",
                           }}
@@ -147,7 +142,7 @@ export default function AnnouncementsPage() {
                         <div
                           className="flex items-center gap-1.5 px-3 py-1.5"
                           style={{
-                            background: "rgba(255,255,255,0.06)",
+                            background: "rgba(0,0,0,0.45)",
                             border: "1px solid rgba(255,255,255,0.10)",
                             borderRadius: "8px",
                           }}

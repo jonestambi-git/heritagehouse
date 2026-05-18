@@ -39,7 +39,7 @@ const tabs: { id: Tab; label: string }[] = [
 // ─── Glass styles ─────────────────────────────────────────────────────────────
 
 const glass: React.CSSProperties = {
-  background: "rgba(255,255,255,0.07)",
+  background: "rgba(0,0,0,0.45)",
   backdropFilter: "blur(16px)",
   WebkitBackdropFilter: "blur(16px)",
   border: "1px solid rgba(255,255,255,0.12)",
@@ -124,24 +124,19 @@ export default function SermonsPage() {
   }, [activeTab]);
 
   return (
-    <section className="relative w-full min-h-svh">
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10 pointer-events-none" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none" />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
 
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -163,7 +158,7 @@ export default function SermonsPage() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm"
+          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -173,7 +168,7 @@ export default function SermonsPage() {
 
         {/* ── Tab switcher ── */}
         <motion.div
-          className="mt-8 flex flex-wrap gap-2"
+          className="mt-8 flex flex-wrap gap-2 justify-center"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.95, duration: 0.6 }}
@@ -186,16 +181,15 @@ export default function SermonsPage() {
               style={
                 activeTab === tab.id
                   ? {
-                      background: "rgba(255,255,255,0.15)",
+                      background: "rgba(212,175,55,0.15)",
                       backdropFilter: "blur(12px)",
                       WebkitBackdropFilter: "blur(12px)",
-                      border: "1px solid rgba(255,255,255,0.30)",
+                      border: "1px solid rgba(212,175,55,0.4)",
                       borderRadius: "10px",
-                      color: "rgba(255,255,255,1)",
-                      boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+                      color: "#D4AF37",
                     }
                   : {
-                      background: "rgba(255,255,255,0.05)",
+                      background: "rgba(0,0,0,0.3)",
                       border: "1px solid rgba(255,255,255,0.10)",
                       borderRadius: "10px",
                       color: "rgba(255,255,255,0.45)",
@@ -214,7 +208,7 @@ export default function SermonsPage() {
           {activeTab === "word" && (
             <motion.div
               key="word"
-              className="mt-10 flex flex-col"
+              className="mt-10 flex flex-col w-full max-w-4xl"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -352,7 +346,7 @@ export default function SermonsPage() {
                     <motion.div
                       className="flex items-center justify-between mt-10 px-5 py-4"
                       style={{
-                        background: "rgba(255,255,255,0.06)",
+                        background: "rgba(0,0,0,0.45)",
                         backdropFilter: "blur(14px)",
                         WebkitBackdropFilter: "blur(14px)",
                         border: "1px solid rgba(255,255,255,0.10)",

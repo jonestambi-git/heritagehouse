@@ -75,23 +75,18 @@ export default function ContactPage() {
   }
 
   return (
-    <section className="relative w-full min-h-screen">
+    <section className="relative w-full min-h-screen overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
       {/* Background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
-      <div className="public-content relative z-10 flex flex-col px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span
@@ -114,7 +109,7 @@ export default function ContactPage() {
 
         {/* Body */}
         <motion.div
-          className="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 flex-1"
+          className="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 flex-1 w-full max-w-5xl"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
@@ -167,7 +162,7 @@ export default function ContactPage() {
 
           {/* Right — form */}
           <div className="p-6 sm:p-8" style={{
-            background: "rgba(255,255,255,0.08)",
+            background: "rgba(0,0,0,0.45)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             border: "1px solid rgba(255,255,255,0.12)",
@@ -214,7 +209,7 @@ export default function ContactPage() {
                 {/* Name + Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Name
                     </label>
                     <Input
@@ -227,7 +222,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Email
                     </label>
                     <Input
@@ -245,7 +240,7 @@ export default function ContactPage() {
                 {/* Phone + Subject */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Phone{" "}
                       <span className="normal-case opacity-50">(optional)</span>
                     </label>
@@ -259,7 +254,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                       Subject
                     </label>
                     <Select
@@ -289,7 +284,7 @@ export default function ContactPage() {
 
                 {/* Message */}
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                  <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
                     Message
                   </label>
                   <Textarea

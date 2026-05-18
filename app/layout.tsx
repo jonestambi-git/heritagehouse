@@ -3,6 +3,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/lib/providers";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ag2choba.org';
 
@@ -91,16 +92,22 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", "font-sans")}
       style={
         {
-          "--font-sans": 'Georgia, "Times New Roman", serif',
-          "--font-body": 'Inter, "Segoe UI", Arial, sans-serif',
+          "--font-sans": '"Poppins", sans-serif',
+          "--font-body": '"Inter", "Segoe UI", Arial, sans-serif',
         } as React.CSSProperties
       }
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>
           <div className="site-wrapper flex flex-col flex-1">
             <Navbar />
             {children}
+            <Footer />
           </div>
         </Providers>
       </body>

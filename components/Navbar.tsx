@@ -76,18 +76,18 @@ export default function Navbar() {
             {/* Brand */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <Image
-                src="/logo.png"
-                alt="Assemblies Of God Church logo"
+                src="/gofpm.png"
+                alt="Gofpm logo"
                 width={36}
                 height={36}
                 priority
               />
               <div className="flex flex-col gap-0">
                 <span className="font-body text-white/70 text-[11px] tracking-widest uppercase leading-tight">
-                  Assemblies Of God Church
+                  GOFPM
                 </span>
-                <span className="font-body text-white/40 text-[9px] tracking-widest uppercase leading-tight">
-                  Choba 2
+                <span className="font-body text-[9px] tracking-widest uppercase leading-tight" style={{ color: "#42a7c0" }}>
+                  Eleme - Rivers State
                 </span>
               </div>
             </Link>

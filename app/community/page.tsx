@@ -66,20 +66,15 @@ export default function CommunityPage() {
   const filtered = activeTag === "ALL" ? groups : groups.filter((g) => g.tag === activeTag);
 
   return (
-    <section className="relative w-full min-h-svh">
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
+    <section className="relative w-full min-h-svh overflow-hidden">
+      {/* Logo watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
+        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+      </div>
 
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
           <motion.span className="block" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }}>
@@ -91,7 +86,7 @@ export default function CommunityPage() {
         </motion.h1>
 
         <motion.p
-          className="mt-8 sm:mt-12 font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm"
+          className="mt-8 sm:mt-12 font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm text-center"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.7 }}
@@ -100,14 +95,14 @@ export default function CommunityPage() {
         </motion.p>
 
         <motion.div
-          className="mt-12 sm:mt-16"
+          className="mt-12 sm:mt-16 w-full max-w-4xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.05, duration: 0.7 }}
         >
           <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
             <div>
-              <h2 className="font-body text-white/50 text-xs tracking-widest uppercase mb-1">Life groups</h2>
+              <h2 className="font-body text-xs tracking-widest uppercase mb-1" style={{ color:"#42a7c0" }}>Life groups</h2>
               {!loading && (
                 <p className="font-body text-white/40 text-xs">
                   {filtered.length} {filtered.length === 1 ? "group" : "groups"} available
@@ -172,12 +167,10 @@ export default function CommunityPage() {
                       transition={{ delay: i * 0.05, duration: 0.3 }}
                       className="relative overflow-hidden"
                       style={{
-                        background: isOpen
-                          ? "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)"
-                          : "rgba(255,255,255,0.04)",
+                        background: isOpen ? "rgba(212,175,55,0.08)" : "rgba(0,0,0,0.4)",
                         backdropFilter: "blur(16px)",
                         WebkitBackdropFilter: "blur(16px)",
-                        border: `1px solid ${isOpen ? "rgba(255,255,255,0.20)" : "rgba(255,255,255,0.10)"}`,
+                        border: `1px solid ${isOpen ? "rgba(212,175,55,0.3)" : "rgba(255,255,255,0.10)"}`,
                         borderRadius: "16px",
                       }}
                       whileHover={{ scale: 1.01 }}
@@ -241,12 +234,12 @@ export default function CommunityPage() {
         </motion.div>
 
         <motion.div
-          className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-8 p-8 sm:p-10"
+          className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-8 p-8 sm:p-10 w-full max-w-4xl"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+            background: "rgba(0,0,0,0.5)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.18)",
+            border: "1px solid #42a7c0",
             borderRadius: "24px",
           }}
           initial={{ opacity: 0, y: 16 }}
