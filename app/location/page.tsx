@@ -535,8 +535,8 @@ export default function LocationPage() {
             <motion.div
               className="flex items-center justify-between px-6 py-4 absolute top-0 left-0 right-0 z-10"
               style={{
-                background: "linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
                 ...glass.light,
+                background: "linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
                 borderBottom: `1px solid ${colors.border.light}`,
                 borderRadius: "24px 24px 0 0",
               }}
@@ -630,8 +630,8 @@ export default function LocationPage() {
             <motion.div
               className="flex items-center justify-between px-6 py-3 absolute bottom-0 left-0 right-0 z-10"
               style={{
-                background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
                 ...glass.light,
+                background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
                 borderTop: `1px solid ${colors.border.light}`,
                 borderRadius: "0 0 24px 24px",
               }}
@@ -686,8 +686,8 @@ export default function LocationPage() {
             <motion.div
               className="absolute top-20 right-6 z-10 px-4 py-2"
               style={{
-                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.15) 100%)",
                 ...glass.light,
+                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.15) 100%)",
                 border: "1px solid rgba(16, 185, 129, 0.3)",
                 borderRadius: "12px",
                 boxShadow: "0 4px 16px rgba(16, 185, 129, 0.2)",
@@ -750,8 +750,8 @@ export default function LocationPage() {
                   key={faq.q}
                   className="overflow-hidden"
                   style={{
-                    background: isOpen ? colors.accentLight : colors.background.glassLight,
                     ...glass.light,
+                    background: isOpen ? colors.accentLight : colors.background.glassLight,
                     border: `1px solid ${isOpen ? colors.border.accent : colors.border.light}`,
                     transition: "background 0.3s, border-color 0.3s",
                   }}
