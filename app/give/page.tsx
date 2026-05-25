@@ -793,8 +793,8 @@ export default function GivePage() {
             <motion.div
               className="pl-6 py-5 pr-5"
               style={{
-                background: "linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
                 ...glass.light,
+                background: "linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
                 borderLeft: `3px solid ${colors.border.light}`,
                 borderRadius: "0 16px 16px 0",
                 boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
@@ -816,8 +816,8 @@ export default function GivePage() {
             <motion.div
               className="flex flex-col gap-0"
               style={{
-                background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)",
                 ...glass.light,
+                background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)",
                 boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
                 padding: "1.25rem 1.5rem",
               }}

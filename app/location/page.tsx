@@ -393,8 +393,8 @@ export default function LocationPage() {
           <div
             className="flex flex-col"
             style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%)",
               ...glass.light,
+              background: "linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%)",
               overflow: "hidden",
             }}
           >
@@ -403,7 +403,7 @@ export default function LocationPage() {
                 Contact & location
               </p>
             </div>
-            <div className="flex flex-col divide-y" style={{ divideColor: colors.border.lighter }}>
+            <div className="flex flex-col divide-y" style={{ borderColor: colors.border.lighter }}>
               {details.map((item, i) => (
                 <motion.div
                   key={item.label}
