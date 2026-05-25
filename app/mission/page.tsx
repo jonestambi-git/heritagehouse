@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -91,16 +92,16 @@ export default function MissionPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Fixed background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight text-center mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -127,20 +128,20 @@ export default function MissionPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.7 }}
         >
-          <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
+          <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
             Our mission is not a programme — it&apos;s a calling. For over
             eighteen years, we have pursued one thing: to know God deeply, make
             Him known boldly, and serve humanity selflessly — right here in Port
             Harcourt and beyond.
           </p>
 
-          <div className="border-l-2 border-white/25 pl-5 flex flex-col gap-2">
-            <p className="font-heading text-white/90 font-black text-lg sm:text-xl leading-snug">
+          <div className="border-l-2 pl-5 flex flex-col gap-2" style={{ borderColor: colors.border.light }}>
+            <p className="font-black text-lg sm:text-xl leading-snug" style={{ ...typography.h3, color: colors.text.primary, fontFamily: fonts.serif }}>
               &quot;Go therefore and make disciples of all nations, baptising
               them in the name of the Father and of the Son and of the Holy
               Spirit.&quot;
             </p>
-            <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+            <span style={{ ...typography.label, color: colors.text.tertiary }}>
               Matthew 28:19 — The Great Commission
             </span>
           </div>
@@ -153,7 +154,7 @@ export default function MissionPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0, duration: 0.7 }}
         >
-          <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
+          <p style={{ ...typography.label, color: colors.accent, marginBottom: "20px" }}>
             Our three pillars
           </p>
 
@@ -163,24 +164,20 @@ export default function MissionPage() {
                 key={p.title}
                 className="flex flex-col gap-3 px-6 py-7"
                 style={{
-                  background: "rgba(0,0,0,0.45)",
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  borderRadius: "14px",
+                  ...glass.light,
                   boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
                 }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.1 + i * 0.08, duration: 0.5 }}
               >
-                <span className="text-xl leading-none text-white/80">
+                <span className="text-xl leading-none" style={{ color: colors.text.secondary }}>
                   {p.icon}
                 </span>
-                <span className="font-heading text-white font-black text-lg leading-tight">
+                <span className="font-black text-lg leading-tight" style={{ ...typography.h3, color: colors.text.primary, fontFamily: fonts.serif }}>
                   {p.title}
                 </span>
-                <p className="font-body text-white/60 text-sm leading-relaxed">
+                <p style={{ ...typography.body, color: colors.text.secondary }}>
                   {p.body}
                 </p>
               </motion.div>
@@ -190,36 +187,38 @@ export default function MissionPage() {
 
         {/* ── Values + Timeline ─────────────────────────── */}
         <motion.div
-          className="mt-12 sm:mt-16 border-t border-white/20 pt-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20"
+          className="mt-12 sm:mt-16 border-t pt-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20"
+          style={{ borderColor: colors.border.light }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.7 }}
         >
           {/* Values accordion */}
           <div>
-            <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent, marginBottom: "20px" }}>
               Core values
             </p>
 
             {values.map((v) => {
               const isOpen = expandedId === v.id;
               return (
-                <div key={v.id} className="border-t border-white/20">
+                <div key={v.id} className="border-t" style={{ borderColor: colors.border.light }}>
                   <button
                     onClick={() => setExpandedId(isOpen ? null : v.id)}
                     className="w-full text-left py-4 sm:py-5 grid grid-cols-[1fr_auto] gap-4 items-start group"
                   >
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
+                      <span className="font-semibold text-sm sm:text-base group-hover:opacity-80 transition-colors" style={{ ...typography.body, color: colors.text.primary }}>
                         {v.name}
                       </span>
-                      <span className="font-body text-white/40 text-xs">
+                      <span style={{ ...typography.small, color: colors.text.tertiary }}>
                         {v.sub}
                       </span>
                     </div>
                     <span
-                      className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300 inline-block"
+                      className="text-lg mt-0.5 group-hover:opacity-70 transition-all duration-300 inline-block"
                       style={{
+                        color: colors.text.tertiary,
                         transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
                       }}
                     >
@@ -237,7 +236,7 @@ export default function MissionPage() {
                         className="overflow-hidden"
                       >
                         <div className="pb-6 pr-8">
-                          <p className="font-body text-white/65 text-sm leading-relaxed max-w-md">
+                          <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
                             {v.body}
                           </p>
                         </div>
@@ -251,13 +250,13 @@ export default function MissionPage() {
 
           {/* Timeline */}
           <div>
-            <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent, marginBottom: "20px" }}>
               Our story
             </p>
 
             <div className="relative pl-6">
               {/* Vertical line */}
-              <div className="absolute left-0 top-2 bottom-2 w-px bg-white/20" />
+              <div className="absolute left-0 top-2 bottom-2 w-px" style={{ background: colors.border.light }} />
 
               {timeline.map((item, i) => (
                 <motion.div
@@ -268,13 +267,13 @@ export default function MissionPage() {
                   transition={{ delay: 1.2 + i * 0.12, duration: 0.5 }}
                 >
                   {/* Dot */}
-                  <div className="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full bg-white/50" />
+                  <div className="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full" style={{ background: colors.border.light }} />
 
-                  <p className="font-body text-white/35 text-[10px] tracking-widest uppercase mb-1">
+                  <p style={{ ...typography.label, color: colors.text.tertiary, marginBottom: "4px" }}>
                     {item.year}
                   </p>
-                  <p className="font-body text-white/70 text-sm leading-relaxed">
-                    <strong className="text-white font-semibold">
+                  <p style={{ ...typography.body, color: colors.text.secondary }}>
+                    <strong style={{ color: colors.text.primary }}>
                       {item.heading}
                     </strong>{" "}
                     {item.desc}
@@ -289,11 +288,8 @@ export default function MissionPage() {
         <motion.div
           className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-6 w-full max-w-4xl"
           style={{
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "20px",
+            ...glass.light,
+            border: `1px solid ${colors.border.light}`,
             boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
             padding: "2rem",
           }}
@@ -302,10 +298,10 @@ export default function MissionPage() {
           transition={{ delay: 1.3, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent }}>
               Be part of the mission
             </p>
-            <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
+            <p className="font-black text-2xl sm:text-3xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               This story is still
               <br />
               being written.
@@ -314,14 +310,14 @@ export default function MissionPage() {
           <div className="flex gap-3 flex-wrap">
             <Button
               variant="outline"
-              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-7"
+              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-semibold tracking-wide rounded-none px-7"
               asChild
             >
               <a href="/contact">Join us this Sunday</a>
             </Button>
             <Button
               variant="ghost"
-              className="text-white/55 hover:text-white hover:bg-transparent font-body tracking-wide rounded-none px-0 underline underline-offset-4"
+              className="text-white/55 hover:text-white hover:bg-transparent font-semibold tracking-wide rounded-none px-0 underline underline-offset-4"
               asChild
             >
               <a href="/community">Explore life groups</a>

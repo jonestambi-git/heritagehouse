@@ -8,8 +8,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
-  const title = project ? `${project.title} | AG Church` : "Project | AG Church";
-  const description = project?.summary ?? "Project details — Assemblies Of God Church, Port Harcourt.";
+  const title = project ? `${project.title} | HeritageHouse Ministries` : "Project | HeritageHouse Ministries";
+  const description = project?.summary ?? "Project details — HeritageHouse Ministries, Port Harcourt.";
 
   return {
     title,

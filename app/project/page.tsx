@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getDailyPhoto } from "@/lib/church-photos";
 import type { ProjectCategory } from "@/lib/projects-data";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -81,16 +82,16 @@ export default function ProjectsPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight text-center mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -117,7 +118,7 @@ export default function ProjectsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.7 }}
         >
-          <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
+          <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
             We believe the church exists not just within four walls but in every
             street, school, and home it touches. These are the projects through
             which we put our faith to work.
@@ -126,10 +127,7 @@ export default function ProjectsPage() {
           <div
             className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px"
             style={{
-              background: "rgba(0,0,0,0.45)",
-              borderRadius: "16px",
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+              ...glass.light,
               overflow: "hidden",
             }}
           >
@@ -138,7 +136,7 @@ export default function ProjectsPage() {
                 key={s.label}
                 className="flex flex-col gap-0.5 px-4 py-4"
                 style={{
-                  background: "rgba(0,0,0,0.18)",
+                  background: colors.background.glassLight,
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
                 }}
@@ -146,10 +144,10 @@ export default function ProjectsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
               >
-                <span className="font-heading text-white font-black text-2xl sm:text-3xl leading-none">
+                <span className="font-black text-2xl sm:text-3xl leading-none" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
                   {s.value}
                 </span>
-                <span className="font-body text-white/45 text-[10px] tracking-widest uppercase mt-1">
+                <span style={{ ...typography.label, color: colors.text.tertiary, marginTop: "4px" }}>
                   {s.label}
                 </span>
               </motion.div>
@@ -165,7 +163,7 @@ export default function ProjectsPage() {
           transition={{ delay: 1.05, duration: 0.7 }}
         >
           <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
-            <h2 className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <h2 style={{ ...typography.label, color: colors.accent }}>
               Projects
             </h2>
 
@@ -175,11 +173,16 @@ export default function ProjectsPage() {
                 <button
                   key={f}
                   onClick={() => setActiveFilter(f)}
-                  className={`font-body text-xs tracking-widest uppercase px-3 py-1 border transition-all duration-200 ${
+                  className={`transition-all duration-200 ${
                     activeFilter === f
                       ? `${categoryActiveBg[f]} border-transparent`
                       : "border-white/25 text-white/60 hover:border-white/50 hover:text-white bg-transparent"
                   }`}
+                  style={{
+                    ...typography.label,
+                    padding: "6px 12px",
+                    border: "1px solid",
+                  }}
                 >
                   {f}
                 </button>
@@ -205,11 +208,7 @@ export default function ProjectsPage() {
                     href={`/project/${project.slug}`}
                     className="group flex flex-col transition-all duration-300 overflow-hidden"
                     style={{
-                      background: "rgba(0,0,0,0.45)",
-                      backdropFilter: "blur(16px)",
-                      WebkitBackdropFilter: "blur(16px)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                      borderRadius: "16px",
+                      ...glass.light,
                       boxShadow: "0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08)",
                     }}
                   >
@@ -235,35 +234,37 @@ export default function ProjectsPage() {
                       {/* Badges */}
                       <div className="flex items-center gap-2 flex-wrap">
                         <span
-                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${categoryColors[project.category]}`}
+                          className={`${categoryColors[project.category]}`}
+                          style={{ ...typography.label, padding: "4px 8px" }}
                         >
                           {project.category}
                         </span>
                         <span
-                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${statusColors[project.status]}`}
+                          className={`${statusColors[project.status]}`}
+                          style={{ ...typography.label, padding: "4px 8px" }}
                         >
                           {project.status}
                         </span>
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-body text-white font-semibold text-sm sm:text-base leading-snug group-hover:text-white/80 transition-colors">
+                      <h3 className="font-semibold text-sm sm:text-base leading-snug group-hover:opacity-80 transition-opacity" style={{ ...typography.body, color: colors.text.primary }}>
                         {project.title}
                       </h3>
 
                       {/* Meta */}
-                      <span className="font-body text-white/40 text-xs">
+                      <span style={{ ...typography.small, color: colors.text.tertiary }}>
                         {project.year}
                       </span>
 
                       {/* Summary */}
-                      <p className="font-body text-white/55 text-xs leading-relaxed line-clamp-2">
+                      <p style={{ ...typography.small, color: colors.text.secondary }} className="line-clamp-2">
                         {project.summary}
                       </p>
 
                       {/* CTA arrow */}
                       <div className="flex justify-end mt-1">
-                        <span className="font-body text-white/30 text-sm group-hover:text-white/70 group-hover:translate-x-1 transition-all duration-300 inline-block">
+                        <span className="text-sm group-hover:opacity-70 group-hover:translate-x-1 transition-all duration-300 inline-block" style={{ color: colors.text.tertiary }}>
                           →
                         </span>
                       </div>
@@ -280,8 +281,8 @@ export default function ProjectsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <p className="font-heading text-white/20 font-black text-4xl">No projects yet</p>
-              <p className="font-body text-white/35 text-sm max-w-xs">
+              <p className="font-black text-4xl" style={{ ...typography.h1, color: colors.text.muted, fontFamily: fonts.serif }}>No projects yet</p>
+              <p style={{ ...typography.body, color: colors.text.tertiary, maxWidth: "20rem" }}>
                 {activeFilter === "All"
                   ? "Projects will appear here once the admin adds them."
                   : `No ${activeFilter} projects at the moment.`}
@@ -302,11 +303,8 @@ export default function ProjectsPage() {
         <motion.div
           className="mt-16 sm:mt-20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
           style={{
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "20px",
+            ...glass.light,
+            border: `1px solid ${colors.border.light}`,
             boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
             padding: "2rem",
           }}
@@ -315,10 +313,10 @@ export default function ProjectsPage() {
           transition={{ delay: 1.3, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent }}>
               Get involved
             </p>
-            <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
+            <p className="font-black text-2xl sm:text-3xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               Your giving moves
               <br />
               mountains.
@@ -327,13 +325,17 @@ export default function ProjectsPage() {
           <div className="flex gap-3 flex-wrap">
             <a
               href="/give"
-              className="border border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide px-7 py-2 text-sm transition-colors"
+              className="border text-white bg-transparent hover:bg-white hover:text-black font-semibold tracking-wide px-7 py-2 text-sm transition-colors"
+              style={{ borderColor: colors.border.light }}
             >
               Give now
             </a>
             <a
               href="/contact"
-              className="text-white/55 hover:text-white font-body tracking-wide px-0 py-2 text-sm underline underline-offset-4 transition-colors"
+              className="font-semibold tracking-wide px-0 py-2 text-sm underline underline-offset-4 transition-colors"
+              style={{ color: colors.text.secondary }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = colors.text.primary)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = colors.text.secondary)}
             >
               Volunteer
             </a>

@@ -8,6 +8,7 @@ import { useEvents, useRegisterForEventMutation } from "@/lib/hooks/queries";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { getDailyPhoto } from "@/lib/church-photos";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 import type { ChurchEvent, EventCategory } from "@/lib/types/resources";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -105,12 +106,12 @@ function MonthlyProgramsSection() {
 
   return (
     <motion.div
-      className="mt-10 sm:mt-12"
+      className={spacing.marginTopLg}
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.75, duration: 0.7 }}
     >
-      <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
+      <p style={{ ...typography.label, color: colors.accent, marginBottom: "1.25rem" }}>
         Monthly Special Programs
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -133,10 +134,11 @@ function MonthlyProgramsSection() {
             {/* Badge */}
             <div className="flex items-center justify-between mb-4">
               <span
-                className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
+                className="px-3 py-1"
                 style={{
+                  ...typography.label,
                   background: "rgba(212,175,55,0.15)",
-                  color: "#D4AF37",
+                  color: colors.accent,
                   border: "1px solid rgba(212,175,55,0.3)",
                   borderRadius: "8px",
                 }}
@@ -144,14 +146,12 @@ function MonthlyProgramsSection() {
                 {program.type === "first" ? "1st Day of Month" : "Last Day of Month"}
               </span>
               <span
-                className={`w-2.5 h-2.5 rounded-full shadow-lg ${
-                  "bg-[#D4AF37]"
-                }`}
+                className={`w-2.5 h-2.5 rounded-full shadow-lg bg-[#D4AF37]`}
               />
             </div>
 
             {/* Title & Time */}
-            <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight mb-2">
+            <h3 style={{ ...typography.h4, fontFamily: fonts.serif, color: colors.text.primary, marginBottom: "0.5rem" }}>
               {program.title}
             </h3>
             <div className="flex items-center gap-2 mb-4">
@@ -162,18 +162,18 @@ function MonthlyProgramsSection() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="text-white/50"
+                style={{ color: colors.text.tertiary }}
               >
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
-              <span className="font-body text-white/70 text-sm font-medium">
+              <span style={{ ...typography.body, color: colors.text.secondary, fontWeight: 500 }}>
                 {program.time}
               </span>
             </div>
 
             {/* Description */}
-            <p className="font-body text-white/70 text-sm leading-relaxed mb-4">
+            <p style={{ ...typography.body, color: colors.text.secondary, marginBottom: "1rem" }}>
               {program.description}
             </p>
 
@@ -183,7 +183,7 @@ function MonthlyProgramsSection() {
                 className="inline-flex items-start gap-2 px-3 py-2"
                 style={{
                   background: "rgba(0,0,0,0.45)",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  border: `1px solid ${colors.border.light}`,
                   borderRadius: "10px",
                 }}
               >
@@ -194,13 +194,14 @@ function MonthlyProgramsSection() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="text-white/40 mt-0.5 flex-shrink-0"
+                  className="mt-0.5 flex-shrink-0"
+                  style={{ color: colors.text.tertiary }}
                 >
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="16" x2="12" y2="12" />
                   <line x1="12" y1="8" x2="12.01" y2="8" />
                 </svg>
-                <span className="font-body text-white/50 text-xs italic leading-relaxed">
+                <span style={{ ...typography.small, color: colors.text.tertiary, fontStyle: "italic" }}>
                   {program.notes}
                 </span>
               </div>
@@ -260,16 +261,20 @@ export default function EventsPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="text-white font-black leading-[0.92] tracking-tight text-center"
+          style={{
+            ...typography.h1,
+            fontFamily: fonts.serif,
+            marginTop: "clamp(1rem, 3vw, 2rem)",
+          }}
         >
           <motion.span
             className="block"
@@ -294,7 +299,7 @@ export default function EventsPage() {
 
         {/* Category filters */}
         <motion.div
-          className="mt-8 sm:mt-10 flex flex-wrap gap-2 justify-center"
+          className={`flex flex-wrap gap-2 justify-center ${spacing.marginTopLg}`}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -306,11 +311,15 @@ export default function EventsPage() {
                 setActiveCategory(cat);
                 setExpandedId(null);
               }}
-              className={`font-body text-xs tracking-widest uppercase px-4 py-1.5 border transition-all duration-200 ${
+              className={`px-4 py-1.5 border transition-all duration-200 ${
                 activeCategory === cat
                   ? `${categoryActiveBg[cat]} border-transparent`
                   : "border-white/25 text-white/70 hover:border-white/50 hover:text-white bg-transparent"
               }`}
+              style={{
+                ...typography.label,
+                borderRadius: "6px",
+              }}
             >
               {cat}
             </button>
@@ -324,22 +333,23 @@ export default function EventsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <p className="text-white/60">Loading events...</p>
+            <p style={{ ...typography.body, color: colors.text.secondary }}>Loading events...</p>
           </motion.div>
         )}
 
         {/* Error state */}
         {!isLoading && error && (
           <motion.div
-            className="mt-8 border-t border-white/20 pt-6 sm:pt-8 flex-1"
+            className={`border-t flex-1 ${spacing.marginTopLg}`}
+            style={{ borderColor: colors.border.light, paddingTop: "clamp(1.5rem, 3vw, 2rem)" }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.7 }}
           >
-            <p className="font-body text-white/35 text-[10px] tracking-widest uppercase">
+            <p style={{ ...typography.label, color: colors.text.tertiary }}>
               Events
             </p>
-            <p className="font-body text-white/55 text-sm mt-2 leading-relaxed">
+            <p style={{ ...typography.body, color: colors.text.secondary, marginTop: "0.5rem" }}>
               Unable to load events right now. Please try again.
             </p>
             <Button
@@ -354,7 +364,7 @@ export default function EventsPage() {
         {/* Events list */}
         {!isLoading && !error && (
           <motion.div
-            className="mt-8 flex flex-col gap-0 flex-1 w-full max-w-4xl"
+            className={`flex flex-col gap-0 flex-1 w-full max-w-4xl ${spacing.marginTopLg}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.7 }}
@@ -379,7 +389,8 @@ export default function EventsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ delay: i * 0.05, duration: 0.35 }}
-                    className="border-t border-white/20"
+                    className="border-t"
+                    style={{ borderColor: colors.border.light }}
                   >
                     <button
                       onClick={() => setExpandedId(isOpen ? null : event.id)}
@@ -387,13 +398,13 @@ export default function EventsPage() {
                     >
                       {/* Date block */}
                       <div className="flex flex-col items-center leading-none pt-0.5">
-                        <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+                        <span style={{ ...typography.label, color: colors.text.tertiary }}>
                           {month}
                         </span>
-                        <span className="font-heading text-white font-black text-3xl sm:text-4xl leading-none mt-0.5">
+                        <span style={{ ...typography.h2, fontFamily: fonts.serif, color: colors.text.primary, marginTop: "0.25rem", lineHeight: 1 }}>
                           {day}
                         </span>
-                        <span className="font-body text-white/40 text-[10px] tracking-widest uppercase mt-0.5">
+                        <span style={{ ...typography.label, color: colors.text.tertiary, marginTop: "0.25rem" }}>
                           {dayName}
                         </span>
                       </div>
@@ -401,26 +412,29 @@ export default function EventsPage() {
                       {/* Title + meta */}
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
+                          <span style={{ ...typography.body, color: colors.text.primary, fontWeight: 600 }} className="group-hover:opacity-80 transition-opacity">
                             {event.title}
                           </span>
                           {event.featured && (
-                            <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5" style={{ background: "rgba(212,175,55,0.15)", color: "#D4AF37", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "4px" }}>
+                            <span style={{ ...typography.label, background: "rgba(212,175,55,0.15)", color: colors.accent, border: "1px solid rgba(212,175,55,0.3)", borderRadius: "4px", padding: "0.25rem 0.5rem" }}>
                               Featured
                             </span>
                           )}
                         </div>
-                        <span className="font-body text-white/50 text-xs">
+                        <span style={{ ...typography.small, color: colors.text.tertiary }}>
                           {event.time || "TBA"} · {event.location || "TBA"}
                         </span>
                       </div>
 
                       {/* Expand icon */}
                       <span
-                        className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300"
+                        className="transition-all duration-300"
                         style={{
+                          ...typography.h3,
+                          color: colors.text.tertiary,
                           transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
                           display: "inline-block",
+                          marginTop: "0.25rem",
                         }}
                       >
                         +
@@ -438,7 +452,7 @@ export default function EventsPage() {
                           className="overflow-hidden"
                         >
                           <div className="pb-6 pl-20 sm:pl-24 pr-8 flex flex-col gap-4">
-                            <p className="font-body text-white/70 text-sm leading-relaxed max-w-lg">
+                            <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "32rem" }}>
                               {event.description}
                             </p>
                             {event.imageUrl && (
@@ -453,7 +467,8 @@ export default function EventsPage() {
                                   alt={event.title}
                                   width={640}
                                   height={256}
-                                  className="w-full max-h-64 object-cover border border-white/20"
+                                  className="w-full max-h-64 object-cover"
+                                  style={{ border: `1px solid ${colors.border.light}` }}
                                 />
                               </a>
                             )}
@@ -485,16 +500,17 @@ export default function EventsPage() {
 
             {filtered.length === 0 && (
               <motion.div
-                className="border-t border-white/20 pt-6 sm:pt-8"
+                className="border-t"
+                style={{ borderColor: colors.border.light, paddingTop: "clamp(1.5rem, 3vw, 2rem)" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <p className="font-body text-white/35 text-[10px] tracking-widest uppercase">
+                <p style={{ ...typography.label, color: colors.text.tertiary }}>
                   {activeCategory === "All"
                     ? "Events"
                     : `${activeCategory} events`}
                 </p>
-                <p className="font-body text-white/55 text-sm mt-2 leading-relaxed">
+                <p style={{ ...typography.body, color: colors.text.secondary, marginTop: "0.5rem" }}>
                   {categoryEmptyMessage[activeCategory]}
                 </p>
               </motion.div>
@@ -503,7 +519,7 @@ export default function EventsPage() {
         )}
 
         {/* Bottom spacer */}
-        <div className="h-12" />
+        <div className="h-8 sm:h-12" />
       </div>
     </section>
   );

@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getDailyPhoto, getDailyScripture } from "@/lib/church-photos";
 import AnnouncementModal from "@/components/AnnouncementModal";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
@@ -44,15 +44,11 @@ function ServiceTimes() {
   const [settings] = useLocalStorage<SiteSettings | null>("admin-site-settings", null);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (!mounted) return;
-    
     if (!settings) {
-      // Default service times
       setServiceDays([
         { day: "Sunday", time: "8:00 AM & 10:30 AM" },
         { day: "Wednesday", time: "6:00 PM" },
@@ -60,77 +56,31 @@ function ServiceTimes() {
       ]);
       return;
     }
-
     const days: Array<{ day: string; time: string }> = [];
-
-    // Sunday
     if (!settings.sundayHidden && (settings.sundayTime1 || settings.sundayTime2)) {
       const times = [settings.sundayTime1, settings.sundayTime2].filter(Boolean).join(" & ");
       days.push({ day: "Sunday", time: times });
     }
-
-    // Monday
-    if (!settings.mondayHidden && settings.mondayTime) {
-      days.push({ day: "Monday", time: settings.mondayTime });
-    }
-
-    // Tuesday
-    if (!settings.tuesdayHidden && settings.tuesdayTime) {
-      days.push({ day: "Tuesday", time: settings.tuesdayTime });
-    }
-
-    // Wednesday
-    if (!settings.wednesdayHidden && settings.wednesdayTime) {
-      days.push({ day: "Wednesday", time: settings.wednesdayTime });
-    }
-
-    // Thursday
-    if (!settings.thursdayHidden && settings.thursdayTime) {
-      days.push({ day: "Thursday", time: settings.thursdayTime });
-    }
-
-    // Friday
-    if (!settings.fridayHidden && settings.fridayTime) {
-      days.push({ day: "Friday", time: settings.fridayTime });
-    }
-
-    // Saturday
-    if (!settings.saturdayHidden && settings.saturdayTime) {
-      days.push({ day: "Saturday", time: settings.saturdayTime });
-    }
-
+    if (!settings.mondayHidden && settings.mondayTime) days.push({ day: "Monday", time: settings.mondayTime });
+    if (!settings.tuesdayHidden && settings.tuesdayTime) days.push({ day: "Tuesday", time: settings.tuesdayTime });
+    if (!settings.wednesdayHidden && settings.wednesdayTime) days.push({ day: "Wednesday", time: settings.wednesdayTime });
+    if (!settings.thursdayHidden && settings.thursdayTime) days.push({ day: "Thursday", time: settings.thursdayTime });
+    if (!settings.fridayHidden && settings.fridayTime) days.push({ day: "Friday", time: settings.fridayTime });
+    if (!settings.saturdayHidden && settings.saturdayTime) days.push({ day: "Saturday", time: settings.saturdayTime });
     setServiceDays(days);
   }, [settings, mounted]);
 
-  if (!mounted || serviceDays.length === 0) {
-    return null;
-  }
+  if (!mounted || serviceDays.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-3">
-      {serviceDays.map((s) => (
-        <div
-          key={s.day}
-          className="flex items-center gap-3 px-4 py-2.5"
-          style={{
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "999px",
-          }}
-        >
-          <span
-            className="w-2 h-2 rounded-full flex-shrink-0"
-            style={{ background: "#42a7c0" }}
-          />
-          <span className="font-body text-white font-semibold text-xs tracking-wide">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-px w-full"
+      style={{ background: "rgba(255,255,255,0.06)", borderRadius: "16px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+      {serviceDays.map((s, i) => (
+        <div key={s.day} className="flex flex-col gap-1 px-6 py-5" style={{ background: "#0b0b0b" }}>
+          <span style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#42a7c0", fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase" }}>
             {s.day}
           </span>
-          <span
-            className="font-body text-xs"
-            style={{ color: "#3ca7c2" }}
-          >
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "rgba(255,255,255,0.85)", fontSize: "20px", fontWeight: 600, lineHeight: 1.2 }}>
             {s.time}
           </span>
         </div>
@@ -143,7 +93,7 @@ function ServiceTimes() {
 
 interface MonthlyProgram {
   id: string;
-  day: string; // Dynamic day (e.g., "1st Sunday", "Last Friday", "15th")
+  day: string;
   title: string;
   time: string;
   description: string;
@@ -172,129 +122,108 @@ const defaultMonthlyPrograms: MonthlyProgram[] = [
 function MonthlyPrograms() {
   const [programs] = useLocalStorage<MonthlyProgram[]>("admin-monthly-programs", defaultMonthlyPrograms);
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
-  if (!programs || programs.length === 0) {
-    return null;
-  }
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted || !programs || programs.length === 0) return null;
 
   return (
-    <section className="relative z-10 border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-12 sm:px-10 sm:py-16">
-        <motion.p
-          className="font-body text-white/40 text-xs tracking-widest uppercase mb-6"
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Monthly Gatherings
-        </motion.p>
+    <section className="relative z-10" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-7xl mx-auto px-8 py-20 sm:px-14">
+        {/* Section header */}
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <motion.p
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#42a7c0", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "8px" }}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              Monthly Gatherings
+            </motion.p>
+            <motion.h2
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "white", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", lineHeight: 1.1 }}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+            >
+              Mark Your Calendar
+            </motion.h2>
+          </div>
+          <div className="hidden sm:block w-24 h-px" style={{ background: "linear-gradient(to right, rgba(66,167,192,0.5), transparent)" }} />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {programs.map((program, i) => (
             <motion.div
               key={program.id}
-              className="relative overflow-hidden"
-              style={{
-                background: "rgba(0,0,0,0.45)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: "20px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-              }}
-              initial={{ opacity: 0, y: 20 }}
+              className="group relative overflow-hidden"
+              style={{ borderRadius: "2px", background: "#111", border: "1px solid rgba(255,255,255,0.07)" }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
+              transition={{ delay: i * 0.12, duration: 0.6 }}
             >
-              {/* Gold left border stripe */}
-              <div
-                className="absolute left-0 top-0 bottom-0 w-1"
-                style={{ background: "#42a7c0", borderRadius: "20px 0 0 20px" }}
-              />
+              {/* Number watermark */}
+              <span
+                className="absolute top-4 right-5 pointer-events-none select-none"
+                style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontSize: "80px",
+                  fontWeight: 700,
+                  color: "rgba(66,167,192,0.06)",
+                  lineHeight: 1,
+                  userSelect: "none",
+                }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
 
-              <div className="pl-6 pr-6 py-6">
-                {/* Badge */}
-                <div className="flex items-center justify-between mb-4">
-                  <span
-                    className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
-                    style={{
-                      background: "rgb(187, 187, 187)",
-                      color: "#141414",
-                      border: "1px solid rgba(212,175,55,0.3)",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    {program.day}
-                  </span>
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shadow-lg"
-                    style={{ background: "#42a7c0" }}
-                  />
-                </div>
+              {/* Top accent bar */}
+              <div className="h-0.5 w-full" style={{ background: "linear-gradient(to right, #42a7c0, transparent)" }} />
 
-                {/* Title & Time */}
-                <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight mb-2">
+              <div className="px-8 py-8">
+                {/* Day badge */}
+                <span
+                  className="inline-block mb-5 px-3 py-1"
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: "9px",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: "#42a7c0",
+                    border: "1px solid rgba(66,167,192,0.3)",
+                    borderRadius: "2px",
+                  }}
+                >
+                  {program.day}
+                </span>
+
+                <h3
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    color: "rgba(255,255,255,0.92)",
+                    fontWeight: 700,
+                    fontSize: "clamp(1.3rem, 2.5vw, 1.75rem)",
+                    lineHeight: 1.2,
+                    marginBottom: "8px",
+                  }}
+                >
                   {program.title}
                 </h3>
-                <div className="flex items-center gap-2 mb-4">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="text-white/50"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <span className="font-body text-white/70 text-sm font-medium">
-                    {program.time}
-                  </span>
-                </div>
 
-                {/* Description */}
-                <p className="font-body text-white/70 text-sm leading-relaxed mb-4">
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "#42a7c0", fontSize: "15px", marginBottom: "16px", fontStyle: "italic" }}>
+                  {program.time}
+                </p>
+
+                <p style={{ fontFamily: "var(--font-body, sans-serif)", color: "rgba(255,255,255,0.5)", fontSize: "13px", lineHeight: 1.7, marginBottom: "20px" }}>
                   {program.description}
                 </p>
 
-                {/* Notes */}
                 {program.notes && (
-                  <div
-                    className="inline-flex items-start gap-2 px-3 py-2"
-                    style={{
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.10)",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-white/40 mt-0.5 flex-shrink-0"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="16" x2="12" y2="12" />
-                      <line x1="12" y1="8" x2="12.01" y2="8" />
-                    </svg>
-                    <span className="font-body text-white/50 text-xs italic leading-relaxed">
-                      {program.notes}
-                    </span>
-                  </div>
+                  <p style={{ fontFamily: "var(--font-body, sans-serif)", color: "rgba(255,255,255,0.3)", fontSize: "11px", letterSpacing: "0.04em", borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: "16px" }}>
+                    {program.notes}
+                  </p>
                 )}
               </div>
             </motion.div>
@@ -315,41 +244,18 @@ const quickLinks = [
 ];
 
 const dailyQuotes = [
-  {
-    quote: "Faith is not the absence of doubt — it is the decision to trust despite it.",
-    ref: "Hebrews 11:1",
-  },
-  {
-    quote: "You are not an afterthought in His story. You are the reason He entered the wilderness.",
-    ref: "Genesis 16:13",
-  },
-  {
-    quote: "The table is His. The food is His. The invitation is His. Your only job is to come.",
-    ref: "Psalm 23:5",
-  },
-  {
-    quote: "Open your hands. Whatever He wants to place here, receive. Whatever He wants to remove, release.",
-    ref: "Matthew 6:10",
-  },
-  {
-    quote: "You are not loved because of what you do. You are loved because of who you are — His.",
-    ref: "Matthew 3:17",
-  },
-  {
-    quote: "In this house, we believe there is a God worth talking to. We believe He is listening.",
-    ref: "Joshua 24:15",
-  },
-  {
-    quote: "To be seen by God is not a threat. It is the safest thing there is.",
-    ref: "Genesis 16:13",
-  },
+  { quote: "Faith is not the absence of doubt — it is the decision to trust despite it.", ref: "Hebrews 11:1" },
+  { quote: "You are not an afterthought in His story. You are the reason He entered the wilderness.", ref: "Genesis 16:13" },
+  { quote: "The table is His. The food is His. The invitation is His. Your only job is to come.", ref: "Psalm 23:5" },
+  { quote: "Open your hands. Whatever He wants to place here, receive. Whatever He wants to remove, release.", ref: "Matthew 6:10" },
+  { quote: "You are not loved because of what you do. You are loved because of who you are — His.", ref: "Matthew 3:17" },
+  { quote: "In this house, we believe there is a God worth talking to. We believe He is listening.", ref: "Joshua 24:15" },
+  { quote: "To be seen by God is not a threat. It is the safest thing there is.", ref: "Genesis 16:13" },
 ];
 
 function getDailyQuote() {
   const now = new Date();
-  const dayOfYear = Math.floor(
-    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000,
-  );
+  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
   return dailyQuotes[dayOfYear % dailyQuotes.length];
 }
 
@@ -359,6 +265,24 @@ export default function Hero() {
   const dailyQuote = getDailyQuote();
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
   const [loadingSermons, setLoadingSermons] = useState(true);
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+
+  // Gallery images for sections
+  const galleryImages = [
+    { src: getDailyPhoto(0), alt: "Church interior" },
+    { src: getDailyPhoto(1), alt: "Church exterior" },
+    { src: getDailyPhoto(2), alt: "Worship service" },
+  ];
+
+  const ministryImages = [
+    { src: getDailyPhoto(3), alt: "Ministry 1" },
+    { src: getDailyPhoto(4), alt: "Ministry 2" },
+    { src: getDailyPhoto(5), alt: "Ministry 3" },
+    { src: getDailyPhoto(6), alt: "Ministry 4" },
+  ];
 
   useEffect(() => {
     async function fetchSermons() {
@@ -366,9 +290,7 @@ export default function Hero() {
         const response = await fetch("/api/v1/sermons?limit=3");
         if (response.ok) {
           const result = await response.json();
-          if (result.success && result.data) {
-            setRecentSermons(result.data.data || []);
-          }
+          if (result.success && result.data) setRecentSermons(result.data.data || []);
         }
       } catch (error) {
         console.error("Failed to fetch sermons:", error);
@@ -381,296 +303,503 @@ export default function Hero() {
 
   return (
     <>
+      {/* Google Fonts */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+      `}</style>
+
       {/* ── Hero section ─────────────────────────────── */}
-      <section className="relative w-full h-svh min-h-[700px] overflow-hidden">
-        {/* Background image */}
-        <img
-          src={bgUrl}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          style={{ zIndex: 0 }}
-        />
-        {/* Dark overlay */}
+      <section ref={heroRef} className="relative w-full overflow-hidden" style={{ minHeight: "clamp(80vh, 100svh, 120vh)" }}>
+
+        {/* Parallax background */}
+        <motion.div
+          className="absolute inset-0 w-full h-full"
+          style={{ y: bgY, scale: bgScale, transformOrigin: "center center" }}
+        >
+          <img
+            src={bgUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ zIndex: 0 }}
+          />
+        </motion.div>
+
+        {/* Sophisticated gradient overlay — dark on left, lighter on right */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(120deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.70) 100%)", zIndex: 1 }}
+          style={{
+            background: "linear-gradient(105deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 40%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.72) 100%)",
+            zIndex: 1,
+          }}
         />
 
-        {/* Content — centered single column */}
+        {/* Vertical text — editorial accent */}
         <div
-          className="public-content relative h-full flex flex-col items-center justify-center gap-8 px-6 py-10 sm:px-10 sm:py-12 text-center"
-          style={{ zIndex: 2 }}
+          className="absolute left-5 top-1/2 hidden lg:flex items-center gap-2"
+          style={{ zIndex: 3, transform: "translateY(-50%)" }}
         >
+          <span
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              color: "rgba(255,255,255,0.15)",
+              fontSize: "9px",
+              letterSpacing: "0.35em",
+              textTransform: "uppercase",
+              writingMode: "vertical-rl",
+              textOrientation: "mixed",
+            }}
+          >
+            God&apos;s Own Favour Prophetic Ministry
+          </span>
+          <div className="w-px h-20" style={{ background: "rgba(66,167,192,0.3)" }} />
+        </div>
 
-          {/* ── Headline + CTAs ── */}
-          <div className="flex flex-col items-center w-full max-w-3xl">
+        {/* Page number — bottom right editorial detail */}
+        <div
+          className="absolute bottom-8 right-8 hidden lg:flex flex-col items-end gap-1"
+          style={{ zIndex: 3 }}
+        >
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "rgba(255,255,255,0.12)", fontSize: "42px", fontWeight: 300, lineHeight: 1 }}>
+            01
+          </span>
+          <span style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "rgba(255,255,255,0.15)", fontSize: "8px", letterSpacing: "0.3em", textTransform: "uppercase" }}>
+            Welcome
+          </span>
+        </div>
 
-            {/* Location pill */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="mb-6"
+        {/* Main content */}
+        <div
+          className="relative h-full flex flex-col justify-between px-4 py-8 sm:px-8 sm:py-12 lg:px-14 lg:py-16"
+          style={{ zIndex: 2, minHeight: "clamp(80vh, 100svh, 120vh)" }}
+        >
+          {/* Top row — badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.7 }}
+            className="flex items-center justify-between"
+          >
+            <span
+              className="inline-flex items-center gap-2.5 px-5 py-2"
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                color: "rgba(255,255,255,0.55)",
+                fontSize: "9px",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: "2px",
+              }}
             >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              God&apos;s Own Favour Prophetic Ministry · Eleme
+            </span>
+          </motion.div>
+
+          {/* Center — main headline block */}
+          <div className="flex flex-col max-w-4xl">
+
+            {/* Thin rule + overline */}
+            <motion.div
+              className="flex items-center gap-3 mb-4 sm:mb-6"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+            >
+              <div className="h-px w-8 sm:w-10" style={{ background: "#42a7c0" }} />
               <span
-                className="font-body text-white/60 text-xs tracking-widest uppercase px-4 py-1.5 inline-flex items-center gap-2"
                 style={{
-                  background: "rgba(255,255,255,0.10)",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  borderRadius: "24px",
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  color: "#42a7c0",
+                  fontSize: "clamp(8px, 2vw, 10px)",
+                  letterSpacing: "0.28em",
+                  textTransform: "uppercase",
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                God's Own Favour Prophetic Ministry · Eleme
+                Port Harcourt, Nigeria
               </span>
             </motion.div>
 
-            {/* Headline with gold left border accent */}
-            <div className="flex gap-5 items-stretch mb-6 justify-center">
-              <motion.div
-                className="w-1 rounded-full flex-shrink-0"
-                style={{ background: "#42a7c0" }}
-                initial={{ scaleY: 0, opacity: 0 }}
-                animate={{ scaleY: 1, opacity: 1 }}
-                transition={{ delay: 0.55, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              />
+            {/* Giant headline — Cormorant serif */}
+            <div className="overflow-hidden mb-2 sm:mb-3">
               <motion.h1
-                className="font-heading text-white font-black leading-[0.88] tracking-tight"
-                style={{ fontSize: "clamp(3rem, 9vw, 6.5rem)" }}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                transition={{ delay: 0.55, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  color: "white",
+                  fontWeight: 700,
+                  lineHeight: 0.88,
+                  letterSpacing: "-0.02em",
+                  fontSize: "clamp(2.5rem, 8vw, 8rem)",
+                }}
               >
-                <motion.span
-                  className="block"
-                  initial={{ opacity: 0, x: -40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  Love God,
-                </motion.span>
-                <motion.span
-                  className="block"
-                  initial={{ opacity: 0, x: -40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.75, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  Serve People.
-                </motion.span>
+                Love God,
+              </motion.h1>
+            </div>
+            <div className="overflow-hidden mb-6 sm:mb-8">
+              <motion.h1
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                transition={{ delay: 0.68, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  color: "rgba(255,255,255,0.45)",
+                  fontWeight: 300,
+                  fontStyle: "italic",
+                  lineHeight: 0.88,
+                  letterSpacing: "-0.02em",
+                  fontSize: "clamp(2.5rem, 8vw, 8rem)",
+                }}
+              >
+                Serve People.
               </motion.h1>
             </div>
 
-            {/* Welcome + tagline */}
-            <motion.p
-              className="font-heading text-white/50 font-black text-lg sm:text-xl tracking-tight mb-3"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.88, duration: 0.7 }}
-            >
-              Every soul is welcome here.
-            </motion.p>
-
-            <motion.p
-              className="font-body text-white/60 text-sm sm:text-base leading-relaxed mb-8 max-w-md"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.95, duration: 0.7 }}
-            >
-              A Spirit-filled family rooted in the Word, alive in worship, and committed to transforming lives — right here in Port Harcourt.
-            </motion.p>
-
-            {/* Scripture */}
+            {/* Tagline & description */}
             <motion.div
-              className="mb-8 flex flex-col items-center gap-1.5 max-w-md"
+              className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-8 mb-8 sm:mb-10"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0, duration: 0.7 }}
+              transition={{ delay: 0.85, duration: 0.7 }}
             >
-              <p className="font-heading text-white font-black text-base sm:text-lg leading-snug italic drop-shadow-lg">
-                &ldquo;{scripture.text}&rdquo;
-              </p>
-              <span
-                className="font-body text-xs tracking-widest uppercase self-start px-3 py-1"
+              <div className="flex-1">
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    color: "rgba(255,255,255,0.65)",
+                    fontSize: "clamp(1rem, 2vw, 1.4rem)",
+                    fontStyle: "italic",
+                    fontWeight: 300,
+                    marginBottom: "6px",
+                  }}
+                >
+                  Every soul is welcome here.
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-body, sans-serif)",
+                    color: "rgba(255,255,255,0.4)",
+                    fontSize: "clamp(12px, 2vw, 13px)",
+                    lineHeight: 1.7,
+                    maxWidth: "400px",
+                  }}
+                >
+                  A Spirit-filled family rooted in the Word, alive in worship, and committed to transforming lives — right here in Port Harcourt.
+                </p>
+              </div>
+
+              {/* Scripture pull-quote */}
+              <div
+                className="flex-shrink-0 sm:max-w-xs"
                 style={{
-                  background: "#42a7c0",
-                  border: "1px solid rgba(231, 231, 228, 0.3)",
-                  borderRadius: "20px",
-                  color: "#0a0a0a", 
+                  borderLeft: "2px solid #42a7c0",
+                  paddingLeft: "16px",
                 }}
               >
-                {scripture.verse}
-              </span>
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    color: "rgba(255,255,255,0.75)",
+                    fontSize: "clamp(14px, 2vw, 16px)",
+                    fontStyle: "italic",
+                    lineHeight: 1.5,
+                    marginBottom: "6px",
+                  }}
+                >
+                  &ldquo;{scripture.text}&rdquo;
+                </p>
+                <span
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "#42a7c0",
+                    fontSize: "8px",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {scripture.verse}
+                </span>
+              </div>
             </motion.div>
 
-            {/* CTAs row */}
+            {/* CTAs */}
             <motion.div
-              className="flex flex-wrap justify-center gap-3"
-              initial={{ opacity: 0, y: 16 }}
+              className="flex flex-wrap gap-2 sm:gap-3"
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1, duration: 0.6 }}
+              transition={{ delay: 1.0, duration: 0.65 }}
             >
-              {/* Plan a visit — solid white */}
               <Link
                 href="/location"
-                className="font-body text-sm font-semibold text-black tracking-wide px-6 py-2.5 transition-all hover:opacity-90"
+                className="group relative overflow-hidden inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3.5 transition-all duration-300"
                 style={{
-                  background: "#ffffff",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
+                  background: "#42a7c0",
+                  borderRadius: "2px",
                 }}
               >
-                Plan a Visit
+                <span
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: "rgba(255,255,255,0.15)" }}
+                />
+                <span
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "#000",
+                    fontSize: "clamp(9px, 2vw, 11px)",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    fontWeight: 500,
+                  }}
+                >
+                  Plan a Visit
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "#000" }}>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </Link>
-              {/* Watch Live — red gradient */}
+
               <Link
                 href="/live-service"
-                className="font-body text-sm font-semibold text-white tracking-wide px-6 py-2.5 flex items-center gap-2 transition-all hover:opacity-90"
+                className="group inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3.5 transition-all duration-300 hover:bg-white/10"
                 style={{
-                  background: "linear-gradient(135deg, #557a92 0%, #b91c1c 100%)",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 16px rgba(185,28,28,0.4)",
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  borderRadius: "2px",
                 }}
               >
-                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                Watch Live
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "clamp(9px, 2vw, 11px)",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Watch Live
+                </span>
               </Link>
-              {/* Give — ghost outline */}
+
               <Link
                 href="/give"
-                className="font-body text-sm font-semibold text-white/80 tracking-wide px-6 py-2.5 transition-all hover:text-white hover:border-white/40"
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.25)",
-                  borderRadius: "12px",
-                }}
+                className="group inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3.5 transition-all duration-300 hover:bg-white/5"
+                style={{ borderRadius: "2px" }}
               >
-                Give
+                <span
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "rgba(255,255,255,0.35)",
+                    fontSize: "clamp(9px, 2vw, 11px)",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                  }}
+                  className="group-hover:text-white/60 transition-colors"
+                >
+                  Give
+                </span>
               </Link>
             </motion.div>
-          </div>{/* end headline+CTAs */}
+          </div>
 
-          {/* ── Sermons + quote row ── */}
-          <div className="flex flex-col sm:flex-row gap-5 w-full max-w-3xl justify-center">
+          {/* Bottom — sermons strip */}
+          <motion.div
+            className="w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.7 }}
+          >
             <div
-              className="flex flex-col overflow-hidden"
+              className="w-full overflow-x-auto"
               style={{
-                background: "rgba(0,0,0,0.45)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: "20px",
-                borderTop: "2px solid #42a7c0",
+                background: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)",
+                borderTop: "1px solid rgba(255,255,255,0.08)",
+                borderBottom: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              {/* Sermons section */}
-              <div className="px-5 pt-5 pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+              <div className="flex flex-col sm:flex-row items-stretch min-w-full">
+                {/* Label column */}
+                <div
+                  className="flex-shrink-0 px-4 sm:px-6 py-4 sm:py-5 flex flex-col justify-center"
+                  style={{ borderRight: "1px solid rgba(255,255,255,0.08)", minWidth: "140px" }}
+                >
+                  <p
+                    style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      color: "#42a7c0",
+                      fontSize: "clamp(8px, 2vw, 9px)",
+                      letterSpacing: "0.22em",
+                      textTransform: "uppercase",
+                      marginBottom: "4px",
+                    }}
+                  >
                     Recent Messages
-                  </span>
+                  </p>
                   <Link
                     href="/sermons"
-                    className="font-body text-[10px] tracking-widest uppercase transition-colors hover:text-white"
-                    style={{ color: "#42a7c0" }}
+                    style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      color: "rgba(255,255,255,0.3)",
+                      fontSize: "clamp(8px, 2vw, 9px)",
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                    }}
+                    className="hover:text-white/60 transition-colors"
                   >
                     View all →
                   </Link>
                 </div>
 
-                {loadingSermons ? (
-                  <div className="py-8 text-center">
-                    <span className="font-body text-white/40 text-xs">Loading sermons...</span>
-                  </div>
-                ) : recentSermons.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <span className="font-body text-white/40 text-xs">No messages yet</span>
-                  </div>
-                ) : (
-                  recentSermons.map((sermon, i) => (
-                    <motion.div
-                      key={sermon.slug}
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 1.1 + i * 0.1, duration: 0.5 }}
-                    >
+                {/* Sermons */}
+                <div className="flex flex-col sm:flex-row flex-1 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.06]">
+                  {loadingSermons ? (
+                    <div className="flex-1 flex items-center justify-center py-4 sm:py-6 px-4 sm:px-6">
+                      <span style={{ fontFamily: "var(--font-body, sans-serif)", color: "rgba(255,255,255,0.25)", fontSize: "12px" }}>Loading sermons...</span>
+                    </div>
+                  ) : recentSermons.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center py-4 sm:py-6 px-4 sm:px-6">
+                      <span style={{ fontFamily: "var(--font-body, sans-serif)", color: "rgba(255,255,255,0.25)", fontSize: "12px" }}>No messages yet</span>
+                    </div>
+                  ) : (
+                    recentSermons.map((sermon, i) => (
                       <Link
+                        key={sermon.slug || sermon._id}
                         href={`/sermons/${sermon.slug || sermon._id}`}
-                        className="group flex items-center justify-between gap-4 py-3 border-t border-white/10 hover:border-white/20 transition-colors"
+                        className="group flex-1 flex flex-col justify-center gap-1 px-4 sm:px-6 py-4 sm:py-5 transition-all duration-200 hover:bg-white/[0.04]"
                       >
-                        <div className="flex flex-col gap-0.5 min-w-0">
-                          <span className="font-body text-white/85 font-semibold text-xs truncate group-hover:text-white transition-colors">
+                        <div className="flex items-start justify-between gap-2">
+                          <span
+                            style={{
+                              fontFamily: "'Cormorant Garamond', Georgia, serif",
+                              color: "rgba(255,255,255,0.8)",
+                              fontSize: "clamp(13px, 2vw, 15px)",
+                              lineHeight: 1.3,
+                              fontWeight: 600,
+                            }}
+                            className="group-hover:text-white transition-colors line-clamp-2"
+                          >
                             {sermon.title}
                           </span>
-                          <span className="font-body text-white/35 text-[10px] italic">
-                            {sermon.scripture} · {sermon.pastor}
+                          <span
+                            className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5"
+                            style={{ color: "#42a7c0" }}
+                          >
+                            →
                           </span>
                         </div>
                         <span
-                          className="group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm"
-                          style={{ color: "rgba(18, 64, 124, 0.5)" }}
+                          style={{
+                            fontFamily: "var(--font-body, sans-serif)",
+                            color: "rgba(255,255,255,0.3)",
+                            fontSize: "clamp(10px, 2vw, 11px)",
+                            letterSpacing: "0.04em",
+                          }}
                         >
-                          →
+                          {sermon.scripture} · {sermon.pastor}
                         </span>
                       </Link>
-                    </motion.div>
-                  ))
-                )}
-              </div>
+                    ))
+                  )}
+                </div>
 
-              {/* Divider */}
-              <div className="mx-5 h-px" style={{ background: "rgba(212,175,55,0.2)" }} />
-
-              {/* Daily quote section */}
-              <div className="px-5 py-5 flex flex-col gap-2">
-                <span className="font-body text-[9px] tracking-widest uppercase" style={{ color: "#b7c0c2" }}>
-                  Today&apos;s Word
-                </span>
-                <p className="font-heading text-white/80 font-black text-sm leading-snug italic">
-                  &ldquo;{dailyQuote.quote}&rdquo;
-                </p>
-                <span className="font-body text-white/40 text-[10px] tracking-wide">
-                  — {dailyQuote.ref}
-                </span>
+                {/* Daily quote */}
+                <div
+                  className="flex-shrink-0 px-4 sm:px-6 py-4 sm:py-5 flex flex-col justify-center sm:max-w-xs"
+                  style={{ borderLeft: "1px solid rgba(255,255,255,0.08)", background: "rgba(66,167,192,0.04)" }}
+                >
+                  <p
+                    style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      color: "#42a7c0",
+                      fontSize: "clamp(8px, 2vw, 9px)",
+                      letterSpacing: "0.22em",
+                      textTransform: "uppercase",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    Today&apos;s Word
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                      color: "rgba(255,255,255,0.65)",
+                      fontSize: "clamp(12px, 2vw, 13px)",
+                      fontStyle: "italic",
+                      lineHeight: 1.55,
+                      marginBottom: "6px",
+                    }}
+                  >
+                    &ldquo;{dailyQuote.quote}&rdquo;
+                  </p>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-body, sans-serif)",
+                      color: "rgba(255,255,255,0.25)",
+                      fontSize: "10px",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    — {dailyQuote.ref}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>{/* end sermons+quote row */}
-        </div>{/* end content */}
+          </motion.div>
+        </div>
       </section>
 
       {/* ── Quick links strip ─────────────────────────── */}
-      <section className="relative z-10 border-t border-white/10">
-        <div className="max-w-4xl mx-auto px-6 py-8 sm:px-10">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <section className="relative z-10" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-8 sm:py-12 lg:px-14">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px" style={{ background: "rgba(255,255,255,0.06)" }}>
             {quickLinks.map((item, i) => (
               <motion.div
                 key={item.label}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.07, duration: 0.5 }}
               >
                 <Link
                   href={item.href}
-                  className="group flex items-center gap-3 py-4 px-4 transition-all duration-300"
-                  style={{
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(20px)",
-                    WebkitBackdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    borderRadius: "20px",
-                  }}
+                  className="group flex items-center justify-between gap-2 sm:gap-3 py-4 sm:py-6 px-3 sm:px-6 transition-all duration-300"
+                  style={{ background: "#0a0a0a" }}
                 >
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <span
+                      style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        color: "rgba(66,167,192,0.3)",
+                        fontSize: "clamp(20px, 5vw, 28px)",
+                        fontWeight: 300,
+                        lineHeight: 1,
+                      }}
+                      className="group-hover:text-[#42a7c0] transition-colors duration-300"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        color: "rgba(255,255,255,0.45)",
+                        fontSize: "clamp(9px, 2vw, 10px)",
+                        letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                      }}
+                      className="group-hover:text-white transition-colors duration-300"
+                    >
+                      {item.label}
+                    </span>
+                  </div>
                   <span
-                    className="font-body text-[10px] font-bold flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full"
-                    style={{
-                      background: "rgba(250, 250, 250, 0.7)",
-                      color: "#42a7c0",
-                      border: "1px solid rgba(212,175,55,0.25)",
-                    }}
+                    className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 flex-shrink-0"
+                    style={{ color: "#42a7c0", fontSize: "12px" }}
                   >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-body text-white/65 text-xs tracking-widest uppercase group-hover:text-white transition-colors">
-                    {item.label}
+                    →
                   </span>
                 </Link>
               </motion.div>
@@ -680,136 +809,225 @@ export default function Hero() {
       </section>
 
       {/* ── Mission section ───────────────────────────── */}
-      <section className="relative z-10 border-t border-white/10 overflow-hidden">
+      <section className="relative z-10 overflow-hidden" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         {/* Logo watermark */}
         <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+          className="absolute inset-0 flex items-center justify-end pointer-events-none select-none pr-4 sm:pr-8"
           aria-hidden="true"
-          style={{ zIndex: 0 }}
         >
           <Image
-            src="/gofpm.png"
+            src="/heritage-house-logo.svg"
             alt=""
-            width={600}
-            height={600}
+            width={500}
+            height={500}
             className="object-contain"
-            style={{ opacity: 0.04, userSelect: "none" }}
+            style={{ opacity: 0.03, userSelect: "none" }}
           />
         </div>
 
-        <div className="relative max-w-4xl mx-auto px-6 py-16 sm:px-10 sm:py-20 flex flex-col items-center text-center" style={{ zIndex: 1 }}>
+        <div className="relative max-w-7xl mx-auto px-4 py-12 sm:px-8 sm:py-20 lg:px-14 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-24">
 
-          {/* Section label */}
-          <motion.p
-            className="font-body text-white/45 text-xs tracking-widest uppercase mb-4"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            Our Purpose
-          </motion.p>
-          <motion.h2
-            className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight tracking-tight mb-12"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.7 }}
-          >
-            Built on the Word.<br />Moved by the Spirit.
-          </motion.h2>
+            {/* Left — section label + heading */}
+            <div className="flex flex-col justify-between">
+              <div>
+                <motion.p
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "#42a7c0",
+                    fontSize: "clamp(9px, 2vw, 10px)",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    marginBottom: "16px",
+                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                >
+                  Our Purpose
+                </motion.p>
 
-          {/* Stats — horizontal row of 4 */}
-          <motion.div
-            className="grid grid-cols-2 sm:grid-cols-4 gap-0 mb-12 w-full"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.7 }}
-          >
-            {[
-              { value: "18+", label: "Years serving" },
-              { value: "1,200+", label: "Members" },
-              { value: "40+", label: "Nations" },
-              { value: "\u221e", label: "Impact" },
-            ].map((s, i) => (
-              <div
-                key={s.label}
-                className="flex flex-col gap-1 px-6 py-5"
+                <motion.h2
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    color: "white",
+                    fontWeight: 700,
+                    fontSize: "clamp(1.8rem, 5vw, 4rem)",
+                    lineHeight: 1.05,
+                    letterSpacing: "-0.01em",
+                    marginBottom: "24px",
+                  }}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1, duration: 0.7 }}
+                >
+                  Built on the Word.<br />
+                  <span style={{ fontWeight: 300, fontStyle: "italic", color: "rgba(255,255,255,0.5)" }}>
+                    Moved by the Spirit.
+                  </span>
+                </motion.h2>
+
+                <motion.div
+                  className="flex flex-wrap gap-4 sm:gap-5 mb-8 sm:mb-12"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2, duration: 0.7 }}
+                >
+                  <Link
+                    href="/mission"
+                    style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      color: "rgba(255,255,255,0.5)",
+                      fontSize: "clamp(10px, 2vw, 11px)",
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      textDecoration: "underline",
+                      textUnderlineOffset: "4px",
+                    }}
+                    className="hover:text-white transition-colors"
+                  >
+                    Our full story →
+                  </Link>
+                  <Link
+                    href="/community"
+                    style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      color: "rgba(255,255,255,0.3)",
+                      fontSize: "clamp(10px, 2vw, 11px)",
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      textDecoration: "underline",
+                      textUnderlineOffset: "4px",
+                    }}
+                    className="hover:text-white transition-colors"
+                  >
+                    Find a life group →
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Stats — stacked column */}
+              <motion.div
+                className="grid grid-cols-2 gap-px"
+                style={{ background: "rgba(255,255,255,0.05)" }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.25, duration: 0.7 }}
+              >
+                {[
+                  { value: "18+", label: "Years serving" },
+                  { value: "1,200+", label: "Members" },
+                  { value: "40+", label: "Nations" },
+                  { value: "∞", label: "Impact" },
+                ].map((s) => (
+                  <div key={s.label} className="flex flex-col gap-1 px-4 sm:px-6 py-4 sm:py-6" style={{ background: "#0a0a0a" }}>
+                    <span
+                      style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        color: "white",
+                        fontWeight: 300,
+                        fontSize: "clamp(1.5rem, 4vw, 2.8rem)",
+                        lineHeight: 1,
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {s.value}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        color: "rgba(255,255,255,0.3)",
+                        fontSize: "clamp(8px, 2vw, 9px)",
+                        letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {s.label}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Right — mission text */}
+            <motion.div
+              className="flex flex-col justify-center"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.15, duration: 0.7 }}
+            >
+              {/* Decorative line */}
+              <div className="w-8 sm:w-12 h-0.5 mb-6 sm:mb-8" style={{ background: "#42a7c0" }} />
+
+              <p
                 style={{
-                  borderLeft: i === 0 ? "none" : "1px solid rgba(255,255,255,0.08)",
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "clamp(1rem, 2vw, 1.35rem)",
+                  lineHeight: 1.75,
+                  fontWeight: 400,
+                  marginBottom: "20px",
                 }}
               >
-                {/* Gold divider line above each stat */}
-                <div
-                  className="w-8 h-0.5 mb-3"
-                  style={{ background: "#42a7c0" }}
-                />
-                <span className="font-heading text-white font-black text-3xl sm:text-4xl leading-none">
-                  {s.value}
-                </span>
-                <span className="font-body text-white/40 text-[10px] tracking-widest uppercase mt-1">
-                  {s.label}
-                </span>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* Mission text card */}
-          <motion.div
-            className="flex flex-col gap-5 w-full text-left"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.7 }}
-            style={{
-              background: "rgba(0,0,0,0.45)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "20px",
-              padding: "2rem",
-            }}
-          >
-            <p className="font-body text-white/72 text-sm sm:text-base leading-relaxed">
-              We are not just a congregation — we are a family on mission. For over
-              eighteen years, AG Church Choba 2 has been a place where broken people
-              find wholeness, seekers find truth, and believers grow deeper in Christ.
-            </p>
-            <p className="font-body text-white/52 text-sm sm:text-base leading-relaxed">
-              Rooted in the Assemblies of God fellowship, we are passionate about
-              Spirit-filled worship, sound biblical teaching, and reaching every
-              soul in Port Harcourt and beyond with the love of Jesus.
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Link
-                href="/mission"
-                className="font-body text-white/80 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors"
+                We are not just a congregation — we are a family on mission. For over
+                eighteen years, AG Church Choba 2 has been a place where broken people
+                find wholeness, seekers find truth, and believers grow deeper in Christ.
+              </p>
+              <p
+                style={{
+                  fontFamily: "var(--font-body, sans-serif)",
+                  color: "rgba(255,255,255,0.4)",
+                  fontSize: "clamp(13px, 2vw, 14px)",
+                  lineHeight: 1.8,
+                }}
               >
-                Our full story →
-              </Link>
-              <Link
-                href="/community"
-                className="font-body text-white/50 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors"
-              >
-                Find a life group →
-              </Link>
-            </div>
-          </motion.div>
+                Rooted in faith and community, we are passionate about
+                Spirit-filled worship, sound biblical teaching, and reaching every
+                soul in Port Harcourt and beyond with the love of Jesus.
+              </p>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ── Service times strip ───────────────────────── */}
-      <section className="relative z-10 border-t border-white/10">
-        <div className="max-w-4xl mx-auto px-6 py-10 sm:px-10">
-          <div className="flex flex-col items-center gap-6 text-center">
-            <div>
-              <p className="font-body text-white/40 text-xs tracking-widest uppercase mb-1">
-                Gather with us
-              </p>
-              <p className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
-                Come as you are. Leave transformed.
-              </p>
+      <section className="relative z-10" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "#080808" }}>
+        <div className="max-w-7xl mx-auto px-4 py-10 sm:px-8 sm:py-14 lg:px-14">
+          <div className="flex flex-col gap-6 sm:gap-8">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-3">
+              <div>
+                <p
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "#42a7c0",
+                    fontSize: "clamp(9px, 2vw, 10px)",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    marginBottom: "6px",
+                  }}
+                >
+                  Gather with us
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    color: "white",
+                    fontWeight: 600,
+                    fontSize: "clamp(1.3rem, 3vw, 2.2rem)",
+                    lineHeight: 1.15,
+                  }}
+                >
+                  Come as you are.{" "}
+                  <span style={{ fontWeight: 300, fontStyle: "italic", color: "rgba(255,255,255,0.45)" }}>
+                    Leave transformed.
+                  </span>
+                </p>
+              </div>
             </div>
             <ServiceTimes />
           </div>
@@ -818,8 +1036,6 @@ export default function Hero() {
 
       {/* ── Monthly Programs ───────────────────────────── */}
       <MonthlyPrograms />
-
-      
 
       {/* ── Announcement Modal ────────────────────────── */}
       <AnnouncementModal />

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -85,8 +86,8 @@ const dayStyles: Record<string, { accent: string; dot: string; note: string }> =
 const details = [
   {
     label: "Address",
-    value: "Assemblies Of God Church, Choba, Port Harcourt, Rivers State",
-    href: "https://www.google.com/maps/place/Assemblies+Of+God+Church+Choba+2/@4.8832034,6.9008766,1123m",
+    value: "HeritageHouse Ministries, Port Harcourt, Rivers State",
+    href: "https://www.google.com/maps/place/HeritageHouse+Ministries+Port+Harcourt",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -106,8 +107,8 @@ const details = [
   },
   {
     label: "Email",
-    value: "hello@agchurch.org",
-    href: "mailto:hello@agchurch.org",
+    value: "hello@heritagehouse.org",
+    href: "mailto:hello@heritagehouse.org",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -277,17 +278,17 @@ export default function LocationPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
 
         {/* ── Heading ── */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight text-center mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -308,7 +309,8 @@ export default function LocationPage() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-md text-center"
+          className="mt-4 text-center max-w-md leading-relaxed"
+          style={{ ...typography.body, color: colors.text.secondary }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -324,7 +326,7 @@ export default function LocationPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.7 }}
         >
-          <p className="font-body text-xs tracking-widest uppercase mb-5" style={{ color: "#D4AF37" }}>
+          <p style={{ ...typography.label, color: colors.accent, marginBottom: "20px" }}>
             Weekly Service times
           </p>
           <div className={`grid grid-cols-1 gap-4 ${serviceTimes.length === 1 ? 'sm:grid-cols-1 max-w-md' : serviceTimes.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
@@ -333,10 +335,7 @@ export default function LocationPage() {
                 key={s.day}
                 className={`relative overflow-hidden p-6 bg-gradient-to-br ${s.accent}`}
                 style={{
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255,255,255,0.14)",
-                  borderRadius: "20px",
+                  ...glass.light,
                   boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
                 }}
                 initial={{ opacity: 0, y: 20 }}
@@ -346,19 +345,19 @@ export default function LocationPage() {
               >
                 {/* Day label */}
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+                  <span style={{ ...typography.label, color: colors.text.muted }}>
                     {s.shortDay}
                   </span>
                   <span className={`w-2.5 h-2.5 rounded-full ${s.dot} shadow-lg`} />
                 </div>
 
-                <h3 className="font-heading text-white font-black text-2xl leading-none mb-3">
+                <h3 className="font-black text-2xl leading-none mb-3" style={{ ...typography.h3, color: colors.text.primary, fontFamily: fonts.serif }}>
                   {s.day}
                 </h3>
 
                 <div className="flex flex-col gap-1.5 mb-4">
                   {s.times.map((t) => (
-                    <span key={t} className="font-body text-white/80 text-sm font-medium">
+                    <span key={t} style={{ ...typography.body, color: colors.text.primary, fontWeight: 500 }}>
                       {t}
                     </span>
                   ))}
@@ -367,16 +366,16 @@ export default function LocationPage() {
                 <div
                   className="inline-flex items-center gap-1.5 px-3 py-1.5"
                   style={{
-                    background: "rgba(0,0,0,0.45)",
-                    border: "1px solid rgba(255,255,255,0.15)",
+                    background: colors.background.glassLight,
+                    border: `1px solid ${colors.border.light}`,
                     borderRadius: "8px",
                   }}
                 >
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/50">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: colors.text.tertiary }}>
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 12 16 14"/>
                   </svg>
-                  <span className="font-body text-white/55 text-[11px] italic">{s.note}</span>
+                  <span style={{ ...typography.label, color: colors.text.tertiary }}>{s.note}</span>
                 </div>
               </motion.div>
             ))}
@@ -395,19 +394,16 @@ export default function LocationPage() {
             className="flex flex-col"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "20px",
+              ...glass.light,
               overflow: "hidden",
             }}
           >
-            <div className="px-6 py-4 border-b border-white/10">
-              <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <div className="px-6 py-4 border-b" style={{ borderColor: colors.border.light }}>
+              <p style={{ ...typography.label, color: colors.accent }}>
                 Contact & location
               </p>
             </div>
-            <div className="flex flex-col divide-y divide-white/[0.08]">
+            <div className="flex flex-col divide-y" style={{ divideColor: colors.border.lighter }}>
               {details.map((item, i) => (
                 <motion.div
                   key={item.label}
@@ -417,17 +413,18 @@ export default function LocationPage() {
                   transition={{ delay: 1.1 + i * 0.08, duration: 0.5 }}
                 >
                   <div
-                    className="w-11 h-11 flex items-center justify-center flex-shrink-0 text-white/50 group-hover:text-white/80 transition-colors"
+                    className="w-11 h-11 flex items-center justify-center flex-shrink-0 group-hover:opacity-100 transition-opacity"
                     style={{
-                      background: "rgba(0,0,0,0.45)",
-                      border: "1px solid rgba(255,255,255,0.12)",
+                      background: colors.background.glassLight,
+                      border: `1px solid ${colors.border.light}`,
                       borderRadius: "12px",
+                      color: colors.text.tertiary,
                     }}
                   >
                     {item.icon}
                   </div>
                   <div className="flex flex-col gap-1 min-w-0">
-                    <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+                    <span style={{ ...typography.label, color: colors.text.muted }}>
                       {item.label}
                     </span>
                     {item.href ? (
@@ -435,7 +432,8 @@ export default function LocationPage() {
                         href={item.href}
                         target={item.href.startsWith("http") ? "_blank" : undefined}
                         rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                        className="font-body text-white font-semibold text-sm leading-snug hover:text-white/70 transition-colors flex items-start gap-1.5 group/link"
+                        className="font-semibold leading-snug hover:opacity-70 transition-opacity flex items-start gap-1.5 group/link"
+                        style={{ ...typography.body, color: colors.text.primary }}
                       >
                         <span>{item.value}</span>
                         {item.href.startsWith("http") && (
@@ -447,7 +445,7 @@ export default function LocationPage() {
                         )}
                       </a>
                     ) : (
-                      <span className="font-body text-white font-semibold text-sm leading-snug">
+                      <span className="font-semibold leading-snug" style={{ ...typography.body, color: colors.text.primary }}>
                         {item.value}
                       </span>
                     )}
@@ -457,16 +455,17 @@ export default function LocationPage() {
             </div>
 
             {/* Directions CTA inside card */}
-            <div className="px-6 py-5 border-t border-white/10 mt-auto">
+            <div className="px-6 py-5 border-t" style={{ borderColor: colors.border.light }}>
               <motion.a
                 href={MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full font-body font-semibold text-sm text-white py-3 transition-all duration-300"
+                className="flex items-center justify-center gap-2 w-full font-semibold text-sm py-3 transition-all duration-300"
                 style={{
-                  background: "rgba(0,0,0,0.45)",
-                  border: "1px solid rgba(255,255,255,0.20)",
+                  background: colors.background.glassLight,
+                  border: `1px solid ${colors.border.light}`,
                   borderRadius: "12px",
+                  color: colors.text.primary,
                 }}
                 whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.18)" }}
                 whileTap={{ scale: 0.98 }}
@@ -485,7 +484,7 @@ export default function LocationPage() {
             className="relative overflow-hidden group"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
-              border: "2px solid rgba(255,255,255,0.18)",
+              border: `2px solid ${colors.border.accent}`,
               borderRadius: "24px",
               boxShadow: "0 12px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
               minHeight: "480px",
@@ -537,9 +536,8 @@ export default function LocationPage() {
               className="flex items-center justify-between px-6 py-4 absolute top-0 left-0 right-0 z-10"
               style={{
                 background: "linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                borderBottom: "1px solid rgba(255,255,255,0.12)",
+                ...glass.light,
+                borderBottom: `1px solid ${colors.border.light}`,
                 borderRadius: "24px 24px 0 0",
               }}
               initial={{ y: -20, opacity: 0 }}
@@ -577,10 +575,10 @@ export default function LocationPage() {
                   />
                 </motion.div>
                 <div className="flex flex-col">
-                  <span className="font-body text-white font-semibold text-sm tracking-wide">
+                  <span className="font-semibold text-sm tracking-wide" style={{ ...typography.body, color: colors.text.primary }}>
                     AG Church · Choba 2
                   </span>
-                  <span className="font-body text-white/50 text-[10px] tracking-widest uppercase">
+                  <span style={{ ...typography.label, color: colors.text.tertiary }}>
                     Port Harcourt, Rivers State
                   </span>
                 </div>
@@ -589,7 +587,8 @@ export default function LocationPage() {
                 href={MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                style={{ ...typography.small, color: colors.text.secondary }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -632,9 +631,8 @@ export default function LocationPage() {
               className="flex items-center justify-between px-6 py-3 absolute bottom-0 left-0 right-0 z-10"
               style={{
                 background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                borderTop: "1px solid rgba(255,255,255,0.12)",
+                ...glass.light,
+                borderTop: `1px solid ${colors.border.light}`,
                 borderRadius: "0 0 24px 24px",
               }}
               initial={{ y: 20, opacity: 0 }}
@@ -645,28 +643,30 @@ export default function LocationPage() {
                 <div
                   className="w-8 h-8 flex items-center justify-center"
                   style={{
-                    background: "rgba(0,0,0,0.45)",
-                    border: "1px solid rgba(255,255,255,0.15)",
+                    background: colors.background.glassLight,
+                    border: `1px solid ${colors.border.light}`,
                     borderRadius: "8px",
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/70">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: colors.text.secondary }}>
                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                     <path d="M2 17l10 5 10-5"/>
                     <path d="M2 12l10 5 10-5"/>
                   </svg>
                 </div>
-                <span className="font-body text-white/60 text-xs">
+                <span style={{ ...typography.small, color: colors.text.secondary }}>
                   Interactive map · Zoom & pan enabled
                 </span>
               </div>
               <motion.button
                 onClick={() => window.open(MAPS_URL, '_blank')}
-                className="flex items-center gap-2 px-4 py-2 font-body text-white text-xs font-semibold tracking-wide transition-all"
+                className="flex items-center gap-2 px-4 py-2 font-semibold tracking-wide transition-all"
                 style={{
                   background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)",
-                  border: "1px solid rgba(255,255,255,0.20)",
+                  border: `1px solid ${colors.border.light}`,
                   borderRadius: "8px",
+                  ...typography.label,
+                  color: colors.text.primary,
                 }}
                 whileHover={{
                   scale: 1.05,
@@ -687,8 +687,7 @@ export default function LocationPage() {
               className="absolute top-20 right-6 z-10 px-4 py-2"
               style={{
                 background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.15) 100%)",
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
+                ...glass.light,
                 border: "1px solid rgba(16, 185, 129, 0.3)",
                 borderRadius: "12px",
                 boxShadow: "0 4px 16px rgba(16, 185, 129, 0.2)",
@@ -703,7 +702,7 @@ export default function LocationPage() {
                   <circle cx="12" cy="12" r="10"/>
                   <polyline points="12 6 12 12 16 14"/>
                 </svg>
-                <span className="font-body text-emerald-200 text-xs font-semibold">
+                <span className="font-semibold text-xs" style={{ ...typography.label, color: "rgb(204, 251, 241)" }}>
                   ~5 min drive
                 </span>
               </div>
@@ -720,21 +719,22 @@ export default function LocationPage() {
         >
           {/* Left label */}
           <div className="flex flex-col gap-3">
-            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent }}>
               Plan your visit
             </p>
-            <p className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight">
+            <p className="font-black text-3xl sm:text-4xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               First time?
               <br />
               We&apos;ve got you.
             </p>
-            <p className="font-body text-white/55 text-sm leading-relaxed mt-2 max-w-xs">
+            <p className="mt-2 max-w-xs leading-relaxed" style={{ ...typography.body, color: colors.text.secondary }}>
               Here are answers to the questions most people have before they
               walk through the door.
             </p>
             <motion.a
               href="/contact"
-              className="mt-2 self-start font-body text-white/50 text-sm hover:text-white transition-colors underline underline-offset-4"
+              className="mt-2 self-start hover:opacity-70 transition-opacity underline underline-offset-4"
+              style={{ ...typography.small, color: colors.text.secondary }}
               whileHover={{ x: 4 }}
             >
               Still have questions? Contact us →
@@ -750,11 +750,9 @@ export default function LocationPage() {
                   key={faq.q}
                   className="overflow-hidden"
                   style={{
-                    background: isOpen ? "rgba(212,175,55,0.08)" : "rgba(0,0,0,0.4)",
-                    backdropFilter: "blur(14px)",
-                    WebkitBackdropFilter: "blur(14px)",
-                    border: `1px solid ${isOpen ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.08)"}`,
-                    borderRadius: "16px",
+                    background: isOpen ? colors.accentLight : colors.background.glassLight,
+                    ...glass.light,
+                    border: `1px solid ${isOpen ? colors.border.accent : colors.border.light}`,
                     transition: "background 0.3s, border-color 0.3s",
                   }}
                   initial={{ opacity: 0, y: 8 }}
@@ -766,19 +764,20 @@ export default function LocationPage() {
                     onClick={() => setOpenFaq(isOpen ? null : i)}
                     className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 group"
                   >
-                    <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
+                    <span className="font-semibold group-hover:opacity-80 transition-opacity" style={{ ...typography.body, color: colors.text.primary }}>
                       {faq.q}
                     </span>
                     <motion.div
-                      className="w-8 h-8 flex items-center justify-center flex-shrink-0 border border-white/25 group-hover:border-white/50 transition-colors"
+                      className="w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors"
                       style={{
                         borderRadius: "10px",
                         background: isOpen ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+                        border: `1px solid ${isOpen ? colors.border.accent : colors.border.light}`,
                       }}
                       animate={{ rotate: isOpen ? 45 : 0 }}
                       transition={{ duration: 0.25 }}
                     >
-                      <span className="text-white/70 text-xl leading-none">+</span>
+                      <span style={{ color: colors.text.secondary, fontSize: "1.25rem", lineHeight: 1 }}>+</span>
                     </motion.div>
                   </button>
                   <AnimatePresence initial={false}>
@@ -790,8 +789,8 @@ export default function LocationPage() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 pb-6 pt-1 border-t border-white/10">
-                          <p className="font-body text-white/70 text-sm leading-relaxed">
+                        <div className="px-6 pb-6 pt-1 border-t" style={{ borderColor: colors.border.light }}>
+                          <p style={{ ...typography.body, color: colors.text.secondary }}>
                             {faq.a}
                           </p>
                         </div>
@@ -808,11 +807,8 @@ export default function LocationPage() {
         <motion.div
           className="mt-16 sm:mt-20 relative overflow-hidden flex flex-col sm:flex-row sm:items-end justify-between gap-8 p-8 sm:p-10"
           style={{
-            background: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(212,175,55,0.25)",
-            borderRadius: "24px",
+            ...glass.base,
+            border: `1px solid ${colors.border.accent}`,
             boxShadow: "0 12px 48px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
           }}
           initial={{ opacity: 0, y: 16 }}
@@ -825,10 +821,10 @@ export default function LocationPage() {
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           />
           <div className="flex flex-col gap-2 relative z-10">
-            <p className="font-body text-white/50 text-xs tracking-widest uppercase">
+            <p style={{ ...typography.label, color: colors.text.secondary }}>
               We&apos;d love to meet you
             </p>
-            <p className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight">
+            <p className="font-black text-3xl sm:text-4xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               Come as you are.
               <br />
               Leave changed.
@@ -839,8 +835,13 @@ export default function LocationPage() {
               href={MAPS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 font-body font-semibold text-sm text-black bg-white px-7 py-3.5 transition-all duration-300 hover:bg-white/90"
-              style={{ borderRadius: "12px", boxShadow: "0 4px 16px rgba(0,0,0,0.3)" }}
+              className="inline-flex items-center gap-2 font-semibold text-sm py-3.5 px-7 transition-all duration-300"
+              style={{
+                background: colors.text.primary,
+                color: colors.background.dark,
+                borderRadius: "12px",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -852,9 +853,13 @@ export default function LocationPage() {
             </motion.a>
             <motion.a
               href="/contact"
-              className="inline-flex items-center gap-2 font-body font-semibold text-sm text-white/80 hover:text-white px-7 py-3.5 border-2 border-white/30 hover:border-white/60 transition-all duration-300"
-              style={{ borderRadius: "12px" }}
-              whileHover={{ scale: 1.05 }}
+              className="inline-flex items-center gap-2 font-semibold text-sm py-3.5 px-7 transition-all duration-300"
+              style={{
+                color: colors.text.secondary,
+                border: `2px solid ${colors.border.light}`,
+                borderRadius: "12px",
+              }}
+              whileHover={{ scale: 1.05, borderColor: colors.border.accent }}
               whileTap={{ scale: 0.97 }}
             >
               Contact us

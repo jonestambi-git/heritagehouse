@@ -11,6 +11,7 @@ import YouTubeVideos from "@/components/YouTubeVideos";
 import type { PodcastFeed } from "@/app/api/podcast-feed/route";
 import { useEffect } from "react";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,17 +36,6 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "audio", label: "Audio Messages" },
   { id: "video", label: "Video Sessions" },
 ];
-
-// ─── Glass styles ─────────────────────────────────────────────────────────────
-
-const glass: React.CSSProperties = {
-  background: "rgba(0,0,0,0.45)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  borderRadius: "16px",
-  boxShadow: "0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -127,17 +117,17 @@ export default function SermonsPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
 
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-heading mt-4 sm:mt-6 font-black leading-[0.92] tracking-tight text-center"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -158,7 +148,8 @@ export default function SermonsPage() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm text-center"
+          className="mt-4 text-center max-w-sm leading-relaxed"
+          style={{ ...typography.body, color: colors.text.secondary }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -177,22 +168,23 @@ export default function SermonsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="font-body text-xs tracking-widest uppercase px-5 py-2 transition-all duration-200"
+              className="transition-all duration-200"
               style={
                 activeTab === tab.id
                   ? {
-                      background: "rgba(212,175,55,0.15)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                      border: "1px solid rgba(212,175,55,0.4)",
-                      borderRadius: "10px",
-                      color: "#D4AF37",
+                      ...typography.label,
+                      ...glass.light,
+                      padding: "10px 20px",
+                      color: colors.accent,
+                      border: `1px solid ${colors.border.accent}`,
                     }
                   : {
-                      background: "rgba(0,0,0,0.3)",
-                      border: "1px solid rgba(255,255,255,0.10)",
+                      ...typography.label,
+                      background: colors.background.glassLight,
+                      border: `1px solid ${colors.border.light}`,
+                      padding: "10px 20px",
                       borderRadius: "10px",
-                      color: "rgba(255,255,255,0.45)",
+                      color: colors.text.tertiary,
                     }
               }
             >
@@ -218,7 +210,7 @@ export default function SermonsPage() {
               {isLoading && (
                 <div className="flex items-center gap-3 py-8">
                   <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                  <p className="font-body text-white/50 text-sm">Loading sermons…</p>
+                  <p style={{ ...typography.small, color: colors.text.tertiary }}>Loading sermons…</p>
                 </div>
               )}
 
@@ -230,46 +222,46 @@ export default function SermonsPage() {
                   transition={{ duration: 0.5 }}
                   className="mb-8"
                 >
-                  <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-3">
+                  <p style={{ ...typography.label, color: colors.text.muted, marginBottom: "12px" }}>
                     Featured
                   </p>
                   <Link
                     href={`/sermons/${featured.slug}`}
                     className="group block p-5 sm:p-6"
-                    style={glass}
+                    style={glass.light}
                   >
                     <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 sm:gap-10 items-start">
                       <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+                          <span style={{ ...typography.label, color: colors.text.muted }}>
                             Latest sermon
                           </span>
-                          <span className="font-body text-white/30 text-[10px]">
+                          <span style={{ ...typography.small, color: colors.text.tertiary }}>
                             {featured.date || new Date(featured.dateISO || featured.createdAt || Date.now()).toLocaleDateString()}
                           </span>
                         </div>
                         <h2
-                          className="font-heading text-white font-black leading-[0.95] tracking-tight group-hover:text-white/80 transition-colors"
-                          style={{ fontSize: "clamp(1.8rem, 5vw, 3.5rem)" }}
+                          className="font-black leading-[0.95] tracking-tight group-hover:opacity-80 transition-opacity"
+                          style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}
                         >
                           {featured.title}
                         </h2>
-                        <p className="font-body text-white/55 text-sm leading-relaxed max-w-lg line-clamp-3">
+                        <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "32rem" }} className="line-clamp-3">
                           {featured.excerpt || (featured as SermonItem).content}
                         </p>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className="font-body text-white/60 text-xs">
+                          <span style={{ ...typography.small, color: colors.text.secondary }}>
                             {featured.pastor || (featured as SermonItem).author || "Pastor"}
                           </span>
-                          <span className="font-body text-white/25 text-xs">·</span>
-                          <span className="font-body text-white/35 text-xs">5 min read</span>
+                          <span style={{ ...typography.small, color: colors.text.muted }}>·</span>
+                          <span style={{ ...typography.small, color: colors.text.tertiary }}>5 min read</span>
                         </div>
                       </div>
-                      <span className="hidden sm:block font-body text-white/30 text-3xl group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 mt-2">
+                      <span className="hidden sm:block text-3xl group-hover:opacity-60 group-hover:translate-x-1 transition-all duration-300 mt-2" style={{ color: colors.text.tertiary }}>
                         →
                       </span>
                     </div>
-                    <span className="mt-5 inline-block font-body text-white/50 text-xs tracking-widest uppercase border-b border-white/25 pb-0.5 group-hover:text-white group-hover:border-white transition-colors">
+                    <span className="mt-5 inline-block tracking-widest uppercase border-b pb-0.5 group-hover:opacity-100 transition-opacity" style={{ ...typography.label, color: colors.text.secondary, borderColor: colors.border.light }}>
                       Read sermon
                     </span>
                   </Link>
@@ -279,7 +271,7 @@ export default function SermonsPage() {
               {/* Sermon list */}
               {!isLoading && (
                 <>
-                  <p className="font-body text-white/35 text-[10px] tracking-widest uppercase mb-1">
+                  <p style={{ ...typography.label, color: colors.text.muted, marginBottom: "4px" }}>
                     All sermons — {filtered.length} messages
                   </p>
                   <AnimatePresence mode="popLayout">
@@ -294,15 +286,18 @@ export default function SermonsPage() {
                       >
                         <Link
                           href={`/sermons/${sermon.slug}`}
-                          className="group flex items-start gap-5 sm:gap-8 py-5 border-t border-white/20 hover:border-white/40 transition-colors"
+                          className="group flex items-start gap-5 sm:gap-8 py-5 border-t transition-colors"
+                          style={{ borderColor: colors.border.light }}
+                          onMouseEnter={(e) => (e.currentTarget.style.borderColor = colors.border.accent)}
+                          onMouseLeave={(e) => (e.currentTarget.style.borderColor = colors.border.light)}
                         >
                           <div className="hidden sm:flex flex-col items-center w-10 flex-shrink-0 pt-0.5 leading-none">
-                            <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">
+                            <span style={{ ...typography.label, color: colors.text.muted }}>
                               {new Date(sermon.dateISO || sermon.createdAt || sermon.date || Date.now())
                                 .toLocaleString("en", { month: "short" })
                                 .toUpperCase()}
                             </span>
-                            <span className="font-heading text-white font-black text-2xl leading-none mt-0.5">
+                            <span className="font-black text-2xl leading-none mt-0.5" style={{ ...typography.h3, color: colors.text.primary }}>
                               {new Date(sermon.dateISO || sermon.createdAt || sermon.date || Date.now())
                                 .getDate()
                                 .toString()
@@ -310,24 +305,24 @@ export default function SermonsPage() {
                             </span>
                           </div>
                           <div className="flex-1 flex flex-col gap-1.5">
-                            <span className="font-body text-white/35 text-[10px] tracking-widest uppercase">
+                            <span style={{ ...typography.label, color: colors.text.muted }}>
                               Sermon
                             </span>
-                            <h3 className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/75 transition-colors leading-snug">
+                            <h3 className="font-semibold group-hover:opacity-75 transition-opacity leading-snug" style={{ ...typography.h4, color: colors.text.primary }}>
                               {sermon.title}
                             </h3>
-                            <p className="font-body text-white/45 text-xs leading-relaxed line-clamp-2 max-w-xl hidden sm:block">
+                            <p style={{ ...typography.small, color: colors.text.tertiary, maxWidth: "44rem" }} className="line-clamp-2 hidden sm:block">
                               {sermon.excerpt || (sermon as SermonItem).content}
                             </p>
                             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                              <span className="font-body text-white/45 text-xs">
+                              <span style={{ ...typography.small, color: colors.text.tertiary }}>
                                 {sermon.pastor || (sermon as SermonItem).author || "Pastor"}
                               </span>
-                              <span className="font-body text-white/20 text-xs">·</span>
-                              <span className="font-body text-white/30 text-xs">5 min read</span>
+                              <span style={{ ...typography.small, color: colors.text.muted }}>·</span>
+                              <span style={{ ...typography.small, color: colors.text.tertiary }}>5 min read</span>
                             </div>
                           </div>
-                          <span className="text-white/25 text-xl group-hover:text-white/55 group-hover:translate-x-1 transition-all duration-300 mt-1 flex-shrink-0">
+                          <span className="text-xl group-hover:opacity-60 group-hover:translate-x-1 transition-all duration-300 mt-1 flex-shrink-0" style={{ color: colors.text.tertiary }}>
                             →
                           </span>
                         </Link>
@@ -336,7 +331,7 @@ export default function SermonsPage() {
                   </AnimatePresence>
 
                   {filtered.length === 0 && (
-                    <p className="font-body text-white/40 text-sm pt-8">
+                    <p style={{ ...typography.body, color: colors.text.secondary }} className="pt-8">
                       No sermons found. Check back soon.
                     </p>
                   )}
@@ -345,24 +340,22 @@ export default function SermonsPage() {
                   {!searchTerm && paginatedSermons?.pagination && (
                     <motion.div
                       className="flex items-center justify-between mt-10 px-5 py-4"
-                      style={{
-                        background: "rgba(0,0,0,0.45)",
-                        backdropFilter: "blur(14px)",
-                        WebkitBackdropFilter: "blur(14px)",
-                        border: "1px solid rgba(255,255,255,0.10)",
-                        borderRadius: "12px",
-                      }}
+                      style={glass.light}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
                       <button
                         onClick={() => setPage(Math.max(1, page - 1))}
                         disabled={page === 1}
-                        className="font-body text-xs tracking-widest uppercase text-white/60 disabled:text-white/30 hover:text-white transition-colors disabled:cursor-not-allowed"
+                        className="transition-colors disabled:cursor-not-allowed"
+                        style={{
+                          ...typography.label,
+                          color: page === 1 ? colors.text.muted : colors.text.secondary,
+                        }}
                       >
                         ← Previous
                       </button>
-                      <span className="font-body text-xs text-white/40">
+                      <span style={{ ...typography.small, color: colors.text.tertiary }}>
                         Page {page} of{" "}
                         {Math.ceil((paginatedSermons.pagination?.total || 0) / 10)}
                       </span>
@@ -371,7 +364,11 @@ export default function SermonsPage() {
                         disabled={
                           page >= Math.ceil((paginatedSermons.pagination?.total || 0) / 10)
                         }
-                        className="font-body text-xs tracking-widest uppercase text-white/60 disabled:text-white/30 hover:text-white transition-colors disabled:cursor-not-allowed"
+                        className="transition-colors disabled:cursor-not-allowed"
+                        style={{
+                          ...typography.label,
+                          color: page >= Math.ceil((paginatedSermons.pagination?.total || 0) / 10) ? colors.text.muted : colors.text.secondary,
+                        }}
                       >
                         Next →
                       </button>
@@ -397,16 +394,16 @@ export default function SermonsPage() {
               {podcastLoading && (
                 <div className="flex items-center gap-3 py-8">
                   <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                  <p className="font-body text-white/50 text-sm">Loading audio messages…</p>
+                  <p style={{ ...typography.small, color: colors.text.tertiary }}>Loading audio messages…</p>
                 </div>
               )}
 
               {podcastError && !podcastLoading && (
-                <div className="px-6 py-8 flex flex-col gap-3" style={glass}>
-                  <p className="font-body text-white/60 text-sm">
+                <div className="px-6 py-8 flex flex-col gap-3" style={glass.light}>
+                  <p style={{ ...typography.body, color: colors.text.secondary }}>
                     Could not load audio messages.
                   </p>
-                  <p className="font-body text-white/35 text-xs">{podcastError}</p>
+                  <p style={{ ...typography.small, color: colors.text.tertiary }}>{podcastError}</p>
                 </div>
               )}
 

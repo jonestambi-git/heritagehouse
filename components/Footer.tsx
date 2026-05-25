@@ -14,17 +14,17 @@ const Footer = () => {
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-4">
                 <Image
-                  src="/gofpm.png"
-                  alt="Assemblies Of God Church logo"
+                  src="/heritage-house-logo.svg"
+                  alt="HeritageHouse Ministries logo"
                   width={44}
                   height={44}
                 />
                 <div className="flex flex-col gap-0.5">
                   <span className="font-body text-white text-sm tracking-widest uppercase">
-                    GOD'S OWN FAVOUR PROPHETIC MINISTRY
+                    HeritageHouse Ministries
                   </span>
                   <span className="font-body text-white/35 text-xs">
-                    Alesa· Eleme, Rivers State
+                    Port Harcourt, Rivers State
                   </span>
                 </div>
               </div>
@@ -55,7 +55,7 @@ const Footer = () => {
           {/* Bottom bar */}
           <div className="mt-8 pt-6 border-t border-white/10 flex flex-col items-center gap-2 text-center">
             <span className="font-body text-white/25 text-xs">
-              &copy; {new Date().getFullYear()} God's Own Favour Prophetic Ministry, Eleme. All rights reserved.
+              &copy; {new Date().getFullYear()} HeritageHouse Ministries, Port Harcourt. All rights reserved.
             </span>
             <Link
               href="/admin-login"

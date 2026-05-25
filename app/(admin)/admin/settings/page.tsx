@@ -46,11 +46,11 @@ interface SiteSettings {
 }
 
 const defaults: SiteSettings = {
-  churchName: "Assemblies Of God Church",
-  tagline: "Choba 2 · Port Harcourt",
-  address: "Assemblies Of God Church, Choba, Port Harcourt, Rivers State",
+  churchName: "HeritageHouse Ministries",
+  tagline: "Port Harcourt · Rivers State",
+  address: "HeritageHouse Ministries, Port Harcourt, Rivers State",
   phone: "+234 801 234 5678",
-  email: "hello@agchurch.org",
+  email: "hello@heritagehouse.org",
   mondayTime: "",
   mondayHidden: true,
   tuesdayTime: "",
@@ -71,14 +71,14 @@ const defaults: SiteSettings = {
   pastorPhotoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces",
   pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
   pastorHidden: false,
-  youtubeUrl: "https://www.youtube.com/@AssembliesOfGodChoba2",
+  youtubeUrl: "https://www.youtube.com/@HeritageHouseMinistries",
   facebookUrl: "",
   instagramUrl: "",
   twitterUrl: "",
   whatsappNumber: "",
   guidanceText: "If this message has stirred something in your heart, or if you're facing challenges and need someone to talk to, we're here for you. Our pastoral team is available for guidance, prayer, and counselling.",
   guidancePhone: "+234 801 234 5678",
-  guidanceEmail: "counselling@agchurch.org",
+  guidanceEmail: "counselling@heritagehouse.org",
 };
 
 const inputClass =

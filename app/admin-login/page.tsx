@@ -57,7 +57,7 @@ function AdminLoginForm() {
       <div className="relative z-10 w-full max-w-sm flex flex-col gap-8">
         <div className="flex flex-col gap-1">
           <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">
-            Assemblies Of God Church
+            HeritageHouse Ministries
           </span>
           <h1 className="font-heading text-white font-black text-4xl leading-none tracking-tight">
             Admin

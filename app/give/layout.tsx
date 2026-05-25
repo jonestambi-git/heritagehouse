@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Give",
-  description: "Support the work of Assemblies Of God Church through your generous giving.",
+  description: "Support the work of HeritageHouse Ministries through your generous giving.",
   openGraph: {
-    title: "Give | AG Church",
+    title: "Give | HeritageHouse Ministries",
     description: "Partner with us through your giving and help advance the Kingdom.",
   },
 };

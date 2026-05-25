@@ -10,6 +10,7 @@ import { useAuthStore } from "@/lib/stores/authStore";
 import { getDailyPhoto } from "@/lib/church-photos";
 import { API_BASE_URL } from "@/lib/constants/config";
 import Link from "next/link";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 type GivingType =
   | "Tithe"
@@ -218,16 +219,16 @@ export default function GivePage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight text-center mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -248,7 +249,8 @@ export default function GivePage() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm text-center"
+          className="mt-4 text-center max-w-sm leading-relaxed"
+          style={{ ...typography.body, color: colors.text.secondary }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -280,20 +282,20 @@ export default function GivePage() {
                     whileHover={{ scale: 1.05 }}
                   >
                     <span
-                      className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-xs font-body font-bold transition-all duration-300 ${
+                      className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                         isCurrent
                           ? "border-2 border-white bg-white text-black shadow-lg shadow-white/20"
                           : isCompleted
                             ? "border-2 border-white/60 bg-white/20 text-white"
                             : "border border-white/30 text-white/50"
                       }`}
-                      style={{ borderRadius: "8px" }}
+                      style={{ borderRadius: "8px", ...typography.label }}
                     >
                       {isCompleted ? "✓" : i + 1}
                     </span>
-                    <span className={`font-body text-[11px] tracking-widest uppercase hidden sm:block transition-colors ${
+                    <span className={`text-[11px] tracking-widest uppercase hidden sm:block transition-colors ${
                       isCurrent ? "text-white font-semibold" : "text-white/60"
-                    }`}>
+                    }`} style={{ ...typography.label }}>
                       {s === "amount"
                         ? "Amount"
                         : s === "details"
@@ -339,7 +341,7 @@ export default function GivePage() {
                 >
                   {/* Enhanced Giving type buttons */}
                   <div className="flex flex-col gap-3">
-                    <label className="font-body text-white/50 text-xs tracking-widest uppercase">
+                    <label style={{ ...typography.label, color: colors.text.secondary }}>
                       Giving type
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -349,12 +351,12 @@ export default function GivePage() {
                           onClick={() => setGivingType(o.type)}
                           whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
-                          className={`font-body text-xs tracking-widest uppercase px-4 py-3 border transition-all duration-300 ${
+                          className={`text-xs tracking-widest uppercase px-4 py-3 border transition-all duration-300 ${
                             givingType === o.type
                               ? "bg-white text-black border-white shadow-lg shadow-white/20"
                               : "border-white/25 text-white/70 hover:border-white/50 hover:text-white hover:bg-white/5"
                           }`}
-                          style={{ borderRadius: "10px" }}
+                          style={{ borderRadius: "10px", ...typography.label }}
                         >
                           {o.type}
                         </motion.button>
@@ -365,16 +367,17 @@ export default function GivePage() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="p-4 border-l-2 border-white/30"
+                      className="p-4 border-l-2"
                       style={{
-                        background: "rgba(0,0,0,0.35)",
+                        background: colors.background.glassLight,
+                        borderColor: colors.border.light,
                         borderRadius: "0 8px 8px 0",
                       }}
                     >
-                      <p className="font-body text-white/60 text-sm leading-relaxed">
+                      <p style={{ ...typography.body, color: colors.text.secondary }}>
                         {selectedOption.description}
                       </p>
-                      <p className="font-body text-white/35 text-xs italic mt-2">
+                      <p style={{ ...typography.small, color: colors.text.tertiary, marginTop: "8px", fontStyle: "italic" }}>
                         {selectedOption.scripture}
                       </p>
                     </motion.div>
@@ -396,7 +399,7 @@ export default function GivePage() {
 
                   {/* Enhanced Preset amounts */}
                   <div className="flex flex-col gap-3">
-                    <label className="font-body text-white/50 text-xs tracking-widest uppercase">
+                    <label style={{ ...typography.label, color: colors.text.secondary }}>
                       Select amount
                     </label>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
@@ -409,7 +412,7 @@ export default function GivePage() {
                           }}
                           whileHover={{ scale: 1.05, y: -3 }}
                           whileTap={{ scale: 0.95 }}
-                          className={`font-body text-sm font-bold py-4 border-2 transition-all duration-300 relative overflow-hidden ${
+                          className={`text-sm font-bold py-4 border-2 transition-all duration-300 relative overflow-hidden ${
                             preset === a
                               ? "bg-white text-black border-white shadow-xl shadow-white/25"
                               : "border-white/30 text-white/80 hover:border-white/60 hover:text-white hover:bg-white/10"
@@ -432,11 +435,11 @@ export default function GivePage() {
 
                   {/* Enhanced Custom amount */}
                   <div className="flex flex-col gap-3">
-                    <label className="font-body text-white/50 text-xs tracking-widest uppercase">
+                    <label style={{ ...typography.label, color: colors.text.secondary }}>
                       Or enter custom amount
                     </label>
                     <div className="relative max-w-md">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-body text-white/50 text-lg font-semibold">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold" style={{ color: colors.text.tertiary }}>
                         ₦
                       </span>
                       <Input
@@ -501,18 +504,18 @@ export default function GivePage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1">
-                      <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                      <label style={{ ...typography.label, color: colors.accent }}>
                         Full name
                       </label>
                       <Input
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Your full name"
-                        className={inputClass}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:border-white/60 focus-visible:ring-0 rounded-none h-10"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                      <label style={{ ...typography.label, color: colors.accent }}>
                         Email
                       </label>
                       <Input
@@ -520,13 +523,13 @@ export default function GivePage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="you@example.com"
-                        className={inputClass}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:border-white/60 focus-visible:ring-0 rounded-none h-10"
                       />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                    <label style={{ ...typography.label, color: colors.accent }}>
                       Phone{" "}
                       <span className="normal-case opacity-50">(optional)</span>
                     </label>
@@ -535,12 +538,12 @@ export default function GivePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+234 800 000 0000"
-                      className={`${inputClass} max-w-xs`}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:border-white/60 focus-visible:ring-0 rounded-none h-10 max-w-xs"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                    <label style={{ ...typography.label, color: colors.accent }}>
                       Note{" "}
                       <span className="normal-case opacity-50">(optional)</span>
                     </label>
@@ -549,7 +552,8 @@ export default function GivePage() {
                       onChange={(e) => setNote(e.target.value)}
                       rows={3}
                       placeholder="Any message for the church..."
-                      className="bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:border-white/60 px-3 py-2.5 font-body text-sm resize-none"
+                      className="bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:border-white/60 px-3 py-2.5 text-sm resize-none"
+                      style={{ ...typography.small }}
                     />
                   </div>
 
@@ -612,12 +616,9 @@ export default function GivePage() {
                   </button>
 
                   {/* Summary card */}
-                  <div className="divide-y divide-white/10" style={{
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    borderRadius: "16px",
+                  <div className="divide-y" style={{
+                    ...glass.light,
+                    borderColor: colors.border.light,
                     boxShadow: "0 4px 24px rgba(0,0,0,0.28)",
                     overflow: "hidden",
                   }}>
@@ -639,10 +640,10 @@ export default function GivePage() {
                         key={label}
                         className="flex justify-between gap-4 px-5 py-3"
                       >
-                        <span className="font-body text-white/40 text-xs tracking-widest uppercase flex-shrink-0">
+                        <span style={{ ...typography.label, color: colors.text.muted }}>
                           {label}
                         </span>
-                        <span className="font-body text-white text-xs text-right">
+                        <span style={{ ...typography.small, color: colors.text.primary, textAlign: "right" }}>
                           {value}
                         </span>
                       </div>
@@ -710,32 +711,32 @@ export default function GivePage() {
                   transition={{ duration: 0.5 }}
                   className="flex flex-col gap-5 py-4"
                 >
-                  <span className="font-body text-white/40 text-xs tracking-widest uppercase">
+                  <span style={{ ...typography.label, color: colors.text.muted }}>
                     Gift received
                   </span>
                   <p
-                    className="font-heading text-white font-black leading-[0.92] tracking-tight"
-                    style={{ fontSize: "clamp(2rem, 7vw, 4rem)" }}
+                    className="font-black leading-[0.92] tracking-tight"
+                    style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
                   >
                     Thank you,
                     <br />
                     {fullName.split(" ")[0] || "friend"}.
                   </p>
-                  <p className="font-body text-white/65 text-sm leading-relaxed max-w-sm">
+                  <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "32rem" }}>
                     {completionMessage}
                   </p>
                   <div className="flex gap-3 flex-wrap mt-2">
                     <Button
                       variant="outline"
                       onClick={reset}
-                      className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-7"
+                      className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-semibold tracking-wide rounded-none px-7"
                     >
                       Give again
                     </Button>
                     <Button
                       variant="ghost"
                       asChild
-                      className="text-white/50 hover:text-white hover:bg-transparent font-body text-sm tracking-wide rounded-none px-0 underline underline-offset-4"
+                      className="text-white/50 hover:text-white hover:bg-transparent text-sm tracking-wide rounded-none px-0 underline underline-offset-4"
                     >
                       <Link href="/">Return home</Link>
                     </Button>
@@ -757,17 +758,14 @@ export default function GivePage() {
               <motion.div
                 className="p-6"
                 style={{
-                  background: "rgba(0,0,0,0.5)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
-                  border: "1px solid rgba(212,175,55,0.25)",
-                  borderRadius: "20px",
+                  ...glass.base,
+                  border: `1px solid ${colors.border.accent}`,
                   boxShadow: "0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
                 }}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
-                <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-2">
+                <p style={{ ...typography.label, color: colors.text.muted, marginBottom: "8px" }}>
                   Your gift
                 </p>
                 <motion.p
@@ -775,16 +773,16 @@ export default function GivePage() {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.3 }}
-                  className="font-heading text-white font-black leading-none tracking-tight"
-                  style={{ fontSize: "clamp(2.5rem, 7vw, 4rem)" }}
+                  className="font-black leading-none tracking-tight"
+                  style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
                 >
                   {displayAmount}
                 </motion.p>
                 <div className="flex items-center gap-2 mt-3">
-                  <span className="px-2 py-1 bg-white/15 border border-white/20 font-body text-white/70 text-[10px] tracking-wider uppercase" style={{ borderRadius: "6px" }}>
+                  <span className="px-2 py-1 bg-white/15 border border-white/20 text-white/70 text-[10px] tracking-wider uppercase" style={{ borderRadius: "6px", ...typography.label }}>
                     {frequency}
                   </span>
-                  <span className="px-2 py-1 bg-white/15 border border-white/20 font-body text-white/70 text-[10px] tracking-wider uppercase" style={{ borderRadius: "6px" }}>
+                  <span className="px-2 py-1 bg-white/15 border border-white/20 text-white/70 text-[10px] tracking-wider uppercase" style={{ borderRadius: "6px", ...typography.label }}>
                     {givingType}
                   </span>
                 </div>
@@ -796,21 +794,20 @@ export default function GivePage() {
               className="pl-6 py-5 pr-5"
               style={{
                 background: "linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
-                backdropFilter: "blur(14px)",
-                WebkitBackdropFilter: "blur(14px)",
-                borderLeft: "3px solid rgba(255,255,255,0.35)",
+                ...glass.light,
+                borderLeft: `3px solid ${colors.border.light}`,
                 borderRadius: "0 16px 16px 0",
                 boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
               }}
               whileHover={{ x: 4 }}
               transition={{ duration: 0.3 }}
             >
-              <p className="font-heading text-white/90 font-black text-lg sm:text-xl leading-snug italic">
+              <p className="font-black text-lg sm:text-xl leading-snug italic" style={{ ...typography.h3, color: colors.text.primary, fontFamily: fonts.serif }}>
                 &quot;Each of you should give what you have decided in your
                 heart to give, not reluctantly or under compulsion, for God
                 loves a cheerful giver.&quot;
               </p>
-              <p className="font-body text-white/40 text-xs mt-3 tracking-wide">
+              <p style={{ ...typography.small, color: colors.text.tertiary, marginTop: "12px", letterSpacing: "0.05em" }}>
                 2 Corinthians 9:7
               </p>
             </motion.div>
@@ -820,10 +817,7 @@ export default function GivePage() {
               className="flex flex-col gap-0"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.15)",
-                borderRadius: "20px",
+                ...glass.light,
                 boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
                 padding: "1.25rem 1.5rem",
               }}
@@ -831,7 +825,7 @@ export default function GivePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2, duration: 0.6 }}
             >
-              <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-4">
+              <p style={{ ...typography.label, color: colors.text.muted, marginBottom: "16px" }}>
                 Where your giving goes
               </p>
               {[
@@ -843,12 +837,13 @@ export default function GivePage() {
               ].map((item, idx) => (
                 <motion.div
                   key={item.label}
-                  className="flex items-center gap-3 border-t border-white/10 py-3"
+                  className="flex items-center gap-3 border-t py-3"
+                  style={{ borderColor: colors.border.light }}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.3 + idx * 0.1, duration: 0.4 }}
                 >
-                  <span className="font-body text-white/65 text-xs flex-1">
+                  <span style={{ ...typography.small, color: colors.text.secondary, flex: 1 }}>
                     {item.label}
                   </span>
                   <div className="w-28 h-1.5 bg-white/10 relative overflow-hidden" style={{ borderRadius: "4px" }}>
@@ -860,7 +855,7 @@ export default function GivePage() {
                       transition={{ delay: 1.4 + idx * 0.1, duration: 0.8, ease: "easeOut" }}
                     />
                   </div>
-                  <span className="font-body text-white/50 text-xs font-semibold w-8 text-right">
+                  <span style={{ ...typography.small, color: colors.text.secondary, fontWeight: 600, width: "32px", textAlign: "right" }}>
                     {item.pct}%
                   </span>
                 </motion.div>

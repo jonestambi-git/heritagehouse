@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with Assemblies Of God Church. Send a message, prayer request, or general inquiry.",
+  description: "Get in touch with HeritageHouse Ministries. Send a message, prayer request, or general inquiry.",
   openGraph: {
-    title: "Contact | AG Church",
+    title: "Contact | HeritageHouse Ministries",
     description: "Reach out to us with questions, prayer requests, or to learn more about our community.",
   },
 };

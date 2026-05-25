@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,13 +70,17 @@ export default function CommunityPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
 
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="text-white font-black leading-[0.92] tracking-tight text-center"
+          style={{
+            ...typography.h1,
+            fontFamily: fonts.serif,
+            marginTop: "clamp(1rem, 3vw, 2rem)",
+          }}
         >
           <motion.span className="block" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }}>
             Better
@@ -86,7 +91,13 @@ export default function CommunityPage() {
         </motion.h1>
 
         <motion.p
-          className="mt-8 sm:mt-12 font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm text-center"
+          style={{
+            ...typography.body,
+            color: colors.text.secondary,
+            maxWidth: "28rem",
+            textAlign: "center",
+            marginTop: "clamp(2rem, 4vw, 3rem)",
+          }}
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.7 }}
@@ -95,16 +106,16 @@ export default function CommunityPage() {
         </motion.p>
 
         <motion.div
-          className="mt-12 sm:mt-16 w-full max-w-4xl"
+          className={`w-full max-w-4xl ${spacing.marginTopLg}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.05, duration: 0.7 }}
         >
-          <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div className={`flex items-end justify-between mb-6 flex-wrap ${spacing.spacingSm}`}>
             <div>
-              <h2 className="font-body text-xs tracking-widest uppercase mb-1" style={{ color:"#42a7c0" }}>Life groups</h2>
+              <h2 style={{ ...typography.label, color: colors.primary, marginBottom: "0.25rem" }}>Life groups</h2>
               {!loading && (
-                <p className="font-body text-white/40 text-xs">
+                <p style={{ ...typography.small, color: colors.text.tertiary }}>
                   {filtered.length} {filtered.length === 1 ? "group" : "groups"} available
                 </p>
               )}
@@ -143,8 +154,8 @@ export default function CommunityPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <p className="font-heading text-white/20 font-black text-4xl">No groups yet</p>
-              <p className="font-body text-white/35 text-sm max-w-xs">
+              <p style={{ ...typography.h2, fontFamily: fonts.serif, color: colors.text.muted }}>No groups yet</p>
+              <p style={{ ...typography.body, color: colors.text.tertiary, maxWidth: "20rem" }}>
                 {activeTag === "ALL"
                   ? "Community groups will appear here once the admin adds them."
                   : `No ${tagLabels[activeTag as GroupTag]} groups at the moment.`}

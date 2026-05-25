@@ -9,7 +9,7 @@ export const revalidate = 3600; // ISR: rebuild this page every hour
 export const metadata: Metadata = {
   title: "Media",
   description:
-    "Listen to audio messages and watch recorded services from Assemblies Of God Church, Choba 2.",
+    "Listen to audio messages and watch recorded services from HeritageHouse Ministries, Port Harcourt.",
 };
 
 function getTagText(xml: string, tag: string): string {

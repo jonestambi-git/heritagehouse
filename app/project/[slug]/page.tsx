@@ -52,24 +52,12 @@ export default function ProjectDetailPage({
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-<<<<<<< HEAD
       <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
-=======
-      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Loading */}
-        {loading && (
-          <motion.div className="mt-16 flex flex-col gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <div className="h-8 w-64 bg-white/8 animate-pulse rounded" />
-            <div className="h-4 w-40 bg-white/5 animate-pulse rounded" />
-          </motion.div>
-        )}
-
->>>>>>> b26331d621b95c37a421480224b6fa0dffe3d0bb
         {/* Not found */}
         {!loading && !project && (
           <motion.div
@@ -253,7 +241,7 @@ export default function ProjectDetailPage({
                     Zenith Bank
                   </span>
                   <span className="font-body text-white/50 text-[11px] leading-relaxed uppercase tracking-wide">
-                    Assemblies of God 2 Choba — Proj Account
+                    HeritageHouse Ministries — Proj Account
                   </span>
                 </motion.div>
               </div>

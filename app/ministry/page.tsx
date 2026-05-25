@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -171,16 +172,16 @@ export default function MinistryPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight text-center mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -207,7 +208,7 @@ export default function MinistryPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.7 }}
         >
-          <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
+          <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
             Every believer is called to serve. Our ministries are the hands and
             feet of this church — each one a place where your gifts, your time,
             and your story become part of something greater than yourself.
@@ -216,12 +217,7 @@ export default function MinistryPage() {
           <div
             className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px"
             style={{
-              background: "rgba(0,0,0,0.45)",
-              backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "16px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+              ...glass.light,
               overflow: "hidden",
             }}
           >
@@ -229,15 +225,15 @@ export default function MinistryPage() {
               <motion.div
                 key={s.label}
                 className="flex flex-col gap-0.5 px-4 py-4"
-                style={{ background: "rgba(0,0,0,0.18)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
+                style={{ background: colors.background.glassLight, backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
               >
-                <span className="font-heading text-white font-black text-2xl sm:text-3xl leading-none">
+                <span className="font-black text-2xl sm:text-3xl leading-none" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
                   {s.value}
                 </span>
-                <span className="font-body text-white/45 text-[10px] tracking-widest uppercase mt-1">
+                <span style={{ ...typography.label, color: colors.text.tertiary, marginTop: "4px" }}>
                   {s.label}
                 </span>
               </motion.div>
@@ -253,7 +249,7 @@ export default function MinistryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.7 }}
           >
-            <p className="font-body text-xs tracking-widest uppercase mb-6" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent, marginBottom: "24px" }}>
               Our Leadership
             </p>
 
@@ -295,18 +291,19 @@ export default function MinistryPage() {
                     {/* Text pinned to bottom */}
                     <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
                       <span
-                        className="inline-block font-body text-[8px] sm:text-[10px] tracking-widest uppercase px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
+                        className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
                         style={{
                           background: "rgba(255,255,255,0.15)",
-                          border: "1px solid rgba(255,255,255,0.25)",
+                          border: `1px solid ${colors.border.light}`,
                           borderRadius: "6px",
-                          color: "rgba(255,255,255,0.8)",
+                          color: colors.text.secondary,
                           backdropFilter: "blur(8px)",
+                          ...typography.label,
                         }}
                       >
                         Lead Pastor
                       </span>
-                      <h3 className="font-heading text-white font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight">
+                      <h3 className="font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
                         {settings.pastorName}
                       </h3>
                     </div>
@@ -348,18 +345,19 @@ export default function MinistryPage() {
 
                     <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
                       <span
-                        className="inline-block font-body text-[8px] sm:text-[10px] tracking-widest uppercase px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
+                        className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
                         style={{
                           background: "rgba(255,255,255,0.15)",
-                          border: "1px solid rgba(255,255,255,0.25)",
+                          border: `1px solid ${colors.border.light}`,
                           borderRadius: "6px",
-                          color: "rgba(255,255,255,0.8)",
+                          color: colors.text.secondary,
                           backdropFilter: "blur(8px)",
+                          ...typography.label,
                         }}
                       >
                         Pastor&apos;s Wife
                       </span>
-                      <h3 className="font-heading text-white font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight">
+                      <h3 className="font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
                         {settings.pastorWifeName}
                       </h3>
                     </div>
@@ -378,7 +376,7 @@ export default function MinistryPage() {
           transition={{ delay: 1.05, duration: 0.7 }}
         >
           <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
-            <h2 className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <h2 style={{ ...typography.label, color: colors.accent }}>
               Ministries
             </h2>
 
@@ -391,11 +389,16 @@ export default function MinistryPage() {
                     setActiveTag(tag);
                     setExpandedId(null);
                   }}
-                  className={`font-body text-xs tracking-widest uppercase px-3 py-1 border transition-all duration-200 ${
+                  className={`transition-all duration-200 ${
                     activeTag === tag
                       ? `${tagActiveBg[tag]} border-transparent`
                       : "border-white/25 text-white/60 hover:border-white/50 hover:text-white bg-transparent"
                   }`}
+                  style={{
+                    ...typography.label,
+                    padding: "6px 12px",
+                    border: "1px solid",
+                  }}
                 >
                   {tag === "All" ? "All" : tagLabels[tag as MinistryTag]}
                 </button>
@@ -426,7 +429,8 @@ export default function MinistryPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ delay: i * 0.04, duration: 0.3 }}
-                    className="border-t border-white/20"
+                    className="border-t"
+                    style={{ borderColor: colors.border.light }}
                   >
                     <button
                       onClick={() => setExpandedId(isOpen ? null : id)}
@@ -434,25 +438,25 @@ export default function MinistryPage() {
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
+                          <span className="font-semibold text-sm sm:text-base group-hover:opacity-80 transition-opacity" style={{ ...typography.body, color: colors.text.primary }}>
                             {ministry.name}
                           </span>
-                          <span className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[ministry.tag]}`}>
+                          <span className={`${tagColors[ministry.tag]}`} style={{ ...typography.label, padding: "4px 8px" }}>
                             {tagLabels[ministry.tag]}
                           </span>
                           {ministry.spots !== null && (
-                            <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-rose-500/20 text-rose-300">
+                            <span className="bg-rose-500/20 text-rose-300" style={{ ...typography.label, padding: "4px 8px" }}>
                               {ministry.spots} spots left
                             </span>
                           )}
                         </div>
-                        <span className="font-body text-white/45 text-xs">
+                        <span style={{ ...typography.small, color: colors.text.tertiary }}>
                           {ministry.meets} · Led by {ministry.leader}
                         </span>
                       </div>
                       <span
-                        className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300 inline-block"
-                        style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                        className="text-lg mt-0.5 group-hover:opacity-70 transition-all duration-300 inline-block"
+                        style={{ color: colors.text.tertiary, transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
                       >
                         +
                       </span>
@@ -468,13 +472,13 @@ export default function MinistryPage() {
                           className="overflow-hidden"
                         >
                           <div className="pb-6 pr-8 flex flex-col gap-4 max-w-lg">
-                            <p className="font-body text-white/70 text-sm leading-relaxed">
+                            <p style={{ ...typography.body, color: colors.text.secondary }}>
                               {ministry.bio}
                             </p>
                             <Button
                               variant="outline"
                               size="sm"
-                              className="self-start border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
+                              className="self-start border-white/40 text-white bg-transparent hover:bg-white hover:text-black tracking-wide rounded-none text-xs px-5"
                               asChild
                             >
                               <a href="/contact">Volunteer</a>
@@ -495,8 +499,8 @@ export default function MinistryPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <p className="font-heading text-white/20 font-black text-4xl">No ministries yet</p>
-              <p className="font-body text-white/35 text-sm max-w-xs">
+              <p className="font-black text-4xl" style={{ ...typography.h1, color: colors.text.muted, fontFamily: fonts.serif }}>No ministries yet</p>
+              <p style={{ ...typography.body, color: colors.text.tertiary, maxWidth: "20rem" }}>
                 {activeTag === "All"
                   ? "Ministries will appear here once the admin adds them."
                   : `No ${tagLabels[activeTag as MinistryTag]} ministries at the moment.`}
@@ -507,12 +511,13 @@ export default function MinistryPage() {
 
         {/* ── How to get involved ───────────────────────── */}
         <motion.div
-          className="mt-16 sm:mt-20 border-t border-white/20 pt-10 w-full max-w-4xl"
+          className="mt-16 sm:mt-20 border-t pt-10 w-full max-w-4xl"
+          style={{ borderColor: colors.border.light }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.7 }}
         >
-          <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-8">
+          <p style={{ ...typography.label, color: colors.text.muted, marginBottom: "32px" }}>
             How it works
           </p>
 
@@ -538,24 +543,20 @@ export default function MinistryPage() {
                 key={item.step}
                 className="flex flex-col gap-3 px-6 py-7"
                 style={{
-                  background: "rgba(0,0,0,0.45)",
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  borderRadius: "14px",
+                  ...glass.light,
                   boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
                 }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.28 + i * 0.08, duration: 0.5 }}
               >
-                <span className="font-heading text-white/20 font-black text-4xl leading-none">
+                <span className="font-black text-4xl leading-none" style={{ ...typography.h1, color: colors.text.muted, fontFamily: fonts.serif }}>
                   {item.step}
                 </span>
-                <span className="font-heading text-white font-black text-lg leading-tight">
+                <span className="font-black text-lg leading-tight" style={{ ...typography.h3, color: colors.text.primary, fontFamily: fonts.serif }}>
                   {item.title}
                 </span>
-                <p className="font-body text-white/60 text-sm leading-relaxed">
+                <p style={{ ...typography.body, color: colors.text.secondary }}>
                   {item.body}
                 </p>
               </motion.div>
@@ -567,11 +568,8 @@ export default function MinistryPage() {
         <motion.div
           className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-6 w-full max-w-4xl"
           style={{
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "20px",
+            ...glass.light,
+            border: `1px solid ${colors.border.light}`,
             boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
             padding: "2rem",
           }}
@@ -580,10 +578,10 @@ export default function MinistryPage() {
           transition={{ delay: 1.3, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent }}>
               Ready to serve?
             </p>
-            <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
+            <p className="font-black text-2xl sm:text-3xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               Your gift was made
               <br />
               for a moment like this.
@@ -592,14 +590,14 @@ export default function MinistryPage() {
           <div className="flex gap-3 flex-wrap">
             <Button
               variant="outline"
-              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-7"
+              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-semibold tracking-wide rounded-none px-7"
               asChild
             >
               <a href="/contact">Talk to a pastor</a>
             </Button>
             <Button
               variant="ghost"
-              className="text-white/55 hover:text-white hover:bg-transparent font-body tracking-wide rounded-none px-0 underline underline-offset-4"
+              className="text-white/55 hover:text-white hover:bg-transparent font-semibold tracking-wide rounded-none px-0 underline underline-offset-4"
               asChild
             >
               <a href="/community">See life groups</a>

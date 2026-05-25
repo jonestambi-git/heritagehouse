@@ -5,19 +5,9 @@ import { useState } from "react";
 import type { PodcastFeed } from "@/app/api/podcast-feed/route";
 import PodcastEpisodes from "@/components/PodcastEpisodes";
 import YouTubeVideos from "@/components/YouTubeVideos";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 type Tab = "audio" | "video";
-
-// ─── Glass styles ─────────────────────────────────────────────────────────────
-
-const glass: React.CSSProperties = {
-  background: "rgba(255,255,255,0.07)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  borderRadius: "16px",
-  boxShadow: "0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -35,12 +25,12 @@ export default function MediaClient({
       {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className={`public-content relative flex flex-col min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`}>
 
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -61,7 +51,8 @@ export default function MediaClient({
         </motion.h1>
 
         <motion.p
-          className="mt-4 font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-sm"
+          className="mt-4 leading-relaxed max-w-sm"
+          style={{ ...typography.body, color: colors.text.secondary }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
@@ -80,22 +71,23 @@ export default function MediaClient({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className="font-body text-xs tracking-widest uppercase px-5 py-2 transition-all duration-200"
+              className="transition-all duration-200"
               style={
                 activeTab === tab
                   ? {
-                      background: "rgba(255,255,255,0.15)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                      border: "1px solid rgba(255,255,255,0.30)",
-                      borderRadius: "10px",
-                      color: "rgba(255,255,255,1)",
+                      ...typography.label,
+                      ...glass.light,
+                      padding: "10px 20px",
+                      color: colors.text.primary,
+                      border: `1px solid ${colors.border.light}`,
                     }
                   : {
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid rgba(255,255,255,0.10)",
+                      ...typography.label,
+                      background: colors.background.glassLight,
+                      border: `1px solid ${colors.border.lighter}`,
+                      padding: "10px 20px",
                       borderRadius: "10px",
-                      color: "rgba(255,255,255,0.45)",
+                      color: colors.text.tertiary,
                     }
               }
             >
@@ -116,13 +108,13 @@ export default function MediaClient({
             {feed ? (
               <PodcastEpisodes feed={feed} />
             ) : (
-              <div className="px-6 py-8 flex flex-col gap-3" style={glass}>
-                <p className="font-body text-white/60 text-sm leading-relaxed">
+              <div className="px-6 py-8 flex flex-col gap-3" style={glass.light}>
+                <p style={{ ...typography.body, color: colors.text.secondary }}>
                   Audio messages are not yet configured.
                 </p>
-                <p className="font-body text-white/35 text-xs leading-relaxed max-w-md">
+                <p style={{ ...typography.small, color: colors.text.tertiary, maxWidth: "28rem" }}>
                   Set the{" "}
-                  <code className="text-white/50">PODCAST_RSS_URL</code>{" "}
+                  <code style={{ color: colors.text.secondary }}>PODCAST_RSS_URL</code>{" "}
                   environment variable to your Spotify for Podcasters RSS feed
                   URL. Episodes will appear here automatically.
                 </p>
@@ -148,11 +140,8 @@ export default function MediaClient({
         <motion.div
           className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
           style={{
-            background: "rgba(255,255,255,0.06)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "20px",
+            ...glass.light,
+            border: `1px solid ${colors.border.light}`,
             boxShadow:
               "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
             padding: "2rem",
@@ -162,10 +151,10 @@ export default function MediaClient({
           transition={{ delay: 1.2, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+            <p style={{ ...typography.label, color: colors.text.secondary }}>
               Join us live
             </p>
-            <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
+            <p className="font-black text-2xl sm:text-3xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               Experience worship
               <br />
               in person.
@@ -174,13 +163,17 @@ export default function MediaClient({
           <div className="flex gap-3 flex-wrap">
             <a
               href="/live-service"
-              className="border border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide px-7 py-2 text-sm transition-colors"
+              className="border text-white bg-transparent hover:bg-white hover:text-black tracking-wide px-7 py-2 text-sm transition-colors"
+              style={{ borderColor: colors.border.light }}
             >
               Watch live stream
             </a>
             <a
               href="/location"
-              className="text-white/55 hover:text-white font-body tracking-wide px-0 py-2 text-sm underline underline-offset-4 transition-colors"
+              className="tracking-wide px-0 py-2 text-sm underline underline-offset-4 transition-colors"
+              style={{ color: colors.text.secondary }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = colors.text.primary)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = colors.text.secondary)}
             >
               Find us
             </a>

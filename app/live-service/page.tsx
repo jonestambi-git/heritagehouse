@@ -9,6 +9,7 @@ import {
   useLivestreamSchedule,
 } from "@/lib/hooks/queries";
 import { toYouTubeEmbedUrl, toYouTubeVideoId, toYouTubeWatchUrl } from "@/lib/utils/youtube";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 export default function LiveServicePage() {
   const bgUrl = getDailyPhoto(1);
@@ -47,13 +48,13 @@ export default function LiveServicePage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
 
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="font-black leading-[0.92] tracking-tight text-center mt-4 sm:mt-6"
+          style={{ ...typography.h1, color: colors.text.primary, fontFamily: fonts.serif }}
         >
           <motion.span
             className="block"
@@ -79,13 +80,13 @@ export default function LiveServicePage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
         >
-          <span className="flex items-center gap-2 font-body text-xs tracking-widest uppercase text-white border border-white/30 px-3 py-1.5">
+          <span className="flex items-center gap-2 border px-3 py-1.5" style={{ ...typography.label, color: colors.text.primary, borderColor: colors.border.light, borderRadius: "6px" }}>
             <span
               className={`w-2 h-2 rounded-full ${isLive ? "bg-red-500 animate-pulse" : "bg-white/35"}`}
             />
             {isLive ? "Live now" : "Offline"}
           </span>
-          <span className="font-body text-white/40 text-xs tracking-wide">
+          <span style={{ ...typography.small, color: colors.text.tertiary }}>
             {serviceTitle}
           </span>
         </motion.div>
@@ -97,7 +98,7 @@ export default function LiveServicePage() {
           transition={{ delay: 1.0, duration: 0.7 }}
         >
           <div className="flex flex-col gap-6">
-            <div className="relative w-full aspect-video bg-black/50 border border-white/15 overflow-hidden">
+            <div className="relative w-full aspect-video bg-black/50 border overflow-hidden" style={{ borderColor: colors.border.light, borderRadius: "2px" }}>
               {isLive && embedUrl ? (
                 <iframe
                   className="absolute inset-0 w-full h-full"
@@ -108,7 +109,7 @@ export default function LiveServicePage() {
                 />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
-                  <div className="w-14 h-14 border border-white/20 flex items-center justify-center">
+                  <div className="w-14 h-14 border flex items-center justify-center" style={{ borderColor: colors.border.light, borderRadius: "2px" }}>
                     <svg
                       width="24"
                       height="24"
@@ -116,12 +117,12 @@ export default function LiveServicePage() {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1.5"
-                      className="text-white/40"
+                      style={{ color: colors.text.tertiary }}
                     >
                       <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
                   </div>
-                  <p className="font-body text-white/50 text-sm max-w-xs leading-relaxed">
+                  <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "20rem" }}>
                     No livestream is active right now. When the service is live,
                     this player will open the YouTube stream here.
                   </p>
@@ -129,7 +130,7 @@ export default function LiveServicePage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-white/30 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5 mt-1"
+                      className="border-white/30 text-white bg-transparent hover:bg-white hover:text-black tracking-wide rounded-none text-xs px-5 mt-1"
                       asChild
                     >
                       <a href={watchUrl} target="_blank" rel="noreferrer">
@@ -141,12 +142,12 @@ export default function LiveServicePage() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-start border-t border-white/20 pt-5">
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-start border-t pt-5" style={{ borderColor: colors.border.light }}>
               <div className="flex flex-col gap-1">
-                <h2 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
+                <h2 className="font-black text-xl sm:text-2xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
                   {serviceTitle}
                 </h2>
-                <p className="font-body text-white/65 text-sm leading-relaxed mt-2 max-w-md">
+                <p style={{ ...typography.body, color: colors.text.secondary, marginTop: "8px", maxWidth: "28rem" }}>
                   {serviceDesc}
                 </p>
               </div>
@@ -154,7 +155,7 @@ export default function LiveServicePage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
+                  className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black tracking-wide rounded-none text-xs px-5"
                   onClick={copyLink}
                 >
                   {copied ? "Copied!" : "Share"}
@@ -162,7 +163,7 @@ export default function LiveServicePage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-white/55 hover:text-white hover:bg-transparent font-body text-xs tracking-wide rounded-none px-0 underline underline-offset-4"
+                  className="text-white/55 hover:text-white hover:bg-transparent text-xs tracking-wide rounded-none px-0 underline underline-offset-4"
                   asChild
                 >
                   <a href="/give">Give online</a>
@@ -170,19 +171,12 @@ export default function LiveServicePage() {
               </div>
             </div>
 
-            <div className="p-4 sm:p-5" style={{
-              background: "rgba(0,0,0,0.45)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "16px",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
-            }}>
-              <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-3">
+            <div className="p-4 sm:p-5" style={glass.light}>
+              <p style={{ ...typography.label, color: colors.text.muted, marginBottom: "12px" }}>
                 Previous streams
               </p>
               {previousStreams.length === 0 ? (
-                <p className="font-body text-white/40 text-sm">
+                <p style={{ ...typography.body, color: colors.text.secondary }}>
                   Archived streams will appear here after you end a live
                   session.
                 </p>
@@ -194,17 +188,18 @@ export default function LiveServicePage() {
                       href={toYouTubeWatchUrl(stream.streamUrl)}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center justify-between gap-4 border-t border-white/10 pt-3 first:border-t-0 first:pt-0 hover:text-white transition-colors"
+                      className="flex items-center justify-between gap-4 border-t pt-3 first:border-t-0 first:pt-0 hover:text-white transition-colors"
+                      style={{ borderColor: colors.border.light }}
                     >
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="font-body text-white text-sm font-semibold truncate">
+                        <span className="font-semibold truncate" style={{ ...typography.body, color: colors.text.primary }}>
                           {stream.title}
                         </span>
-                        <span className="font-body text-white/35 text-xs">
+                        <span style={{ ...typography.small, color: colors.text.tertiary }}>
                           {stream.date}
                         </span>
                       </div>
-                      <span className="font-body text-white/40 text-xs shrink-0">
+                      <span style={{ ...typography.small, color: colors.text.tertiary, flexShrink: 0 }}>
                         Watch
                       </span>
                     </a>
@@ -218,19 +213,14 @@ export default function LiveServicePage() {
           <div
             className="flex flex-col overflow-hidden sticky top-4 self-start"
             style={{
-              background: "rgba(0,0,0,0.45)",
-              backdropFilter: "blur(18px)",
-              WebkitBackdropFilter: "blur(18px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "16px",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.28)",
+              ...glass.light,
               minHeight: "480px",
               height: "560px",
             }}
           >
-            <div className="px-4 py-3 border-b border-white/15 flex items-center justify-between shrink-0">
+            <div className="px-4 py-3 border-b flex items-center justify-between shrink-0" style={{ borderColor: colors.border.light }}>
               <div className="flex items-center gap-2">
-                <span className="font-body text-white/60 text-xs tracking-widest uppercase">
+                <span style={{ ...typography.label, color: colors.text.secondary }}>
                   Live chat
                 </span>
                 {isLive && (
@@ -242,7 +232,8 @@ export default function LiveServicePage() {
                   href={`https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${typeof window !== "undefined" ? window.location.hostname : "localhost"}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-body text-white/35 text-[10px] tracking-widest uppercase hover:text-white transition-colors"
+                  style={{ ...typography.label, color: colors.text.tertiary }}
+                  className="hover:text-white transition-colors"
                 >
                   Open ↗
                 </a>
@@ -267,11 +258,11 @@ export default function LiveServicePage() {
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.2"
-                    className="text-white/20"
+                    style={{ color: colors.text.muted }}
                   >
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
-                  <p className="font-body text-white/35 text-xs leading-relaxed">
+                  <p style={{ ...typography.small, color: colors.text.tertiary }}>
                     Live chat will appear here when the service is streaming.
                   </p>
                 </div>
@@ -283,11 +274,8 @@ export default function LiveServicePage() {
         <motion.div
           className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-5"
           style={{
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "20px",
+            ...glass.light,
+            border: `1px solid ${colors.border.light}`,
             boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
             padding: "1.5rem 2rem",
           }}
@@ -296,10 +284,10 @@ export default function LiveServicePage() {
           transition={{ delay: 1.25, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+            <p style={{ ...typography.label, color: colors.accent }}>
               Need prayer?
             </p>
-            <p className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
+            <p className="font-black text-xl sm:text-2xl leading-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
               We believe in the
               <br className="hidden sm:block" /> power of prayer.
             </p>
@@ -307,14 +295,14 @@ export default function LiveServicePage() {
           <div className="flex gap-3 flex-wrap">
             <Button
               variant="outline"
-              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-7"
+              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black tracking-wide rounded-none px-7"
               asChild
             >
               <a href="/contact">Submit a prayer request</a>
             </Button>
             <Button
               variant="ghost"
-              className="text-white/55 hover:text-white hover:bg-transparent font-body tracking-wide rounded-none px-0 underline underline-offset-4"
+              className="text-white/55 hover:text-white hover:bg-transparent tracking-wide rounded-none px-0 underline underline-offset-4"
               asChild
             >
               <a href="/events">Upcoming services</a>

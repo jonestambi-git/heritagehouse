@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Events",
-  description: "Upcoming services, prayer nights, youth programs, and outreach events at Assemblies Of God Church.",
+  description: "Upcoming services, prayer nights, youth programs, and outreach events at HeritageHouse Ministries.",
   openGraph: {
-    title: "Events | AG Church",
-    description: "What's happening at Assemblies Of God Church — services, prayer, youth, and outreach.",
+    title: "Events | HeritageHouse Ministries",
+    description: "What's happening at HeritageHouse Ministries — services, prayer, youth, and outreach.",
   },
 };
 

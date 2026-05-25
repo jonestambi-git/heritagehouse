@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { getDailyPhoto } from "@/lib/church-photos";
 import { API_BASE_URL } from "@/lib/constants/config";
+import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
 const contactDetails = [
   {
@@ -24,8 +25,8 @@ const contactDetails = [
   { label: "Phone", value: "+234 801 234 5678", href: "tel:+2348012345678" },
   {
     label: "Email",
-    value: "hello@agchurch.org",
-    href: "mailto:hello@agchurch.org",
+    value: "hello@heritagehouse.org",
+    href: "mailto:hello@heritagehouse.org",
   },
   {
     label: "Service Times",
@@ -78,16 +79,19 @@ export default function ContactPage() {
     <section className="relative w-full min-h-screen overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
       </div>
-      {/* Background */}
 
       {/* Content */}
-      <div className="public-content relative flex flex-col items-center px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+      <div className={`public-content relative flex flex-col items-center ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
         {/* Heading */}
         <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight text-center"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          className="text-white font-black leading-[0.92] tracking-tight text-center"
+          style={{
+            ...typography.h1,
+            fontFamily: fonts.serif,
+            marginTop: "clamp(1rem, 3vw, 2rem)",
+          }}
         >
           <motion.span
             className="block"
@@ -109,35 +113,41 @@ export default function ContactPage() {
 
         {/* Body */}
         <motion.div
-          className="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 flex-1 w-full max-w-5xl"
+          className={`w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 ${spacing.sectionGapLarge} flex-1 ${spacing.marginTopLg}`}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
         >
           {/* Left — details */}
-          <div className="flex flex-col gap-8">
-            <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
+          <div className="flex flex-col gap-6 sm:gap-8">
+            <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
               We&apos;d love to hear from you. Reach out with any questions,
               prayer requests, or if you&apos;d simply like to know more about
               our community.
             </p>
-            <dl className="flex flex-col gap-5">
+            <dl className="flex flex-col gap-4 sm:gap-5">
               {contactDetails.map((item, i) => (
                 <motion.div
                   key={item.label}
-                  className="flex flex-col border-t border-white/20 pt-4"
+                  className="flex flex-col border-t"
+                  style={{ borderColor: colors.border.light, paddingTop: "1rem" }}
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.1 + i * 0.1, duration: 0.6 }}
                 >
-                  <dt className="font-body text-white/45 text-xs tracking-widest uppercase mb-1">
+                  <dt style={{ ...typography.label, color: colors.text.tertiary, marginBottom: "0.25rem" }}>
                     {item.label}
                   </dt>
                   <dd>
                     {item.href ? (
                       <a
                         href={item.href}
-                        className="font-body text-white font-semibold text-sm sm:text-base hover:text-white/70 transition-colors"
+                        className="transition-colors"
+                        style={{
+                          ...typography.body,
+                          color: colors.text.primary,
+                          fontWeight: 600,
+                        }}
                         target={
                           item.href.startsWith("http") ? "_blank" : undefined
                         }
@@ -146,11 +156,13 @@ export default function ContactPage() {
                             ? "noopener noreferrer"
                             : undefined
                         }
+                        onMouseEnter={(e) => (e.currentTarget.style.color = colors.text.secondary)}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = colors.text.primary)}
                       >
                         {item.value}
                       </a>
                     ) : (
-                      <span className="font-body text-white font-semibold text-sm sm:text-base">
+                      <span style={{ ...typography.body, color: colors.text.primary, fontWeight: 600 }}>
                         {item.value}
                       </span>
                     )}
@@ -161,30 +173,23 @@ export default function ContactPage() {
           </div>
 
           {/* Right — form */}
-          <div className="p-6 sm:p-8" style={{
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "20px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
-          }}>
+          <div style={{ ...glass.light, padding: "clamp(1.5rem, 3vw, 2rem)" }}>
             {status === "sent" ? (
               <motion.div
-                className="flex flex-col gap-3 py-8"
+                className="flex flex-col gap-3 py-6 sm:py-8"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="font-body text-white/40 text-xs tracking-widest uppercase">
+                <span style={{ ...typography.label, color: colors.text.tertiary }}>
                   Message sent
                 </span>
-                <p className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight">
+                <p style={{ ...typography.h2, fontFamily: fonts.serif, color: colors.text.primary }}>
                   Thank you,
                   <br />
                   {form.name.split(" ")[0] || "friend"}.
                 </p>
-                <p className="font-body text-white/65 text-sm leading-relaxed max-w-xs">
+                <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "20rem" }}>
                   We&apos;ll get back to you as soon as we can. May God bless
                   your day.
                 </p>
@@ -199,7 +204,15 @@ export default function ContactPage() {
                       message: "",
                     });
                   }}
-                  className="mt-4 self-start font-body text-white/60 text-sm underline underline-offset-4 hover:text-white transition-colors"
+                  className="mt-4 self-start transition-colors"
+                  style={{
+                    ...typography.small,
+                    color: colors.text.tertiary,
+                    textDecoration: "underline",
+                    textUnderlineOffset: "4px",
+                  } as React.CSSProperties}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = colors.text.primary)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = colors.text.tertiary)}
                 >
                   Send another message
                 </button>
@@ -209,7 +222,7 @@ export default function ContactPage() {
                 {/* Name + Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                    <label style={{ ...typography.label, color: colors.primary }}>
                       Name
                     </label>
                     <Input
@@ -222,7 +235,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                    <label style={{ ...typography.label, color: colors.primary }}>
                       Email
                     </label>
                     <Input
@@ -240,7 +253,7 @@ export default function ContactPage() {
                 {/* Phone + Subject */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                    <label style={{ ...typography.label, color: colors.primary }}>
                       Phone{" "}
                       <span className="normal-case opacity-50">(optional)</span>
                     </label>
@@ -254,7 +267,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                    <label style={{ ...typography.label, color: colors.primary }}>
                       Subject
                     </label>
                     <Select
@@ -284,7 +297,7 @@ export default function ContactPage() {
 
                 {/* Message */}
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs tracking-widest uppercase" style={{ color: "#D4AF37" }}>
+                  <label style={{ ...typography.label, color: colors.primary }}>
                     Message
                   </label>
                   <Textarea
@@ -300,7 +313,7 @@ export default function ContactPage() {
 
                 {/* Error */}
                 {status === "error" && (
-                  <p className="font-body text-red-400 text-sm">
+                  <p style={{ ...typography.body, color: "#ef4444" }}>
                     Something went wrong. Please try again.
                   </p>
                 )}

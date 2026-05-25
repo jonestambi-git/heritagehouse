@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Media",
   description:
-    "Listen to audio messages on Spotify and watch recorded services on YouTube from Assemblies Of God Church, Choba 2.",
+    "Listen to audio messages on Spotify and watch recorded services on YouTube from HeritageHouse Ministries, Port Harcourt.",
   openGraph: {
-    title: "Media | AG Church Choba 2",
+    title: "Media | HeritageHouse Ministries",
     description:
-      "Audio messages and video recordings from Assemblies Of God Church, Choba 2.",
+      "Audio messages and video recordings from HeritageHouse Ministries, Port Harcourt.",
   },
 };
 
