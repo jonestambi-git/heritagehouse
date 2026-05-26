@@ -21,6 +21,8 @@ function AdminLoginForm() {
     setError("");
 
     try {
+      console.log("[LOGIN FORM]", { email, password: password?.substring(0, 3) + "***" });
+      
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,6 +30,8 @@ function AdminLoginForm() {
       });
 
       const data = await res.json() as { success?: boolean; error?: string };
+
+      console.log("[LOGIN RESPONSE]", { status: res.status, success: data.success, error: data.error });
 
       if (!res.ok || !data.success) {
         setError(data.error || "Invalid credentials.");

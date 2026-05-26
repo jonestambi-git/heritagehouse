@@ -16,7 +16,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+    // Normalize email and password for comparison
+    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedPassword = password.trim();
+    const expectedEmail = ADMIN_EMAIL.toLowerCase().trim();
+    const expectedPassword = ADMIN_PASSWORD.trim();
+
+    // Debug logging - detailed
+    console.log("[LOGIN DEBUG]", {
+      providedEmail: normalizedEmail,
+      providedEmailLength: normalizedEmail.length,
+      providedPassword: normalizedPassword?.substring(0, 3) + "***",
+      providedPasswordLength: normalizedPassword.length,
+      expectedEmail: expectedEmail,
+      expectedEmailLength: expectedEmail.length,
+      expectedPassword: expectedPassword?.substring(0, 3) + "***",
+      expectedPasswordLength: expectedPassword.length,
+      emailMatch: normalizedEmail === expectedEmail,
+      passwordMatch: normalizedPassword === expectedPassword,
+      emailChars: normalizedEmail.split('').map((c: string) => c.charCodeAt(0)),
+      expectedEmailChars: expectedEmail.split('').map((c: string) => c.charCodeAt(0)),
+    });
+
+    if (normalizedEmail !== expectedEmail || normalizedPassword !== expectedPassword) {
       return NextResponse.json(
         { success: false, error: "Invalid credentials" },
         { status: 401 }
