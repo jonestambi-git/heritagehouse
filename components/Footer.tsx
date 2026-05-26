@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-4">
                 <Image
-                  src="/heritage-house-logo.svg"
+                  src="/logo.png"
                   alt="HeritageHouse Ministries logo"
                   width={44}
                   height={44}

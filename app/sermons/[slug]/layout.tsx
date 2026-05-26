@@ -7,10 +7,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   return {
-    title: `Sermon | ${slug} | AG Church`,
+    title: `Sermon | ${slug} | HeritageHouse Ministries`,
     description: "Sermon detail",
     openGraph: {
-      title: `Sermon | ${slug} | AG Church`,
+      title: `Sermon | ${slug} | HeritageHouse Ministries`,
       description: "Sermon detail",
       type: "article",
     },

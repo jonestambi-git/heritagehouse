@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useSermons, useSearchSermons } from "@/lib/hooks/queries";
 import { useUiStore } from "@/lib/stores/uiStore";
@@ -41,6 +41,15 @@ const tabs: { id: Tab; label: string }[] = [
 
 export default function SermonsPage() {
   const bgUrl = getDailyPhoto(5);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 1], [0, 1, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.3], [40, 0]);
+
   const [activeTab, setActiveTab] = useState<Tab>("word");
 
   // ── The Word state ──
@@ -114,15 +123,15 @@ export default function SermonsPage() {
   }, [activeTab]);
 
   return (
-    <section className="relative w-full min-h-svh overflow-hidden">
+    <section ref={sectionRef} className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.10, userSelect: "none" }} />
       </div>
       {/* Background */}
 
       {/* Content */}
-      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
+      <motion.div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1, opacity, y }}>
 
         {/* Heading */}
         <motion.h1
@@ -431,7 +440,7 @@ export default function SermonsPage() {
         </AnimatePresence>
 
         <div className="h-16" />
-      </div>
+      </motion.div>
     </section>
   );
 }

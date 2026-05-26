@@ -57,8 +57,12 @@ function parseItems(xml: string) {
 }
 
 async function getPodcastFeed(): Promise<PodcastFeed | null> {
-  const RSS_URL =
-    process.env.PODCAST_RSS_URL ?? "https://anchor.fm/s/111293d28/podcast/rss";
+  const RSS_URL = process.env.PODCAST_RSS_URL;
+
+  // If no RSS URL is configured, return null with a message
+  if (!RSS_URL) {
+    return null;
+  }
 
   try {
     const res = await fetch(RSS_URL, {

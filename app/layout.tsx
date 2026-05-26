@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   creator: "HeritageHouse Ministries",
   publisher: "HeritageHouse Ministries",
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   formatDetection: {
     email: false,
@@ -98,15 +98,17 @@ export default function RootLayout({
         {
           "--font-sans": '"Poppins", sans-serif',
           "--font-body": '"Inter", "Segoe UI", Arial, sans-serif',
+          "--font-serif": '"Cormorant Garamond", Georgia, serif',
+          "--font-display": '"Playfair Display", Georgia, serif',
         } as React.CSSProperties
       }
     >
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>

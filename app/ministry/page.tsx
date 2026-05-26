@@ -20,6 +20,14 @@ interface Ministry {
   spots: number | null;
 }
 
+interface MinistryInfo {
+  _id?: string;
+  title: string;
+  description: string;
+  image?: string;
+  order: number;
+}
+
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const tagLabels: Record<MinistryTag, string> = {
@@ -132,6 +140,7 @@ export default function MinistryPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [settings, setSettings] = useState<any>(null);
   const [ministries, setMinistries] = useState<Ministry[]>([]);
+  const [ministryInfo, setMinistryInfo] = useState<MinistryInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load pastor settings from database
@@ -163,6 +172,18 @@ export default function MinistryPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Fetch ministry info from database
+  useEffect(() => {
+    fetch("/api/v1/admin/ministry-info", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setMinistryInfo(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const filtered =
     activeTag === "All"
       ? ministries
@@ -172,7 +193,7 @@ export default function MinistryPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.10, userSelect: "none" }} />
       </div>
       {/* Background */}
 
@@ -242,7 +263,7 @@ export default function MinistryPage() {
         </motion.div>
 
         {/* ── Lead Pastor ── */}
-        {!settings?.pastorHidden && (settings?.pastorName || settings?.pastorWifeName) && (
+        {!settings?.pastorHidden && settings?.pastorName && (
           <motion.div
             className="mt-12 sm:mt-14 w-full max-w-4xl"
             initial={{ opacity: 0, y: 24 }}
@@ -253,117 +274,181 @@ export default function MinistryPage() {
               Our Leadership
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-6 max-w-md sm:max-w-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
               {/* Pastor Card */}
-              {settings.pastorName && (
+              <motion.div
+                className="group relative overflow-hidden rounded-[16px] sm:rounded-[24px]"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.15, duration: 0.5 }}
+                whileHover={{ y: -6 }}
+              >
+                {/* Photo — full bleed */}
+                <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[16px] sm:rounded-[24px]">
+                  {settings.pastorPhotoUrl ? (
+                    <img
+                      src={settings.pastorPhotoUrl}
+                      alt={settings.pastorName}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      onError={(e) => { e.currentTarget.src = ""; e.currentTarget.style.display = "none"; }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-white/10">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/40">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                      </svg>
+                    </div>
+                  )}
+
+                  {/* Gradient overlay at bottom */}
+                  <div
+                    className="absolute inset-0 pointer-events-none rounded-[16px] sm:rounded-[24px]"
+                    style={{
+                      background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)",
+                    }}
+                  />
+
+                  {/* Text pinned to bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+                    <span
+                      className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
+                      style={{
+                        background: "rgba(255,255,255,0.15)",
+                        border: `1px solid ${colors.border.light}`,
+                        borderRadius: "6px",
+                        color: colors.text.secondary,
+                        backdropFilter: "blur(8px)",
+                        ...typography.label,
+                      }}
+                    >
+                      Lead Pastor
+                    </span>
+                    <h3 className="font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
+                      {settings.pastorName}
+                    </h3>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* About Pastor Card */}
+              <motion.div
+                className="flex flex-col gap-4 justify-center"
+                style={{
+                  ...glass.light,
+                  padding: "24px",
+                  borderRadius: "16px",
+                  border: `1px solid ${colors.border.light}`,
+                }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.25, duration: 0.5 }}
+              >
+                <div
+                  className="h-1 w-12"
+                  style={{
+                    background: `linear-gradient(90deg, ${colors.accent}, transparent)`,
+                  }}
+                />
+                <h3 className="font-black text-xl sm:text-2xl leading-tight" style={{ ...typography.h3, color: colors.text.primary, fontFamily: fonts.serif }}>
+                  About the Pastor
+                </h3>
+                <p style={{ ...typography.body, color: colors.text.secondary, lineHeight: 1.8 }}>
+                  Dr. Franklin Ede is the Senior Pastor of HeritageHouse Ministries, Port Harcourt, Nigeria. He is a Chartered Accountant, Healing Evangelist, generational prophet and quintessential leader with a passion for transforming lives through the Gospel of Jesus Christ.
+                </p>
+                <p style={{ ...typography.body, color: colors.text.secondary, lineHeight: 1.8 }}>
+                  Under his leadership, HeritageHouse Ministries has grown into a vibrant, Spirit-filled community dedicated to healing the world and rescuing mankind from the grips of the devil through the preaching of the word of grace.
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── Ministry Information Section ── */}
+        {ministryInfo.length > 0 && (
+          <motion.div
+            className="mt-12 sm:mt-14 w-full max-w-5xl"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.7 }}
+          >
+            <p style={{ ...typography.label, color: colors.accent, marginBottom: "32px" }}>
+              Who We Are
+            </p>
+
+            <div className="space-y-6">
+              {ministryInfo.map((info, i) => (
                 <motion.div
-                  className="group relative overflow-hidden rounded-[16px] sm:rounded-[24px]"
+                  key={info._id}
+                  className="group relative overflow-hidden"
+                  style={{
+                    ...glass.light,
+                    borderRadius: "16px",
+                    border: `1px solid ${colors.border.light}`,
+                  }}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.15, duration: 0.5 }}
-                  whileHover={{ y: -6 }}
+                  transition={{ delay: 1.25 + i * 0.1, duration: 0.5 }}
+                  whileHover={{ y: -4 }}
                 >
-                  {/* Photo — full bleed */}
-                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[16px] sm:rounded-[24px]">
-                    {settings.pastorPhotoUrl ? (
-                      <img
-                        src={settings.pastorPhotoUrl}
-                        alt={settings.pastorName}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        onError={(e) => { e.currentTarget.src = ""; e.currentTarget.style.display = "none"; }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-white/10">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/40">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                        </svg>
-                      </div>
-                    )}
+                  {/* Accent bar at top */}
+                  <div
+                    className="h-1 w-full"
+                    style={{
+                      background: `linear-gradient(90deg, ${colors.accent}, transparent)`,
+                    }}
+                  />
 
-                    {/* Gradient overlay at bottom */}
-                    <div
-                      className="absolute inset-0 pointer-events-none rounded-[16px] sm:rounded-[24px]"
-                      style={{
-                        background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)",
-                      }}
-                    />
-
-                    {/* Text pinned to bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+                  <div className="p-6 sm:p-8">
+                    {/* Title with number */}
+                    <div className="flex items-start gap-4 mb-4">
                       <span
-                        className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
+                        className="text-4xl sm:text-5xl font-black leading-none flex-shrink-0"
                         style={{
-                          background: "rgba(255,255,255,0.15)",
-                          border: `1px solid ${colors.border.light}`,
-                          borderRadius: "6px",
-                          color: colors.text.secondary,
-                          backdropFilter: "blur(8px)",
-                          ...typography.label,
+                          color: colors.accent,
+                          opacity: 0.2,
+                          fontFamily: fonts.serif,
                         }}
                       >
-                        Lead Pastor
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-                      <h3 className="font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
-                        {settings.pastorName}
-                      </h3>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Wife Card */}
-              {settings.pastorWifeName && (
-                <motion.div
-                  className="group relative overflow-hidden rounded-[16px] sm:rounded-[24px]"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.25, duration: 0.5 }}
-                  whileHover={{ y: -6 }}
-                >
-                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[16px] sm:rounded-[24px]">
-                    {settings.pastorWifePhotoUrl ? (
-                      <img
-                        src={settings.pastorWifePhotoUrl}
-                        alt={settings.pastorWifeName}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        onError={(e) => { e.currentTarget.src = ""; e.currentTarget.style.display = "none"; }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-white/10">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/40">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                        </svg>
-                      </div>
-                    )}
-
-                    <div
-                      className="absolute inset-0 pointer-events-none rounded-[16px] sm:rounded-[24px]"
-                      style={{
-                        background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)",
-                      }}
-                    />
-
-                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
-                      <span
-                        className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 mb-1.5 sm:mb-3"
+                      <h3
+                        className="font-black text-2xl sm:text-3xl leading-tight tracking-tight"
                         style={{
-                          background: "rgba(255,255,255,0.15)",
-                          border: `1px solid ${colors.border.light}`,
-                          borderRadius: "6px",
-                          color: colors.text.secondary,
-                          backdropFilter: "blur(8px)",
-                          ...typography.label,
+                          ...typography.h2,
+                          color: colors.text.primary,
+                          fontFamily: fonts.serif,
                         }}
                       >
-                        Pastor&apos;s Wife
-                      </span>
-                      <h3 className="font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight" style={{ ...typography.h2, color: colors.text.primary, fontFamily: fonts.serif }}>
-                        {settings.pastorWifeName}
+                        {info.title}
                       </h3>
                     </div>
+
+                    {/* Description with proper formatting */}
+                    <div
+                      className="space-y-3"
+                      style={{
+                        ...typography.body,
+                        color: colors.text.secondary,
+                        lineHeight: 1.8,
+                      }}
+                    >
+                      {info.description.split("\n\n").map((paragraph, idx) => (
+                        <p key={idx} className="leading-relaxed">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+
+                    {/* Decorative element */}
+                    <div
+                      className="mt-6 h-px w-12"
+                      style={{
+                        background: `linear-gradient(90deg, ${colors.accent}, transparent)`,
+                      }}
+                    />
                   </div>
                 </motion.div>
-              )}
+              ))}
             </div>
           </motion.div>
         )}

@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,22 +16,61 @@ import { getDailyPhoto } from "@/lib/church-photos";
 import { API_BASE_URL } from "@/lib/constants/config";
 import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
+interface ServiceSchedule {
+  _id?: string;
+  day: string;
+  title: string;
+  time: string;
+  description?: string;
+}
+
+const defaultSchedules: ServiceSchedule[] = [
+  {
+    day: "Monday",
+    title: "Counseling",
+    time: "08:00 AM - 05:00 PM",
+    description: "Pastoral counseling and spiritual guidance",
+  },
+  {
+    day: "Tuesday",
+    title: "Night Vigil",
+    time: "10:00 PM - 06:00 AM",
+    description: "Prayer and worship night",
+  },
+  {
+    day: "Friday",
+    title: "Healing & Deliverance",
+    time: "08:00 AM - 05:30 PM",
+    description: "Healing service and deliverance ministry",
+  },
+  {
+    day: "Sunday",
+    title: "Services",
+    time: "8:00 AM & 12:30 PM",
+    description: "Main worship services",
+  },
+];
+
 const contactDetails = [
   {
-    label: "Address",
-    value: "14 Grace Avenue, Port Harcourt, Rivers State",
-    href: "https://maps.google.com",
+    label: "Contact Person",
+    value: "HeritageHouse Head Quarter",
+    href: null,
   },
-  { label: "Phone", value: "+234 801 234 5678", href: "tel:+2348012345678" },
+  {
+    label: "Official Line",
+    value: "+234 810 800 8447",
+    href: "tel:+2348108008447",
+  },
   {
     label: "Email",
-    value: "hello@heritagehouse.org",
-    href: "mailto:hello@heritagehouse.org",
+    value: "contact@heritagehouse.org.ng",
+    href: "mailto:contact@heritagehouse.org.ng",
   },
   {
-    label: "Service Times",
-    value: "Sun 8 AM & 10:30 AM · Wed 6 PM",
-    href: null,
+    label: "Address",
+    value: "Plot 11b Ameachi Drive, Opp Norwegian Int'l School, Behind Casablanca, GRA Phase 3, Port Harcourt 500101, Rivers State",
+    href: "https://maps.google.com/maps?q=Plot+11b+Ameachi+Drive+Port+Harcourt",
   },
 ];
 
@@ -42,6 +81,18 @@ const inputClass =
 
 export default function ContactPage() {
   const bgUrl = getDailyPhoto(3);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 1], [0, 1, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.3], [40, 0]);
+
+  const [schedules, setSchedules] = useState<ServiceSchedule[]>(defaultSchedules);
+  const [loadingSchedules, setLoadingSchedules] = useState(true);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -50,6 +101,24 @@ export default function ContactPage() {
     message: "",
   });
   const [status, setStatus] = useState<FormState>("idle");
+
+  // Fetch service schedules
+  useEffect(() => {
+    async function fetchSchedules() {
+      try {
+        const res = await fetch("/api/v1/admin/service-schedule");
+        const data = await res.json();
+        if (data.success && data.data.length > 0) {
+          setSchedules(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      } finally {
+        setLoadingSchedules(false);
+      }
+    }
+    fetchSchedules();
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<
@@ -76,14 +145,14 @@ export default function ContactPage() {
   }
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section ref={sectionRef} className="relative w-full min-h-screen overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.10, userSelect: "none" }} />
       </div>
 
       {/* Content */}
-      <div className={`public-content relative flex flex-col items-center ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
+      <motion.div className={`public-content relative flex flex-col items-center ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1, opacity, y }}>
         {/* Heading */}
         <motion.h1
           className="text-white font-black leading-[0.92] tracking-tight text-center"
@@ -113,67 +182,69 @@ export default function ContactPage() {
 
         {/* Body */}
         <motion.div
-          className={`w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 ${spacing.sectionGapLarge} flex-1 ${spacing.marginTopLg}`}
+          className={`w-full max-w-5xl flex-1 ${spacing.marginTopLg}`}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
         >
-          {/* Left — details */}
-          <div className="flex flex-col gap-6 sm:gap-8">
-            <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
-              We&apos;d love to hear from you. Reach out with any questions,
-              prayer requests, or if you&apos;d simply like to know more about
-              our community.
-            </p>
-            <dl className="flex flex-col gap-4 sm:gap-5">
-              {contactDetails.map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  className="flex flex-col border-t"
-                  style={{ borderColor: colors.border.light, paddingTop: "1rem" }}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.1 + i * 0.1, duration: 0.6 }}
-                >
-                  <dt style={{ ...typography.label, color: colors.text.tertiary, marginBottom: "0.25rem" }}>
-                    {item.label}
-                  </dt>
-                  <dd>
-                    {item.href ? (
-                      <a
-                        href={item.href}
-                        className="transition-colors"
-                        style={{
-                          ...typography.body,
-                          color: colors.text.primary,
-                          fontWeight: 600,
-                        }}
-                        target={
-                          item.href.startsWith("http") ? "_blank" : undefined
-                        }
-                        rel={
-                          item.href.startsWith("http")
-                            ? "noopener noreferrer"
-                            : undefined
-                        }
-                        onMouseEnter={(e) => (e.currentTarget.style.color = colors.text.secondary)}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = colors.text.primary)}
-                      >
-                        {item.value}
-                      </a>
-                    ) : (
-                      <span style={{ ...typography.body, color: colors.text.primary, fontWeight: 600 }}>
-                        {item.value}
-                      </span>
-                    )}
-                  </dd>
-                </motion.div>
-              ))}
-            </dl>
-          </div>
+          {/* Top section - Contact details and form */}
+          <div className={`grid grid-cols-1 lg:grid-cols-2 ${spacing.sectionGapLarge}`}>
+            {/* Left — details */}
+            <div className="flex flex-col gap-6 sm:gap-8">
+              <p style={{ ...typography.body, color: colors.text.secondary, maxWidth: "28rem" }}>
+                We&apos;d love to hear from you. Reach out with any questions,
+                prayer requests, or if you&apos;d simply like to know more about
+                our community.
+              </p>
+              <dl className="flex flex-col gap-4 sm:gap-5">
+                {contactDetails.map((item, i) => (
+                  <motion.div
+                    key={item.label}
+                    className="flex flex-col border-t"
+                    style={{ borderColor: colors.border.light, paddingTop: "1rem" }}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.1 + i * 0.1, duration: 0.6 }}
+                  >
+                    <dt style={{ ...typography.label, color: colors.text.tertiary, marginBottom: "0.25rem" }}>
+                      {item.label}
+                    </dt>
+                    <dd>
+                      {item.href ? (
+                        <a
+                          href={item.href}
+                          className="transition-colors"
+                          style={{
+                            ...typography.body,
+                            color: colors.text.primary,
+                            fontWeight: 600,
+                          }}
+                          target={
+                            item.href.startsWith("http") ? "_blank" : undefined
+                          }
+                          rel={
+                            item.href.startsWith("http")
+                              ? "noopener noreferrer"
+                              : undefined
+                          }
+                          onMouseEnter={(e) => (e.currentTarget.style.color = colors.text.secondary)}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = colors.text.primary)}
+                        >
+                          {item.value}
+                        </a>
+                      ) : (
+                        <span style={{ ...typography.body, color: colors.text.primary, fontWeight: 600 }}>
+                          {item.value}
+                        </span>
+                      )}
+                    </dd>
+                  </motion.div>
+                ))}
+              </dl>
+            </div>
 
-          {/* Right — form */}
-          <div style={{ ...glass.light, padding: "clamp(1.5rem, 3vw, 2rem)" }}>
+            {/* Right — form */}
+            <div style={{ ...glass.light, padding: "clamp(1.5rem, 3vw, 2rem)" }}>
             {status === "sent" ? (
               <motion.div
                 className="flex flex-col gap-3 py-6 sm:py-8"
@@ -333,8 +404,49 @@ export default function ContactPage() {
               </form>
             )}
           </div>
+          </div>
+
+          {/* Middle — Service Schedule */}
+          <motion.div
+            className="w-full mt-12 sm:mt-16 pt-12 sm:pt-16 border-t"
+            style={{ borderColor: colors.border.light }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.6 }}
+          >
+            <h3 style={{ ...typography.h3, fontFamily: fonts.serif, color: colors.text.primary, marginBottom: "2rem", textAlign: "center" }}>
+              Service Schedule
+            </h3>
+            {loadingSchedules ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {schedules.map((schedule, i) => (
+                  <motion.div
+                    key={schedule._id || schedule.day}
+                    className="flex flex-col items-center text-center"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.6 + i * 0.1, duration: 0.5 }}
+                  >
+                    <p style={{ ...typography.label, color: colors.primary, marginBottom: "0.5rem" }}>
+                      {schedule.day}
+                    </p>
+                    <p style={{ ...typography.body, color: colors.text.primary }}>
+                      {schedule.title}
+                    </p>
+                    <p style={{ ...typography.small, color: colors.text.tertiary, marginTop: "0.25rem" }}>
+                      {schedule.time}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -260,15 +260,42 @@ function getDailyQuote() {
 }
 
 export default function Hero() {
-  const bgUrl = getDailyPhoto(0);
   const scripture = getDailyScripture(0);
   const dailyQuote = getDailyQuote();
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
   const [loadingSermons, setLoadingSermons] = useState(true);
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+
+  // Hero background images that rotate every 3 seconds
+  const heroBgImages = [
+    "/images/herobg1.jpg",
+    "/images/herobg2.jpg",
+    "/images/herobg3.jpg",
+    "/images/herobg4.jpg",
+    "/images/herobg5.jpg",
+  ];
+
+  const currentBgUrl = heroBgImages[currentBgIndex];
+
+  // Preload next image
+  useEffect(() => {
+    const nextIndex = (currentBgIndex + 1) % heroBgImages.length;
+    const img = document.createElement('img');
+    img.src = heroBgImages[nextIndex];
+  }, [currentBgIndex, heroBgImages]);
+
+  // Change background image every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prev) => (prev + 1) % heroBgImages.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [heroBgImages.length]);
 
   // Gallery images for sections
   const galleryImages = [
@@ -313,15 +340,18 @@ export default function Hero() {
 
         {/* Parallax background */}
         <motion.div
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full overflow-hidden"
           style={{ y: bgY, scale: bgScale, transformOrigin: "center center" }}
         >
+          {/* Current image - changes every 3 seconds */}
           <img
-            src={bgUrl}
+            src={currentBgUrl}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover object-center"
-            style={{ zIndex: 0 }}
+            style={{ 
+              zIndex: 0,
+            }}
           />
         </motion.div>
 
@@ -350,7 +380,7 @@ export default function Hero() {
               textOrientation: "mixed",
             }}
           >
-            God&apos;s Own Favour Prophetic Ministry
+            HeritageHouse Ministries
           </span>
           <div className="w-px h-20" style={{ background: "rgba(66,167,192,0.3)" }} />
         </div>
@@ -394,7 +424,7 @@ export default function Hero() {
               }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              God&apos;s Own Favour Prophetic Ministry · Eleme
+              HeritageHouse Ministries · Port Harcourt
             </span>
           </motion.div>
 
@@ -816,12 +846,12 @@ export default function Hero() {
           aria-hidden="true"
         >
           <Image
-            src="/heritage-house-logo.svg"
+            src="/logo.png"
             alt=""
             width={500}
             height={500}
             className="object-contain"
-            style={{ opacity: 0.03, userSelect: "none" }}
+            style={{ opacity: 0.10, userSelect: "none" }}
           />
         </div>
 
@@ -975,7 +1005,7 @@ export default function Hero() {
                 }}
               >
                 We are not just a congregation — we are a family on mission. For over
-                eighteen years, AG Church Choba 2 has been a place where broken people
+                eighteen years, HeritageHouse Ministries has been a place where broken people
                 find wholeness, seekers find truth, and believers grow deeper in Christ.
               </p>
               <p

@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 import { getDailyPhoto } from "@/lib/church-photos";
 import { typography, spacing, colors, glass, fonts } from "@/lib/design-system";
 
@@ -17,6 +17,15 @@ interface Announcement {
 
 export default function AnnouncementsPage() {
   const bgUrl = getDailyPhoto(3);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 1], [0, 1, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.3], [40, 0]);
+
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,14 +42,14 @@ export default function AnnouncementsPage() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-svh overflow-hidden">
+    <section ref={sectionRef} className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.10, userSelect: "none" }} />
       </div>
 
       {/* Content */}
-      <div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1 }}>
+      <motion.div className={`public-content relative flex flex-col items-center min-h-svh ${spacing.containerPadding} ${spacing.containerPaddingY}`} style={{ zIndex: 1, opacity, y }}>
         {/* Heading */}
         <motion.h1
           className="text-white font-black leading-[0.92] tracking-tight text-center"
@@ -171,7 +180,7 @@ export default function AnnouncementsPage() {
 
         {/* Bottom spacer */}
         <div className="h-8 sm:h-12" />
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -76,7 +76,7 @@ export default function Navbar() {
             {/* Brand */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <Image
-                src="/heritage-house-logo.svg"
+                src="/logo.png"
                 alt="HeritageHouse Ministries logo"
                 width={36}
                 height={36}

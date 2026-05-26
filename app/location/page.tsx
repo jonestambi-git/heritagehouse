@@ -87,7 +87,7 @@ const details = [
   {
     label: "Address",
     value: "HeritageHouse Ministries, Port Harcourt, Rivers State",
-    href: "https://www.google.com/maps/place/HeritageHouse+Ministries+Port+Harcourt",
+    href: "https://www.google.com/maps/place/HeritageHouse+Ministries/@4.8812921,7.1296229,17z/data=!3m1!4b1!4m6!3m5!1s0x10682d0bdc04a749:0xb90ac6b2be86f4ac!8m2!3d4.8812921!4d7.1321978!16s%2Fg%2F11hb3gyr65?entry=ttu&g_ep=EgoyMDI2MDUyMC4wIKXMDSoASAFQAw%3D%3D",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -150,8 +150,9 @@ const faqs = [
   },
 ];
 
-const MAPS_URL =
-  "https://www.google.com/maps/place/Assemblies+Of+God+Church+Choba+2/@4.8832034,6.9008766,1123m";
+const MAPS_URL = "https://www.google.com/maps/place/HeritageHouse+Ministries/@4.8812921,7.1296229,17z";
+
+const MAPS_EMBED_URL = "https://maps.google.com/maps?q=4.8812921,7.1321978&output=embed&z=17";
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -201,7 +202,7 @@ export default function LocationPage() {
     const getShortDay = (day: string) => day.substring(0, 3).toUpperCase();
 
     // Sunday
-    if (!settings.sundayHidden && (settings.sundayTime1 || settings.sundayTime2)) {
+    if (!settings?.sundayHidden && (settings?.sundayTime1 || settings?.sundayTime2)) {
       const sundayTimes = [settings.sundayTime1, settings.sundayTime2].filter(Boolean);
       times.push({
         day: "Sunday",
@@ -212,7 +213,7 @@ export default function LocationPage() {
     }
 
     // Monday
-    if (!settings.mondayHidden && settings.mondayTime) {
+    if (!settings?.mondayHidden && settings?.mondayTime) {
       times.push({
         day: "Monday",
         shortDay: getShortDay("Monday"),
@@ -222,7 +223,7 @@ export default function LocationPage() {
     }
 
     // Tuesday
-    if (!settings.tuesdayHidden && settings.tuesdayTime) {
+    if (!settings?.tuesdayHidden && settings?.tuesdayTime) {
       times.push({
         day: "Tuesday",
         shortDay: getShortDay("Tuesday"),
@@ -232,7 +233,7 @@ export default function LocationPage() {
     }
 
     // Wednesday
-    if (!settings.wednesdayHidden && settings.wednesdayTime) {
+    if (!settings?.wednesdayHidden && settings?.wednesdayTime) {
       times.push({
         day: "Wednesday",
         shortDay: getShortDay("Wednesday"),
@@ -242,7 +243,7 @@ export default function LocationPage() {
     }
 
     // Thursday
-    if (!settings.thursdayHidden && settings.thursdayTime) {
+    if (!settings?.thursdayHidden && settings?.thursdayTime) {
       times.push({
         day: "Thursday",
         shortDay: getShortDay("Thursday"),
@@ -252,7 +253,7 @@ export default function LocationPage() {
     }
 
     // Friday
-    if (!settings.fridayHidden && settings.fridayTime) {
+    if (!settings?.fridayHidden && settings?.fridayTime) {
       times.push({
         day: "Friday",
         shortDay: getShortDay("Friday"),
@@ -262,7 +263,7 @@ export default function LocationPage() {
     }
 
     // Saturday
-    if (!settings.saturdayHidden && settings.saturdayTime) {
+    if (!settings?.saturdayHidden && settings?.saturdayTime) {
       times.push({
         day: "Saturday",
         shortDay: getShortDay("Saturday"),
@@ -278,7 +279,7 @@ export default function LocationPage() {
     <section className="relative w-full min-h-svh overflow-hidden">
       {/* Logo watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true" style={{ zIndex: 0 }}>
-        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.04, userSelect: "none" }} />
+        <img src="/logo.png" alt="HeritageHouse Ministries watermark" className="object-contain" style={{ width: "min(80vw, 700px)", height: "min(80vw, 700px)", opacity: 0.10, userSelect: "none" }} />
       </div>
       {/* Background */}
 
@@ -576,7 +577,7 @@ export default function LocationPage() {
                 </motion.div>
                 <div className="flex flex-col">
                   <span className="font-semibold text-sm tracking-wide" style={{ ...typography.body, color: colors.text.primary }}>
-                    AG Church · Choba 2
+                    HeritageHouse Ministries
                   </span>
                   <span style={{ ...typography.label, color: colors.text.tertiary }}>
                     Port Harcourt, Rivers State
@@ -610,8 +611,8 @@ export default function LocationPage() {
               }}
             >
               <iframe
-                title="Church location map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2237.3!2d6.9008766!3d4.8832034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1069dbcb5d6ca3f3%3A0xd53fd6de46d82c1b!2sAssemblies%20Of%20God%20Church%20Choba%202!5e0!3m2!1sen!2sng!4v1"
+                title="HeritageHouse Ministries Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.5625!2d7.1296229!3d4.8812921!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1068d0bdc04a749%3A0xb90ac6b2be86f4ac!2sHeritageHouse%20Ministries!5e0!3m2!1sen!2sng!4v1716547200000"
                 width="100%"
                 height="100%"
                 style={{

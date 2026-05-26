@@ -170,7 +170,7 @@ export default function AdminSettingsPage() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Tagline / Location</label>
-              <input name="tagline" value={settings.tagline} onChange={handleChange} placeholder="Choba 2 · Port Harcourt" className={inputClass} />
+              <input name="tagline" value={settings.tagline} onChange={handleChange} placeholder="Port Harcourt · Rivers State" className={inputClass} />
             </div>
           </div>
           <div className="flex flex-col gap-1">
