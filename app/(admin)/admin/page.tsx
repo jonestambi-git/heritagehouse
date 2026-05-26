@@ -19,7 +19,7 @@ interface StatCard {
 async function fetchCount(url: string): Promise<number | null> {
   try {
     const res = await fetch(url, { 
-      signal: AbortSignal.timeout(8000), // 8 seconds — enough for first MongoDB connection
+      signal: AbortSignal.timeout(15000), // Increased from 8s to 15s for Vercel cold starts
       credentials: 'include',
       cache: 'no-store',
     });
@@ -58,7 +58,7 @@ async function fetchCount(url: string): Promise<number | null> {
     console.error(`Unexpected response format from ${url}:`, data);
     return null;
   } catch (error) {
-    console.error(`Error fetching ${url}:`, error);
+    console.error(`Error fetching ${url}:`, error instanceof Error ? error.message : error);
     return null;
   }
 }
@@ -66,7 +66,7 @@ async function fetchCount(url: string): Promise<number | null> {
 async function fetchPodcastCount(): Promise<number | null> {
   try {
     const res = await fetch(`/api/podcast-feed`, { 
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(15000),
       cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -80,7 +80,7 @@ async function fetchPodcastCount(): Promise<number | null> {
 async function fetchYouTubeCount(): Promise<number | null> {
   try {
     const res = await fetch(`/api/youtube-feed`, { 
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(15000),
       cache: 'no-store',
     });
     if (!res.ok) return null;

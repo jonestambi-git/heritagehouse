@@ -316,8 +316,7 @@ export default function LocationPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
         >
-          We meet every week in Choba, Port Harcourt. Whether it&apos;s your
-          first time or your hundredth, there is always a seat for you.
+          We meet every week in Plot 11b Ameachi Drive, Opp Norwegian Int’l School, Behind Casablanca, GRA Phase 3, Port Harcourt 500101, Rivers State.
         </motion.p>
 
         {/* ── Service Times ── */}
