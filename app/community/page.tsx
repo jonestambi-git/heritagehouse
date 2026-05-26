@@ -68,7 +68,7 @@ export default function CommunityPage() {
   useEffect(() => {
     fetch("/api/v1/ministries?limit=100", { cache: "no-store" })
       .then((r) => r.json())
-      .then((data) => setGroups(data?.data ?? []))
+      .then((response) => setGroups(response?.data ?? []))
       .catch(() => setGroups([]))
       .finally(() => setLoading(false));
   }, []);

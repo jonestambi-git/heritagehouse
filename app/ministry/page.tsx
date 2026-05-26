@@ -163,11 +163,10 @@ export default function MinistryPage() {
       .catch(() => {});
   }, []);
 
-  // Fetch ministries from database
   useEffect(() => {
     fetch("/api/v1/ministries?limit=100", { cache: "no-store" })
       .then((r) => r.json())
-      .then((data) => setMinistries(data?.data ?? []))
+      .then((response) => setMinistries(response?.data ?? []))
       .catch(() => setMinistries([]))
       .finally(() => setLoading(false));
   }, []);
