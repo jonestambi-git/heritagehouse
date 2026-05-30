@@ -12,6 +12,32 @@ async function isAuthenticated(): Promise<boolean> {
   }
 }
 
+// GET — fetch livestream settings (public)
+export async function GET() {
+  try {
+    await connectDB();
+
+    const settings = await LiveSettings.findOne().lean();
+
+    return NextResponse.json({
+      success: true,
+      data: settings || {
+        streamUrl: "",
+        title: "Sunday Service",
+        description: "Join us live for worship and the Word.",
+        isLive: false,
+        previousStreams: [],
+      },
+    });
+  } catch (error) {
+    console.error("[GET /api/v1/livestream]", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch livestream settings" },
+      { status: 500 }
+    );
+  }
+}
+
 // POST — create/update livestream settings (admin)
 export async function POST(req: NextRequest) {
   try {

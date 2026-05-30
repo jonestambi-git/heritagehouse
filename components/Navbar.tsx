@@ -74,7 +74,7 @@ export default function Navbar() {
           {/* Top bar */}
           <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
             {/* Brand */}
-            <Link href="/" className="flex items-center gap-2.5 shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 shrink-0 outline-none focus:outline-none">
               <Image
                 src="/logo.png"
                 alt="HeritageHouse Ministries logo"
@@ -98,7 +98,7 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="relative font-body text-[11px] tracking-widest uppercase transition-colors text-white/55 hover:text-white"
+                  className="relative font-body text-[11px] tracking-widest uppercase transition-colors text-white/55 hover:text-white outline-none focus:outline-none"
                 >
                   {/* Hidden bold copy reserves width so active state doesn't shift layout */}
                   <span className="invisible font-bold block h-0 overflow-hidden" aria-hidden="true">
@@ -121,7 +121,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 href="/live-service"
-                className="hidden sm:flex items-center gap-2 font-body text-xs font-semibold text-white tracking-wide border border-white/30 px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                className="hidden sm:flex items-center gap-2 font-body text-xs font-semibold text-white tracking-wide border border-white/30 px-3 py-1.5 hover:bg-white hover:text-black transition-colors outline-none focus:outline-none"
                 style={{ borderRadius: "8px" }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -132,7 +132,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMenuOpen((o) => !o)}
-                className="lg:hidden inline-flex items-center justify-center border border-white/20 text-white/80 hover:bg-white hover:text-black transition-colors"
+                className="lg:hidden inline-flex items-center justify-center border border-white/20 text-white/80 hover:bg-white hover:text-black transition-colors outline-none focus:outline-none"
                 style={{ borderRadius: "8px", width: 38, height: 36 }}
                 aria-label={menuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={menuOpen}
@@ -188,7 +188,7 @@ export default function Navbar() {
                       key={link.label}
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className={`px-3 py-2 font-body text-[11px] tracking-widest uppercase transition-all duration-200 ${
+                      className={`px-3 py-2 font-body text-[11px] tracking-widest uppercase transition-all duration-200 outline-none focus:outline-none ${
                         pathname === link.href || pathname.startsWith(link.href + "/")
                           ? "text-white"
                           : "text-white/75 hover:text-white"
@@ -210,7 +210,7 @@ export default function Navbar() {
                   <Link
                     href="/live-service"
                     onClick={() => setMenuOpen(false)}
-                    className="sm:hidden px-3 py-2 font-body text-[11px] tracking-widest uppercase text-white/75 hover:text-white transition-colors flex items-center gap-2"
+                    className="sm:hidden px-3 py-2 font-body text-[11px] tracking-widest uppercase text-white/75 hover:text-white transition-colors flex items-center gap-2 outline-none focus:outline-none"
                     style={{
                       background: "rgba(255,255,255,0.06)",
                       backdropFilter: "blur(10px)",
