@@ -14,21 +14,29 @@ export type LiveWithStreams = LiveSettings & {
 export const livestreamApi = {
   /** Current live settings + recent streams (cached on server) */
   getActive: async (): Promise<LiveWithStreams | null> => {
-    const res =
-      await apiClient.get<ApiResponse<{ data: LiveWithStreams | null }>>(
-        "/livestream/active",
-      );
-    const body = unwrap(res);
-    return body.data ?? null;
+    try {
+      const res =
+        await apiClient.get<ApiResponse<LiveWithStreams | null>>(
+          "/livestream/active",
+        );
+      const body = unwrap(res);
+      return body ?? null;
+    } catch {
+      return null;
+    }
   },
 
   /** Scheduled / past streams list */
   getSchedule: async (): Promise<PreviousStream[]> => {
-    const res = await apiClient.get<ApiResponse<{ data: PreviousStream[] }>>(
-      "/livestream/schedule",
-    );
-    const body = unwrap(res);
-    return body.data ?? [];
+    try {
+      const res = await apiClient.get<ApiResponse<PreviousStream[]>>(
+        "/livestream/schedule",
+      );
+      const body = unwrap(res);
+      return body ?? [];
+    } catch {
+      return [];
+    }
   },
 
   create: async (payload: Partial<LiveSettings>): Promise<LiveSettings> => {
@@ -41,14 +49,14 @@ export const livestreamApi = {
 
   goLive: async (): Promise<LiveSettings> => {
     const res = await apiClient.put<ApiResponse<LiveSettings>>(
-      "/livestream/go-live",
+      "/livestream?action=go-live",
     );
     return unwrap(res);
   },
 
   end: async (): Promise<LiveSettings> => {
     const res =
-      await apiClient.put<ApiResponse<LiveSettings>>("/livestream/end");
+      await apiClient.put<ApiResponse<LiveSettings>>("/livestream?action=end");
     return unwrap(res);
   },
 };
