@@ -15,7 +15,7 @@ import type { ChurchEvent, EventCategory } from "@/lib/types/resources";
 
 interface MonthlyProgram {
   id: string;
-  type: "first" | "last";
+  type: "first" | "last" | "second" | "third";
   title: string;
   time: string;
   description: string;
@@ -24,20 +24,20 @@ interface MonthlyProgram {
 
 const defaultMonthlyPrograms: MonthlyProgram[] = [
   {
-    id: "first-day-default",
+    id: "first-sunday-default",
     type: "first",
-    title: "First Sunday Communion Service",
-    time: "10:30 AM",
-    description: "Holy Communion service with special worship and prayer",
+    title: "First Sunday African Sunday",
+    time: "9:00 AM",
+    description: "Embracing the African culture",
     notes: "All members are encouraged to attend",
   },
   {
-    id: "last-day-default",
-    type: "last",
-    title: "Thanksgiving Service",
-    time: "6:00 PM",
-    description: "Monthly thanksgiving and testimony service",
-    notes: "Bring your testimonies to share",
+    id: "Third-sunday-default",
+    type: "third",
+    title: "Youth Service",
+    time: "9:00 AM",
+    description: "Service for our young activists in christ",
+    notes: "All youths are encouraged to attend",
   },
 ];
 

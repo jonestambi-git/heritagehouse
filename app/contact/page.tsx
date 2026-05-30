@@ -25,29 +25,29 @@ interface ServiceSchedule {
 }
 
 const defaultSchedules: ServiceSchedule[] = [
-  {
-    day: "Monday",
-    title: "Counseling",
-    time: "08:00 AM - 05:00 PM",
-    description: "Pastoral counseling and spiritual guidance",
-  },
+  // {
+  //   day: "Monday",
+  //   title: "Counseling",
+  //   time: "08:00 AM - 05:00 PM",
+  //   description: "Pastoral counseling and spiritual guidance",
+  // },
   {
     day: "Tuesday",
-    title: "Night Vigil",
-    time: "10:00 PM - 06:00 AM",
-    description: "Prayer and worship night",
+    title: "Counseling",
+    time: "12:00 AM",
+    description: "One on one with our Papa",
   },
   {
     day: "Friday",
-    title: "Healing & Deliverance",
-    time: "08:00 AM - 05:30 PM",
-    description: "Healing service and deliverance ministry",
+    title: "Evangelism",
+    time: "04:00 PM",
+    description: "Soul winnig",
   },
   {
     day: "Sunday",
     title: "Services",
-    time: "8:00 AM & 12:30 PM",
-    description: "Main worship services",
+    time: "9:00 AM",
+    description: "Sunday services",
   },
 ];
 

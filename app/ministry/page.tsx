@@ -152,10 +152,10 @@ export default function MinistryPage() {
           setSettings(data.data);
         } else {
           setSettings({
-            pastorName: "Rev. Emmanuel Okafor",
+            pastorName: "Dr. Franklin Ede",
             pastorWifeName: "Mrs. Grace Okafor",
             pastorPhotoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces",
-            pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
+            // pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
             pastorHidden: false,
           });
         }
